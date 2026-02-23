@@ -11,7 +11,7 @@ L = {
 	COPY_SYSTEM_MESSAGE = "已复制到剪切板。",
 
 	FILTER = "过滤器",
-	FILTER_HELP = "Choose which types of messages are visible in Eavesdropper.|n|n- Toggling a filter only changes what is currently shown.|n- No data is actually deleted; hidden messages will reappear if the filter is turned back on.|n|n|cnWARNING_FONT_COLOR:Note: Filters are applied instantly.|r",
+	FILTER_HELP = "选择哪种消息在Eavesdropper窗口内显示。|n|n- Toggling a filter only changes what is currently shown.|n- 取消勾选不会删除消息记录。被隐藏的消息会在你勾选过滤器后重新显示。|n|n|cnWARNING_FONT_COLOR:请注意：对过滤器的改动会立即生效。|r",
 
 	SCROLLMARKER_TEXT = "滚动到底部",
 
@@ -124,7 +124,7 @@ L = {
 	NOTIFICATIONS_TITLE = "通知",
 
 	EMOTES = "表情",
-	EMOTES_HELP = "When someone emotes at your character (e.g., /point, /laugh).",
+	EMOTES_HELP = "当其他玩家对你做表情时(例如/指点，/大笑）",
 
 	TARGET = "目标",
 	TARGET_HELP = "Messages received from your current target.",
