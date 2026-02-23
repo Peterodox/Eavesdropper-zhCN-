@@ -80,19 +80,19 @@ L = {
 	DISPLAY = "显示",
 	THEMES_BACKGROUND_COLOR = "背景颜色",
 	THEMES_BACKGROUND_COLOR_HELP = "Adjust the color and transparency of Eavesdropper.|n|n- Use the slider in the color picker to set the background opacity.",
-	THEMES_TITLEBAR_COLOR = "Title Bar Color",
+	THEMES_TITLEBAR_COLOR = "标题栏颜色",
 	THEMES_TITLEBAR_COLOR_HELP = "Set the background color and opacity for the title bar.|n|n- The title bar is typically visible when hovering over Eavesdropper.",
-	THEMES_SETTINGS_ELVUI = "ElvUI主体",
+	THEMES_SETTINGS_ELVUI = "ElvUI主题",
 	THEMES_SETTINGS_ELVUI_HELP = "Force Eavesdropper's settings window to use ElvUI skinning.|n|n|cnWARNING_FONT_COLOR:Note: Toggling this will automatically trigger a UI Reload to apply the new skin.|r",
 
 	HIDE_CLOSE_BUTTON = "隐藏关闭按钮",
 	HIDE_CLOSE_BUTTON_HELP = "Toggles the visibility of the close button on the Eavesdropper frame.|n|n- If hidden, you can still control the window using |cnGREEN_FONT_COLOR:/ed show|r or |cnGREEN_FONT_COLOR:/ed hide|r.",
 	HIDE_IN_COMBAT = "战斗中隐藏",
 	HIDE_IN_COMBAT_HELP = "Automatically hide Eavesdropper upon entering combat.|n|n|cnWARNING_FONT_COLOR:Note: Certain combat encounters or instances may restrict message capturing regardless of this setting.|r",
-	HIDE_WHEN_EMPTY = "Hide When Empty",
+	HIDE_WHEN_EMPTY = "没消息时隐藏",
 	HIDE_WHEN_EMPTY_HELP = "Automatically hides Eavesdropper when there are no messages to display.|n|n- The window will reappear as soon as a new message is recorded.",
 
-	TITLE_BAR_TARGET_NAME = "Title Bar Target Name",
+	TITLE_BAR_TARGET_NAME = "标题栏显示目标名称",
 	TITLE_BAR_TARGET_NAME_HELP = "Replaces the 'Eavesdropper' label in the title bar with the name of your current target. This provides a quick visual confirmation of which character's history is currently being tracked.",
 
 	FONT = "字体",
@@ -178,7 +178,7 @@ L = {
 	ADDONINFO_BUILD = "|cnNORMAL_FONT_COLOR:Build:|r %s",
 	ADDONINFO_BUILD_OUTDATED = title .. " is not optimized for this game build.|n|n|cnWARNING_FONT_COLOR:This may cause unexpected behavior.|r",
 	ADDONINFO_BUILD_CURRENT = title .. " is optimized for your current game build.|n|n|cnGREEN_FONT_COLOR:All features should work as expected.|r",
-	ADDONINFO_BLUESKY_SHILL_HELP = "Follow me on Bluesky!",
+	ADDONINFO_BLUESKY_SHILL_HELP = "请在Bluesky上关注我！",
 };
 
 ---@class ED.L : ED.Locale.zhCN, ED.Localization
