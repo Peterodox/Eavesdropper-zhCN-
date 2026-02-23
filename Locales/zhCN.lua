@@ -4,63 +4,63 @@
 local title = C_AddOns.GetAddOnMetadata("Eavesdropper", "Title");
 local L;
 
----@class ED.Locale.enUS
+---@class ED.Locale.zhCN
 L = {
-	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:Left-Click: Open options|nRight-Click: Open profiles|r",
-	POPUP_LINK = "|n|nPress |cnGREEN_FONT_COLOR:CTRL-C|r to copy the highlighted, then paste it in your web browser with |cnGREEN_FONT_COLOR:CTRL-V|r.",
-	COPY_SYSTEM_MESSAGE = "Copied to clipboard.",
+	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:左键单击∶打开设置|n右键单击∶打开档案|r",
+	POPUP_LINK = "|n|n按|cnGREEN_FONT_COLOR:CTRL-C|r 复制高亮的内容，然后在浏览器里按|cnGREEN_FONT_COLOR:CTRL-V|r粘贴。",
+	COPY_SYSTEM_MESSAGE = "已复制到剪切板。",
 
-	FILTER = "Filter",
+	FILTER = "过滤器",
 	FILTER_HELP = "Choose which types of messages are visible in Eavesdropper.|n|n- Toggling a filter only changes what is currently shown.|n- No data is actually deleted; hidden messages will reappear if the filter is turned back on.|n|n|cnWARNING_FONT_COLOR:Note: Filters are applied instantly.|r",
 
-	SCROLLMARKER_TEXT = "Scroll to Bottom",
+	SCROLLMARKER_TEXT = "滚动到底部",
 
-	FILTER_PUBLIC = "Public",
-	FILTER_PARTY = "Party",
-	FILTER_RAID = "Raid",
-	FILTER_RAID_WARNING = "Raid Warning",
-	FILTER_INSTANCE = "Instance",
-	FILTER_GUILD = "Guild",
-	FILTER_GUILD_OFFICER = "Officer",
-	FILTER_WHISPER = "Whisper",
-	FILTER_ROLLS = "Rolls",
+	FILTER_PUBLIC = "公众场合",
+	FILTER_PARTY = "小队",
+	FILTER_RAID = "团队",
+	FILTER_RAID_WARNING = "团队警告",
+	FILTER_INSTANCE = "副本",
+	FILTER_GUILD = "公会",
+	FILTER_GUILD_OFFICER = "公会官员",
+	FILTER_WHISPER = "密语",
+	FILTER_ROLLS = "Roll点",
 
-	WINDOW_OPTIONS = "Window Options",
-	ENABLE_MOUSE = "Enable Mouse",
+	WINDOW_OPTIONS = "窗口设置",
+	ENABLE_MOUSE = "启用鼠标",
 	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, and URLs within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.",
-	LOCK_SCROLL = "Lock Scrolling",
+	LOCK_SCROLL = "锁定滚动",
 	LOCK_SCROLL_HELP = "Disables the ability to scroll through the message history.|n|n- Use this to ensure Eavesdropper always remains at the bottom of the list to show the latest messages.",
-	LOCK_WINDOW = "Lock Moving",
+	LOCK_WINDOW = "锁定位置及大小",
 	LOCK_WINDOW_HELP = "Prevents Eavesdropper from being moved or resized.|n|n- Check this once you have positioned the window to avoid accidental dragging during gameplay.",
-	LOCK_TITLEBAR = "Lock Title Bar",
+	LOCK_TITLEBAR = "常显示标题栏",
 	LOCK_TITLEBAR_HELP = "Toggles the visibility of the window's title bar.|n|n- Enabled: The title bar remains visible at all times.|n- Disabled: The title bar is hidden and only appears when you hover over the window.|n|nNote: You can enable 'Title Bar Target Name' in the settings to replace the 'Eavesdropper' text with your current target's name.",
 
 	-- General Tab
-	GENERAL_TITLE = "General",
+	GENERAL_TITLE = "一般",
 	TARGETING = "Targeting",
-	TARGET_PRIORITY = "Priority",
+	TARGET_PRIORITY = "优先级",
 	TARGET_PRIORITY_HELP = "Determines which unit's history Eavesdropper displays when you have both a target and a mouseover unit.|n|n- Prioritize: Choose which one takes precedence.|n- Only: Choose to ignore one type of interaction entirely.",
-	TARGET_PRIORITY_PRIORITIZE_MOUSEOVER = "Prioritize Mouseover",
-	TARGET_PRIORITY_PRIORITIZE_TARGET = "Prioritize Target",
-	TARGET_PRIORITY_MOUSEOVER_ONLY = "Mouseover Only",
-	TARGET_PRIORITY_TARGET_ONLY = "Target Only",
+	TARGET_PRIORITY_PRIORITIZE_MOUSEOVER = "优先鼠标悬停的玩家",
+	TARGET_PRIORITY_PRIORITIZE_TARGET = "优先被设为目标的玩家",
+	TARGET_PRIORITY_MOUSEOVER_ONLY = "仅追踪鼠标悬停的玩家",
+	TARGET_PRIORITY_TARGET_ONLY = "紧追踪被设为目标的玩家",
 
 	INCLUDE_COMPANIONS = "Include Companions",
 	INCLUDE_COMPANIONS_HELP = "Show the owner's history when targeting or hovering over their pets and companions.|n|n- When enabled, Eavesdropper treats pets as a bridge to their owner's data.|n- When disabled, Eavesdropper will ignore pets and companions entirely.",
 
-	MESSAGES = "Messages",
-	MESSAGES_HELP = "These options only apply to the Eavesdropper history.",
+	MESSAGES = "消息",
+	MESSAGES_HELP = "这些选项仅对Eavesdropper历史消息生效",
 
-	HISTORY_SIZE = "History Size",
+	HISTORY_SIZE = "历史消息数",
 	HISTORY_SIZE_HELP = "Set the maximum number of messages Eavesdropper stores for each unit.|n|n|cnWARNING_FONT_COLOR:Note: High values may cause temporary frame drops when refreshing the history window.|r",
 
-	NAME_DISPLAY_MODE = "Name Display",
+	NAME_DISPLAY_MODE = "姓名格式",
 	NAME_DISPLAY_MODE_HELP = "Choose how character names are formatted within Eavesdropper.",
-	NAME_DISPLAY_MODE_FULL_NAME = "Full Name",
-	NAME_DISPLAY_MODE_FIRST_NAME = "First Name",
-	NAME_DISPLAY_MODE_ORIGINAL_NAME = "Original (OOC) Name",
+	NAME_DISPLAY_MODE_FULL_NAME = "显示姓和名",
+	NAME_DISPLAY_MODE_FIRST_NAME = "仅显示名",
+	NAME_DISPLAY_MODE_ORIGINAL_NAME = "玩家原始名称",
 
-	USE_RP_NAME_COLOR = "Name Colors",
+	USE_RP_NAME_COLOR = "姓名颜色",
 	USE_RP_NAME_COLOR_HELP = "Color names based on their custom RP settings (e.g., from TRP3).|n|n- If no RP color is detected, Eavesdropper falls back to the default Blizzard class color.",
 
 	USE_RP_NAME_IN_ROLLS = "Format Roll Names",
@@ -181,6 +181,6 @@ L = {
 	ADDONINFO_BLUESKY_SHILL_HELP = "Follow me on Bluesky!",
 };
 
----@class ED.L : ED.Locale.enUS, ED.Localization
+---@class ED.L : ED.Locale.zhCN, ED.Localization
 ED.Localization = ED.LocalizationClass:New(L);
-ED.Localization:RegisterNewLocale("enUS", "English", L);
+ED.Localization:RegisterNewLocale("zhCN", "Simplified Chinese", L);
