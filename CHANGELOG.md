@@ -2,11 +2,13 @@
 
 All notable changes to this project will be documented in this file.  
 
-## [Unreleased]
+## [0.1.2] - 2026-02-24  
 Second minor patch for Eavesdropper featuring bug fixes reported by the community via Discord and Bluesky.
 
 ### Fixed
 - Fixed errors occurring within restricted environments, such as PvP, combat, and dungeons ([#6](https://github.com/Raenore/Eavesdropper/pull/6)).  
+- Fixed "Hide When Empty" setting not applying correctly upon login or UI reload ([#8](https://github.com/Raenore/Eavesdropper/pull/8)).  
+- Fixed occurrences of missing or invisible names in emotes and chat when the sender is from an opposing faction ([#7](https://github.com/Raenore/Eavesdropper/pull/7)).  
 
 ## [0.1.1] - 2026-02-23  
 First minor patch for Eavesdropper after its initial release; includes minor improvements and clean-ups.  
@@ -25,6 +27,7 @@ Eavesdropper's initial release build, targeting Midnight Pre-Patch.
 ### Added  
 - Initial release.  
 
-[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.1.1...HEAD
+[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.1.2...HEAD
+[0.1.2]: https://github.com/Raenore/Eavesdropper/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/Raenore/Eavesdropper/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Raenore/Eavesdropper/releases/tag/0.1.0
