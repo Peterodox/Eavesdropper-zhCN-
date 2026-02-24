@@ -66,11 +66,11 @@ L = {
 	USE_RP_NAME_IN_ROLLS = "Format Roll Names",
 	USE_RP_NAME_IN_ROLLS_HELP = "Toggles whether random roll results (/roll) use a character's RP name or their original in-game name.",
 
-	USE_RP_NAME_FOR_TARGETS = "Format Emote Targets",
-	USE_RP_NAME_FOR_TARGETS_HELP = "Toggles whether target names within Blizzard emotes (e.g., /wave, /point) use a character's RP name or their original in-game name.|n|n|cnWARNING_FONT_COLOR:Note: Due to how Blizzard handles emote strings, name substitution may not work consistently in all situations.|r",
+	USE_RP_NAME_FOR_TARGETS = "修改表情目标样式",
+	USE_RP_NAME_FOR_TARGETS_HELP = "选择是否将暴雪自带表情中的目标姓名（例如/招手，/指点）更改为角色的RP名称。|n|n|cnWARNING_FONT_COLOR:请注意：受暴雪处理表情字符串方式的限制，姓名替换可能在某些场合不会正常生效。|r",
 
 	TIMESTAMP_BRACKETS = "时间戳括号",
-	TIMESTAMP_BRACKETS_HELP = "Toggles the visibility of brackets around message timestamps (e.g., [5m] vs 5m).",
+	TIMESTAMP_BRACKETS_HELP = "选择是否显示消息时间戳两边的中括号（例如 [5m] vs 5m)。",
 
 	ADVANCED_FORMATTING = "进阶样式",
 
@@ -83,7 +83,7 @@ L = {
 	THEMES_TITLEBAR_COLOR = "标题栏颜色",
 	THEMES_TITLEBAR_COLOR_HELP = "Set the background color and opacity for the title bar.|n|n- The title bar is typically visible when hovering over Eavesdropper.",
 	THEMES_SETTINGS_ELVUI = "ElvUI主题",
-	THEMES_SETTINGS_ELVUI_HELP = "Force Eavesdropper's settings window to use ElvUI skinning.|n|n|cnWARNING_FONT_COLOR:Note: Toggling this will automatically trigger a UI Reload to apply the new skin.|r",
+	THEMES_SETTINGS_ELVUI_HELP = "强制Eavesdropper设置界面使用ElvUI皮肤。|n|n|cnWARNING_FONT_COLOR:请注意：勾选此选项将自动触发界面重载来应用新的皮肤。|r",
 
 	HIDE_CLOSE_BUTTON = "隐藏关闭按钮",
 	HIDE_CLOSE_BUTTON_HELP = "Toggles the visibility of the close button on the Eavesdropper frame.|n|n- If hidden, you can still control the window using |cnGREEN_FONT_COLOR:/ed show|r or |cnGREEN_FONT_COLOR:/ed hide|r.",
@@ -104,13 +104,13 @@ L = {
 	FONT_SIZE_HELP = "Adjust the size of the messages displayed in the history window.|n|n- You can also hold |cnGREEN_FONT_COLOR:Ctrl + Mouse Wheel Up/Down|r while hovering over Eavesdropper to change the size directly.",
 
 	FONT_OUTLINE = "文字描边",
-	FONT_OUTLINE_HELP = "Apply a border to the text to improve readability against busy backgrounds.",
+	FONT_OUTLINE_HELP = "为文字增加描边来提升其在复杂背景下的可读性。",
 	FONT_OUTLINE_NONE = "无",
 	FONT_OUTLINE_THIN = "细",
 	FONT_OUTLINE_THICK = "粗",
 
 	FONT_SHADOW = "文字阴影",
-	FONT_SHADOW_HELP = "Toggles a soft drop shadow behind the text for added depth and contrast.",
+	FONT_SHADOW_HELP = "为文字增加阴影效果来提升其视觉深度和对比度。",
 
 	MINIMAP = "小地图",
 
@@ -127,7 +127,7 @@ L = {
 	EMOTES_HELP = "当其他玩家对你做表情时(例如/指点，/大笑）",
 
 	TARGET = "目标",
-	TARGET_HELP = "Messages received from your current target.",
+	TARGET_HELP = "当你目前追踪的玩家发消息时。",
 
 	NOTIFICATIONS_PLAY_SOUND = "播放声音",
 	NOTIFICATIONS_PLAY_SOUND_HELP = "Toggles whether Eavesdropper plays an audible alert for this notification type.",
