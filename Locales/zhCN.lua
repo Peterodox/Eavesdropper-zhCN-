@@ -52,16 +52,16 @@ L = {
 	MESSAGES_HELP = "这些选项仅对Eavesdropper历史消息生效",
 
 	HISTORY_SIZE = "历史消息数",
-	HISTORY_SIZE_HELP = "Set the maximum number of messages Eavesdropper stores for each unit.|n|n|cnWARNING_FONT_COLOR:Note: High values may cause temporary frame drops when refreshing the history window.|r",
+	HISTORY_SIZE_HELP = "设定为单个玩家储存的消息记录数。|n|n|cnWARNING_FONT_COLOR:请注意：如果设定的数值较大，更新消息记录窗口时可能会有短暂卡顿。|r",
 
 	NAME_DISPLAY_MODE = "姓名格式",
-	NAME_DISPLAY_MODE_HELP = "Choose how character names are formatted within Eavesdropper.",
+	NAME_DISPLAY_MODE_HELP = "选择角色名在Eavesdropper内的显示格式。",
 	NAME_DISPLAY_MODE_FULL_NAME = "显示姓和名",
 	NAME_DISPLAY_MODE_FIRST_NAME = "仅显示名",
 	NAME_DISPLAY_MODE_ORIGINAL_NAME = "玩家原始名称",
 
 	USE_RP_NAME_COLOR = "姓名颜色",
-	USE_RP_NAME_COLOR_HELP = "Color names based on their custom RP settings (e.g., from TRP3).|n|n- If no RP color is detected, Eavesdropper falls back to the default Blizzard class color.",
+	USE_RP_NAME_COLOR_HELP = "此颜色由角色自己的RP设置（例如TRP）决定。|n|n- 如果角色没有选择RP名字颜色，那么Eavesdropper将使用暴雪默认颜色",
 
 	USE_RP_NAME_IN_ROLLS = "Format Roll Names",
 	USE_RP_NAME_IN_ROLLS_HELP = "Toggles whether random roll results (/roll) use a character's RP name or their original in-game name.",
