@@ -11,7 +11,7 @@ L = {
 	COPY_SYSTEM_MESSAGE = "已复制到剪切板。",
 
 	FILTER = "过滤器",
-	FILTER_HELP = "选择哪种消息在Eavesdropper窗口内显示。|n|n- Toggling a filter only changes what is currently shown.|n- 取消勾选不会删除消息记录。被隐藏的消息会在你勾选过滤器后重新显示。|n|n|cnWARNING_FONT_COLOR:请注意：对过滤器的改动会立即生效。|r",
+	FILTER_HELP = "选择哪种消息在Eavesdropper窗口内显示。|n|n- Toggling a filter only changes what is currently shown.|n- 取消勾选不会删除消息记录。被隐藏的消息会在你勾选过滤器后重新显示。|n|n|cnWARNING_FONT_COLOR:请注意：对过滤器的改动会立即生效。|r", --Discussion needed
 
 	SCROLLMARKER_TEXT = "滚动到底部",
 
@@ -29,17 +29,17 @@ L = {
 	ENABLE_MOUSE = "启用鼠标点击",
 	ENABLE_MOUSE_HELP = "勾选是否允许你点击鼠标来与Eavesdropper窗口内容交互。|n|n- 启用时：允许你点击消息记录里的物品链接和网址。|n- 禁用时：鼠标点击会透过消息窗口，防止你在游戏时误点。",
 	LOCK_SCROLL = "锁定滚动",
-	LOCK_SCROLL_HELP = "Disables the ability to scroll through the message history.|n|n- Use this to ensure Eavesdropper always remains at the bottom of the list to show the latest messages.",
+	LOCK_SCROLL_HELP = "禁止滚动消息历史。|n|n- 勾选此选项可保证Eavesdropper永远在窗口底部显示最新消息。",
 	LOCK_WINDOW = "锁定位置及大小",
-	LOCK_WINDOW_HELP = "Prevents Eavesdropper from being moved or resized.|n|n- Check this once you have positioned the window to avoid accidental dragging during gameplay.",
+	LOCK_WINDOW_HELP = "禁止Eavesdropper窗口被改变大小和位置。|n|n- 在设定好窗口位置后，你可以勾选此选项来防止游戏期间不小心拖动窗口。",
 	LOCK_TITLEBAR = "常显示标题栏",
-	LOCK_TITLEBAR_HELP = "Toggles the visibility of the window's title bar.|n|n- Enabled: The title bar remains visible at all times.|n- Disabled: The title bar is hidden and only appears when you hover over the window.|n|nNote: You can enable 'Title Bar Target Name' in the settings to replace the 'Eavesdropper' text with your current target's name.",
+	LOCK_TITLEBAR_HELP = "改变窗口标题栏的可见性。|n|n- 启用时：标题栏永久可见。|n- 禁用时：标题栏平时隐藏，在鼠标悬停在窗口上时可见。|n|n小提示：你可以在设置中启用“在标题栏显示目标名称”来替换Eavesdropper标题",
 
 	-- General Tab
 	GENERAL_TITLE = "一般",
-	TARGETING = "Targeting",
+	TARGETING = "关注目标",
 	TARGET_PRIORITY = "优先级",
-	TARGET_PRIORITY_HELP = "Determines which unit's history Eavesdropper displays when you have both a target and a mouseover unit.|n|n- Prioritize: Choose which one takes precedence.|n- Only: Choose to ignore one type of interaction entirely.",
+	TARGET_PRIORITY_HELP = "决定当你已选择一个玩家为目标且鼠标悬停在另一个玩家时显示哪个玩家的消息记录。|n|n- Prioritize: Choose which one takes precedence.|n- Only: Choose to ignore one type of interaction entirely.", --过度解释?
 	TARGET_PRIORITY_PRIORITIZE_MOUSEOVER = "优先鼠标悬停的玩家",
 	TARGET_PRIORITY_PRIORITIZE_TARGET = "优先被设为目标的玩家",
 	TARGET_PRIORITY_MOUSEOVER_ONLY = "仅追踪鼠标悬停的玩家",
