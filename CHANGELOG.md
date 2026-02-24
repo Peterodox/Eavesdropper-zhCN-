@@ -33,7 +33,8 @@ Eavesdropper's initial release build, targeting Midnight Pre-Patch.
 ### Added  
 - Initial release.  
 
-[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.1.2...HEAD
+[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.1.3...HEAD
+[0.1.3]: https://github.com/Raenore/Eavesdropper/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/Raenore/Eavesdropper/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/Raenore/Eavesdropper/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/Raenore/Eavesdropper/releases/tag/0.1.0
