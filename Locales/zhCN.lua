@@ -26,8 +26,8 @@ L = {
 	FILTER_ROLLS = "Roll点",
 
 	WINDOW_OPTIONS = "窗口设置",
-	ENABLE_MOUSE = "启用鼠标",
-	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, and URLs within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.",
+	ENABLE_MOUSE = "启用鼠标点击",
+	ENABLE_MOUSE_HELP = "勾选是否允许你点击鼠标来与Eavesdropper窗口内容交互。|n|n- 启用时：允许你点击消息记录里的物品链接和网址。|n- 禁用时：鼠标点击会透过消息窗口，防止你在游戏时误点。",
 	LOCK_SCROLL = "锁定滚动",
 	LOCK_SCROLL_HELP = "Disables the ability to scroll through the message history.|n|n- Use this to ensure Eavesdropper always remains at the bottom of the list to show the latest messages.",
 	LOCK_WINDOW = "锁定位置及大小",
