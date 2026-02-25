@@ -467,6 +467,10 @@ function Database:SetGlobalSetting(key, value)
 	else
 		EavesdropperDB.global[key] = value;
 	end
+
+	if ED.SettingsFrame then
+		ED.SettingsFrame:RefreshWidgets();
+	end
 end
 
 ED.Database = Database;
