@@ -451,7 +451,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("HideWhenEmpty") end,
 			set = function(val)
 				ED.Database:SetSetting("HideWhenEmpty", val);
-				ED.Frame:HandleHiding();
+				-- If users turn this off, we can assume they want the frame to be visible.
+				if not val then
+					ED.Frame.closed = false;
+				end
 			end,
 		},
 		{
@@ -472,6 +475,15 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			set = function(val)
 				ED.Database:SetSetting("UpdateTitleBarWithName", val);
 				ED.Frame:RefreshChat();
+			end,
+		},
+		{
+			type = "checkbox",
+			label = L.WELCOME_MSG,
+			tooltip = L.WELCOME_MSG_HELP,
+			get = function() return ED.Database:GetGlobalSetting("WelcomeMessage") end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("WelcomeMessage", val);
 			end,
 		},
 		{
@@ -858,6 +870,7 @@ function Eavesdropper_SettingsMixin:OnDragStop()
 end
 
 function Eavesdropper_SettingsMixin:OnShow()
+	ED.Frame.settingsOpened = true;
 	ED.ElvUI.SkinRegisteredElements();
 	-- self:RefreshWidgets() unnecessary (?)
 	local tabToShow = lastSelectedTab or 1;
@@ -865,9 +878,8 @@ function Eavesdropper_SettingsMixin:OnShow()
 end
 
 function Eavesdropper_SettingsMixin:OnHide()
-	if ED.Frame.closed then
-		ED.Frame:Hide();
-	end
+	ED.Frame.settingsOpened = false;
+	ED.Frame:HandleVisibility();
 end
 
 ---@param view number? Optional tab index, defaults to 1.

@@ -61,6 +61,11 @@ end
 ---OnMagnifiedChanged Notifies UI of magnifier change.
 ---@return nil
 function Magnifier:OnMagnifiedChanged()
+	-- Bail out when there's secrets involved (PvP or other situations we don't support).
+	if not canaccessvalue(magnifiedGUID) or not canaccessvalue(self.lastNotifiedGUID) then
+		return;
+	end
+
 	-- Always notify if magnifiedGUID is nil (target cleared), otherwise normal throttle
 	if magnifiedGUID ~= nil and self.lastNotifiedGUID == magnifiedGUID and self.lastNotifiedName == magnifiedName then
 		return;
@@ -81,6 +86,7 @@ end
 ---@return nil
 function Magnifier:HandleUpdate(reason) -- luacheck: no unused (reason)
 	if not ED or not ED.Database then return; end
+	if not canaccessvalue(magnifiedGUID) then return; end
 
 	local targetPriority = ED.Database:GetSetting("TargetPriority");
 	if not targetPriority then return; end
@@ -123,6 +129,10 @@ function Magnifier:HandleUpdate(reason) -- luacheck: no unused (reason)
 			unitGUID = UnitOwnerGUID(unit);
 			unitName = nil;
 		end
+	end
+
+	if unitGUID and not canaccessvalue(unitGUID) then
+		return;
 	end
 
 	if polling then
