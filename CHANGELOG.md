@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.  
 
+## [0.1.4] - 2026-02-25  
+Fourth minor patch for Eavesdropper featuring a new way to identify global settings and resolving issues with specific options not toggling correctly.  
+
+### Added
+- Added an asterisk (*) to global settings and included information in tooltips to indicate settings that are not tied to specific profiles ([#10](https://github.com/Raenore/Eavesdropper/pull/10)).  
+
+### Fixed
+- Resolved an issue where certain settings failed to toggle on or off correctly ([#10](https://github.com/Raenore/Eavesdropper/pull/10)).  
+
 ## [0.1.3] - 2026-02-24  
 Third minor patch for Eavesdropper featuring further bug fixes, primarily focusing on Secrets (which occur during combat, encounters, and PvP matches).  
 
@@ -33,7 +42,8 @@ Eavesdropper's initial release build, targeting Midnight Pre-Patch.
 ### Added  
 - Initial release.  
 
-[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.1.3...HEAD
+[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.1.4...HEAD
+[0.1.4]: https://github.com/Raenore/Eavesdropper/compare/0.1.3...0.1.4
 [0.1.3]: https://github.com/Raenore/Eavesdropper/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/Raenore/Eavesdropper/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/Raenore/Eavesdropper/compare/0.1.0...0.1.1
