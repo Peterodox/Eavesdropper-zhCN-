@@ -41,9 +41,9 @@ Eavesdropper can play a sound notification and flash the taskbar when:
 Eavesdropper intelligently handles long-form RP by detecting split messages from various addons, ensuring your history window stays cohesive even when an emote spans multiple posts.
 
 While Eavesdropper is designed to be broadly compatible, the following addons are **explicitly supported**:
-- Chattery
-- EmoteSplitter
-- Yapper
+- [Chattery](https://www.curseforge.com/wow/addons/chattery)
+- [Emote Splitter](https://www.curseforge.com/wow/addons/emote-splitter)
+- [Yapper](https://www.curseforge.com/wow/addons/yapper-post-splitter)
 
 ![Multi-Message Support](Previews/MultiMessageSupport/MultiMessageSupport.png)
 
