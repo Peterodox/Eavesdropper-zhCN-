@@ -194,7 +194,7 @@ function ChatHistory:HandleTextEmote(sender, message)
 	local playSound = ED.Database:GetSetting("NotificationEmotesSound");
 	local flashTaskbar = ED.Database:GetSetting("NotificationEmotesFlashTaskbar");
 
-	if (playSound or flashTaskbar) and GetLocale() == "enUS" and message:find(" you") then
+	if (playSound or flashTaskbar) and GetLocale() == "enUS" and message:find(" you[^a-z]") then
 		for _, phrase in ipairs(Constants.CHAT_HISTORY.IGNORE_EMOTES) do
 			if message:find(phrase, 1, true) then
 				return sender; -- skip notifications
