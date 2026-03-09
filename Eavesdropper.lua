@@ -19,10 +19,12 @@ function ED.Init()
 			msg = type(msg) == "string" and msg:lower() or "";
 
 			if msg == "help" then
-				ED.Utils.Write(ED.Localization.SLASH_COMMAND_ED, "/ed");
-				ED.Utils.Write(ED.Localization.SLASH_COMMAND_ED_SHOW, "/ed show");
-				ED.Utils.Write(ED.Localization.SLASH_COMMAND_ED_HIDE, "/ed hide");
-				ED.Utils.Write(ED.Localization.SLASH_COMMAND_ED_TOGGLE, "/ed toggle");
+				ED.Utils.WriteCommandTable({
+					[ED.Localization.SLASH_COMMAND_ED] = "/ed",
+					[ED.Localization.SLASH_COMMAND_ED_SHOW] = "/ed show",
+					[ED.Localization.SLASH_COMMAND_ED_HIDE] = "/ed hide",
+					[ED.Localization.SLASH_COMMAND_ED_TOGGLE] = "/ed toggle",
+				});
 				return;
 			elseif msg == "show" then
 				ED.Frame:Show();

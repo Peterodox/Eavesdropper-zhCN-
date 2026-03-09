@@ -9,6 +9,7 @@ L = {
 	WELCOMEMSG_VERSION = "Listening with profile |cnGREEN_FONT_COLOR:%s|r (|cnGOLD_FONT_COLOR:%s|r)!",
 	WELCOMEMSG_SETTINGS = "Settings available through |cnGREEN_FONT_COLOR:/ed|r & |cnGREEN_FONT_COLOR:/ed help|r",
 
+	SLASH_COMMAND_HEADER = "List of commands:",
 	SLASH_COMMAND_ED = "Show settings, Eavesdropper unhides during",
 	SLASH_COMMAND_ED_SHOW = "Show Eavesdropper",
 	SLASH_COMMAND_ED_HIDE = "Hide Eavesdropper",
