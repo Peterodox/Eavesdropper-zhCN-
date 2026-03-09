@@ -110,7 +110,7 @@ L = {
 	HIDE_IN_COMBAT = "Hide In Combat",
 	HIDE_IN_COMBAT_HELP = "Automatically hide Eavesdropper upon entering combat.|n|n|cnWARNING_FONT_COLOR:Note: Certain combat encounters or instances may restrict message capturing regardless of this setting.|r",
 	HIDE_WHEN_EMPTY = "Hide When Empty",
-	HIDE_WHEN_EMPTY_HELP = "Automatically hides Eavesdropper when there are no messages to display.|n|n- The window will reappear as soon as a new message is recorded.",
+	HIDE_WHEN_EMPTY_HELP = "Automatically hides Eavesdropper when there are no messages to display.|n|n- The window will reappear as soon as a new message is recorded.|n|n|cnWARNING_FONT_COLOR:Note: This will take effect as soon as the Settings window is closed.|r",
 
 	TITLE_BAR_TARGET_NAME = "Title Bar Target Name",
 	TITLE_BAR_TARGET_NAME_HELP = "Replaces the 'Eavesdropper' label in the title bar with the name of your current target. This provides a quick visual confirmation of which character's history is currently being tracked.",
