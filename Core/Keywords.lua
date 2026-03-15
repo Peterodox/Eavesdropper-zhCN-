@@ -104,45 +104,64 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 		highlightColor.b or 0
 	);
 
+	local allMatches = {};
+	local claimed = {}; -- To avoid double matches (e.g. art and party).
+
+	local keywords = {};
 	for kw in pairs(self.List) do
 		if kw ~= "" then
-			local searchPos = 1;
-			local offset = 0;
-
-			while searchPos <= #originalLower do
-				local startPos, endPos = originalLower:find(kw, searchPos, true);
-				if not startPos then break; end
-
-				local matches = true;
-
-				if not enablePartial then
-					local beforeOk = startPos == 1
-						or not originalLower:sub(startPos - 1, startPos - 1):match("[%w]");
-					local afterOk = endPos == #originalLower
-						or not originalLower:sub(endPos + 1, endPos + 1):match("[%w]");
-					matches = beforeOk and afterOk;
-				end
-
-				if matches then
-					found = true;
-
-					local realStart = startPos + offset;
-					local realEnd   = endPos   + offset;
-
-					local raw = msg:sub(realStart, realEnd);
-					local wrapped = ED.Utils.WrapTextInColor(raw, color);
-
-					msg =
-						msg:sub(1, realStart - 1)
-						.. wrapped
-						.. msg:sub(realEnd + 1);
-
-					offset = offset + (#wrapped - #raw);
-				end
-
-				searchPos = endPos + 1;
-			end
+			keywords[#keywords + 1] = kw;
 		end
+	end
+
+	-- Sort longest first so longer keywords claim their ranges before shorter ones
+	table.sort(keywords, function(a, b) return #a > #b; end);
+
+	for _, kw in ipairs(keywords) do
+		local searchPos = 1;
+		while searchPos <= #originalLower do
+			local startPos, endPos = originalLower:find(kw, searchPos, true);
+			if not startPos then break; end
+
+			local matchOk = true;
+			if not enablePartial then
+				local beforeOk = startPos == 1
+					or not originalLower:sub(startPos - 1, startPos - 1):match("[%w]");
+				local afterOk = endPos == #originalLower
+					or not originalLower:sub(endPos + 1, endPos + 1):match("[%w]");
+				matchOk = beforeOk and afterOk;
+			end
+
+			if matchOk then
+				-- Check no position in this range is already claimed
+				local overlap = false;
+				for pos = startPos, endPos do
+					if claimed[pos] then
+						overlap = true;
+						break;
+					end
+				end
+
+				if not overlap then
+					found = true;
+					allMatches[#allMatches + 1] = { startPos, endPos };
+					for pos = startPos, endPos do
+						claimed[pos] = true;
+					end
+				end
+			end
+
+			searchPos = endPos + 1;
+		end
+	end
+
+	-- Apply replacements back-to-front so earlier positions are not shifted by changes made to later ones.
+	table.sort(allMatches, function(a, b) return a[1] > b[1]; end);
+
+	for _, m in ipairs(allMatches) do
+		local raw = msg:sub(m[1], m[2]);
+		local wrapped = ED.Utils.WrapTextInColor(raw, color);
+		msg = msg:sub(1, m[1] - 1) .. wrapped .. msg:sub(m[2] + 1);
 	end
 
 	if found then
@@ -167,7 +186,7 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 			end
 		);
 
-		-- on TRP NPC Detection, we don't make any keyword changes as it'll just break the formatting.
+		-- On TRP NPC Detection, we don't make any keyword changes as it'll just break the formatting.
 		return false, trpNPCDetection and message or msg, sender, ...;
 	end
 end
