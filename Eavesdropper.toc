@@ -42,6 +42,7 @@ Init.lua
 ## Locales
 Locales\Localization.lua
 Locales\enUS.lua
+Locales\ruRU.lua
 
 ## Core
 Core\Constants.lua
