@@ -13,6 +13,11 @@ Eavesdropper now supports per-character window visibility and includes minor con
 ### Changed
 - Standardized terminology across the addon; all instances now consistently use "Settings" instead of a mix of "Options" and "Settings".  
 - Refined the keyword highlighting system to improve overall consistency and resolve rare occurrences of missed keywords ([#31](https://github.com/Raenore/Eavesdropper/pull/31)).  
+- Implemented various improvements to the Keywords multi-line editbox ([#30](https://github.com/Raenore/Eavesdropper/pull/30)).  
+  - Escaping or clicking out of the editbox will now properly sanitize and save your changes.  
+  - Scrolling while hovering over the editbox (without focus) will now correctly scroll the Keywords tab itself.  
+  - Improved the scrollbar logic to reveal more intuitively when the content exceeds the editbox height.  
+  - Clicking anywhere within the editbox now properly focuses the text, removing the need to click specifically on existing text.  
 
 ## [0.2.4] - 2026-03-14  
 Fourth minor patch, addressing a critical bug with TRP3's NPC Speech Emotes being invisible.  
