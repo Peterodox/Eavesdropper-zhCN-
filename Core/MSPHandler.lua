@@ -198,7 +198,7 @@ end
 ---@return string? className
 ---@return string? raceName
 function MSP.TryGetMSPData(playerName, playerGUID)
-	if msp == nil then return nil, nil; end
+	if not MSP.IsEnabled() then return nil, nil; end
 	if not playerGUID or not playerName then return nil, nil; end
 
 	local now = GetTime();
@@ -270,13 +270,10 @@ end
 local pendingRefresh;
 
 function MSP.Init()
-	if msp == nil then return; end
-
-	local name, realm = UnitFullName("player");
-	MSP.FullName = format("%s-%s", name, realm);
+	if not MSP.IsEnabled() then return; end
 
 	table.insert(msp.callback["updated"], function(senderID, field)
-		if MSP.FullName ~= senderID then return; end
+		if ED.Globals.player_sender_name ~= senderID then return; end
 		if not Constants.MSP_RELEVANT_FIELDS[field] then return; end
 
 		-- Cancel any pending refresh for this sender before scheduling a new one
