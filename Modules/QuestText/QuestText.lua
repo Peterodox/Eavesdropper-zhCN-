@@ -11,7 +11,7 @@ local preferredName;
 function QuestText.GetPlayerPreferredName()
 	return preferredName;
 end
-ED.GetPreferredName = QuestText.GetPlayerPreferredName; -- TO-DO: Talk to Peter regarding function names
+ED.GetPreferredName = QuestText.GetPlayerPreferredName; -- TO-DO: Remove when Dialogue UI changes their calls.
 
 function QuestText.RefreshPlayerPreferredName()
 	preferredName = ED.Globals.player_character_name;
@@ -35,7 +35,7 @@ end
 
 ---@param questText string
 function QuestText.SubstitutePlayerPreferredName(questText)
-	if not INSTALLED_QUEST_TEXT_ADDON or not ED.Database:GetSetting("ApplyOnQuestText") then
+	if not INSTALLED_QUEST_TEXT_ADDON or ED.Database:GetSetting("QuestTextNameDisplayMode") == 3 then
 		return questText;
 	end
 
@@ -52,7 +52,7 @@ function QuestText.SubstitutePlayerPreferredName(questText)
 	local result = questText:gsub(escapedName, preferredName);
 	return result;
 end
-ED.ModifyPlayerNameInQuest = QuestText.SubstitutePlayerPreferredName; -- TO-DO: Talk to Peter regarding function names
+ED.ModifyPlayerNameInQuest = QuestText.SubstitutePlayerPreferredName; -- TO-DO: Remove when Dialogue UI changes their calls.
 
 function QuestText.SupportedAddonsInstalled()
 	return INSTALLED_QUEST_TEXT_ADDON;

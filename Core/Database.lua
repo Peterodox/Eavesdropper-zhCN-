@@ -32,7 +32,6 @@ local GLOBAL_DEFAULTS = {
 
 ---@class EavesdropperProfile
 ---@field ApplyOnMainChat boolean?
----@field ApplyOnQuestText boolean?
 ---@field ColorBackground table?
 ---@field ColorTitleBar table?
 ---@field CompanionSupport boolean?
@@ -82,7 +81,6 @@ local GLOBAL_DEFAULTS = {
 ---@field Filters table<string, boolean>?
 local DEFAULT_PROFILE = {
 	ApplyOnMainChat = true,
-	ApplyOnQuestText = true,
 	ColorBackground = ED.Utils.ShallowCopy(Constants.DEFAULT_BACKGROUND_COLOR),
 	ColorTitleBar = ED.Utils.ShallowCopy(Constants.DEFAULT_BACKGROUND_COLOR),
 	CompanionSupport = true,
@@ -333,7 +331,6 @@ end
 
 ---@alias EavesdropperSettingKey
 ---| "ApplyOnMainChat"
----| "ApplyOnQuestText"
 ---| "ColorBackground"
 ---| "ColorTitleBar"
 ---| "CompanionSupport"
