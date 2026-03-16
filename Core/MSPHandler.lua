@@ -175,6 +175,10 @@ local function NormalizeString(value)
 	return value;
 end
 
+function MSP.IsEnabled()
+	return not (msp == nil);
+end
+
 local invalidateCache = false;
 
 ---Invalidates the MSP cache, forcing the next TryGetMSPData call to fetch fresh data.
@@ -286,6 +290,7 @@ function MSP.Init()
 			pendingRefresh = nil;
 			MSP.InvalidateCache();
 			ED.Keywords:ParseList();
+			ED.QuestText:RefreshPlayerPreferredName();
 		end, 1);
 	end);
 end

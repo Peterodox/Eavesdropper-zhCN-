@@ -370,6 +370,27 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			end,
 		},
 		{
+			type = "dropdown",
+			label = L.USE_RP_NAME_FOR_QUEST_TEXT,
+			tooltip = L.USE_RP_NAME_FOR_QUEST_TEXT_HELP,
+			values = {
+				[1] = L.NAME_DISPLAY_MODE_FULL_NAME;
+				[2] = L.NAME_DISPLAY_MODE_FIRST_NAME;
+				[3] = L.NAME_DISPLAY_MODE_ORIGINAL_NAME;
+			},
+			sorting = {
+				1,
+				2,
+				3,
+			},
+			disabled = function() return not ED.MSP.IsEnabled() or not ED.QuestText.SupportedAddonsInstalled() end,
+			get = function() return ED.Database:GetSetting("QuestTextNameDisplayMode") end,
+			set = function(val)
+				ED.Database:SetSetting("QuestTextNameDisplayMode", val);
+				ED.QuestText.RefreshPlayerPreferredName();
+			end,
+		},
+		{
 			type = "subtitle",
 			label = L.DISPLAY,
 		},

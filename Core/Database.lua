@@ -32,6 +32,7 @@ local GLOBAL_DEFAULTS = {
 
 ---@class EavesdropperProfile
 ---@field ApplyOnMainChat boolean?
+---@field ApplyOnQuestText boolean?
 ---@field ColorBackground table?
 ---@field ColorTitleBar table?
 ---@field CompanionSupport boolean?
@@ -66,6 +67,7 @@ local GLOBAL_DEFAULTS = {
 ---@field NotificationTargetFlashTaskbar boolean?
 ---@field NotificationThrottle number?
 ---@field PreferMouseOver boolean?
+---@field QuestTextNameDisplayMode number?
 ---@field TargetOnly boolean?
 ---@field TargetPriority EavesdropperTargetPriority?
 ---@field TimestampBrackets boolean?
@@ -80,6 +82,7 @@ local GLOBAL_DEFAULTS = {
 ---@field Filters table<string, boolean>?
 local DEFAULT_PROFILE = {
 	ApplyOnMainChat = true,
+	ApplyOnQuestText = true,
 	ColorBackground = ED.Utils.ShallowCopy(Constants.DEFAULT_BACKGROUND_COLOR),
 	ColorTitleBar = ED.Utils.ShallowCopy(Constants.DEFAULT_BACKGROUND_COLOR),
 	CompanionSupport = true,
@@ -114,6 +117,7 @@ local DEFAULT_PROFILE = {
 	NotificationTargetFlashTaskbar = true,
 	NotificationThrottle = 3,
 	PreferMouseOver = true,
+	QuestTextNameDisplayMode = 1,
 	TargetOnly = false,
 	TargetPriority = Enums.TARGET_PRIORITY.PRIORITIZE_MOUSEOVER,
 	TimestampBrackets = true,
@@ -325,6 +329,7 @@ end
 
 ---@alias EavesdropperSettingKey
 ---| "ApplyOnMainChat"
+---| "ApplyOnQuestText"
 ---| "ColorBackground"
 ---| "ColorTitleBar"
 ---| "CompanionSupport"
@@ -359,6 +364,7 @@ end
 ---| "NotificationTargetFlashTaskbar"
 ---| "NotificationThrottle"
 ---| "PreferMouseOver"
+---| "QuestTextNameDisplayMode"
 ---| "TargetOnly"
 ---| "TargetPriority"
 ---| "TimestampBrackets"
