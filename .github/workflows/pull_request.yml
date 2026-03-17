@@ -10,6 +10,8 @@ jobs:
         with:
           python-version: '3.13'
       - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
       - uses: actions/checkout@v6
         with:
           submodules: recursive
