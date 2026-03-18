@@ -3,13 +3,18 @@
 All notable changes to this project will be documented in this file.  
 
 ## [Unreleased]  
-Eavesdropper now supports per-character window visibility and includes minor consistency updates for the Settings menu.  
+Significant feature update introducing Dedicated Windows for unique targets, RP name integration with Dialogue UI, and localized Russian support.  
 
 ### Added
+- Dedicated Window support for unique targets ([#26](https://github.com/Raenore/Eavesdropper/pull/26)).  
+  - This feature can be toggled under the "Dedicated Windows" category.  
+  - Open a unique window by right-clicking a unit's portrait or their name in chat and selecting "Eavesdrop On".  
+  - Includes optional notification options (sounds and taskbar flashing) in the "Notifications" tab.  
+  - New messages will trigger a yellow message indicator on the respective window to help track conversations (enabled by default, can be disabled in settings).  
 - Eavesdropper can now replace your character's name with your RP name within quest text when using [Dialogue UI](https://www.curseforge.com/wow/addons/dialogueui) (special thanks to [Peterodox](https://www.curseforge.com/members/peterodox/projects) for his work on his side) ([#36](https://github.com/Raenore/Eavesdropper/pull/36) and [#44](https://github.com/Raenore/Eavesdropper/pull/44)).  
 - Eavesdropper can now replace your character's name within NPC's their dialogue (Say, Emote, etc.) when a supported RP addon is used ([#42](https://github.com/Raenore/Eavesdropper/pull/42) and [#44](https://github.com/Raenore/Eavesdropper/pull/44)).  
   - Quest Text and NPC Dialogue feature can be toggled under the "Advanced Formatting" category.  
-  - Note: Chat bubbles will still show your original name, as they cannot be modified by addons. 
+  - Note: Chat bubbles will still show your original name, as they cannot be modified by addons.  
   - Includes three display modes:  
 	- Full Name: Displays your complete RP name.  
 	- First Name: Displays only the first part of your RP name.  
