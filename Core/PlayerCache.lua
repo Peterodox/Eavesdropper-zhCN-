@@ -149,6 +149,11 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 		end
 	end
 
+	-- Inherit guid from existing entry if none was passed in
+	if not guid and oldEntry then
+		guid = oldEntry.guid;
+	end
+
 	-- Evict any bare-name entry now that we have the full Name-Realm.
 	if Utils.HasRealmSuffix(sender) then
 		local bareName = Utils.StripRealmSuffix(sender);
