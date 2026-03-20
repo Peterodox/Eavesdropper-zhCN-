@@ -23,6 +23,17 @@ local function toggleFilters(events, enable)
 	end
 end
 
+--- Returns true if the event is any CHAT_MSG_MONSTER_* variant.
+---@param event string
+---@return boolean
+local function isMonsterEvent(event)
+	return event == "CHAT_MSG_MONSTER_SAY"
+		or event == "CHAT_MSG_MONSTER_EMOTE"
+		or event == "CHAT_MSG_MONSTER_PARTY"
+		or event == "CHAT_MSG_MONSTER_YELL"
+		or event == "CHAT_MSG_MONSTER_WHISPER";
+end
+
 ---Handles a specific chat message.
 ---@param chatFrame table
 ---@param event string
@@ -39,8 +50,8 @@ function MainChat:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 	if event == "CHAT_MSG_TEXT_EMOTE" or event == "CHAT_MSG_SYSTEM" then
 		local handled, newMessage, newSender = ED.AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...);
 		if handled ~= nil then return handled, newMessage, newSender, ...; end
-	elseif event == "CHAT_MSG_MONSTER_SAY" then
-		message = ED.GossipText.SubstitutePlayerPreferredName(message);
+	elseif isMonsterEvent(event) then
+		message = ED.NPCDialogue.SubstitutePlayerPreferredName(message);
 		return false, message, sender, ...;
 	else
 		local handled, newMessage, newSender = ED.Keywords:HandleChecks(chatFrame, event, message, sender, ...);

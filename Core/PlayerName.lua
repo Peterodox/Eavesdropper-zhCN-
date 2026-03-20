@@ -4,18 +4,19 @@
 ---@class EavesdropperPlayerName
 local PlayerName = {};
 
+---Default to the OOC character name until MSP data is available.
 PlayerName.preferredName = ED.Globals.player_character_name;
 
----@param defaultName string
-function PlayerName:RefreshPlayerPreferredName()
+---Refreshes the cached preferred name from MSP data, falling back to the OOC name.
+function PlayerName.RefreshPlayerPreferredName()
 	PlayerName.preferredName = ED.Globals.player_character_name;
 	-- Request MSP data with a cache bust to make sure we get latest.
 	local fullName, firstName = ED.MSP.TryGetMSPData(ED.Utils.GetUnitName(), ED.Globals.player_guid);
-	local questTextNameDisplayMode = ED.Database:GetSetting("QuestTextNameDisplayMode");
-	local useRPName = questTextNameDisplayMode ~= 3;
+	local nameDisplayMode = ED.Database:GetSetting("NPCAndQuestNameDisplayMode");
+	local useRPName = nameDisplayMode ~= 3;
 
 	if useRPName then
-		if questTextNameDisplayMode == 2 and firstName then
+		if nameDisplayMode == 2 and firstName then
 			PlayerName.preferredName = firstName;
 		elseif fullName then
 			PlayerName.preferredName = fullName;
@@ -23,10 +24,12 @@ function PlayerName:RefreshPlayerPreferredName()
 	end
 end
 
+---Replaces the OOC player name in sourceText with the preferred (RP) name.
 ---@param sourceText string
+---@return string
 function PlayerName:SubstitutePlayerPreferredName(sourceText)
 	if not PlayerName.preferredName then
-		self:RefreshPlayerPreferredName();
+		PlayerName.RefreshPlayerPreferredName();
 	end
 
 	if not PlayerName.preferredName or not ED.Globals.player_character_name or ED.Globals.player_character_name == "" then
@@ -35,8 +38,7 @@ function PlayerName:SubstitutePlayerPreferredName(sourceText)
 
 	-- Escape certain characters that could be in names like - and . (Mary-Sue, J.W.).
 	local escapedName = ED.Globals.player_character_name:gsub("([%(%)%.%%%+%-%*%?%[%^%$])", "%%%1");
-	local result = sourceText:gsub(escapedName, PlayerName.preferredName);
-	return result;
+	return sourceText:gsub(escapedName, PlayerName.preferredName);
 end
 
 ED.PlayerName = PlayerName;

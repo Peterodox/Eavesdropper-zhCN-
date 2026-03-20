@@ -376,11 +376,16 @@ function Eavesdropper_SettingsMixin:OnLoad()
 				ED.Database:SetSetting("UseRPNameInRolls", val)
 				ED.Frame:RefreshChat();
 			end,
-		},
+		},--[[ Decide on if we make this a separate category
+		{
+			type = "subtitle",
+			label = L.NPC_DIALOGUE_AND_QUEST_TEXT,
+			subLabel = L.NPC_DIALOGUE_AND_QUEST_TEXT_HELP,
+		},]]
 		{
 			type = "dropdown",
-			label = L.USE_RP_NAME_FOR_QUEST_TEXT,
-			tooltip = L.USE_RP_NAME_FOR_QUEST_TEXT_HELP,
+			label = L.NPC_AND_QUEST_NAME_DISPLAY,
+			tooltip = L.NPC_AND_QUEST_NAME_DISPLAY_HELP,
 			values = {
 				[1] = L.NAME_DISPLAY_MODE_FULL_NAME;
 				[2] = L.NAME_DISPLAY_MODE_FIRST_NAME;
@@ -398,10 +403,30 @@ function Eavesdropper_SettingsMixin:OnLoad()
 					[2] = not ED.MSP.IsEnabled(),
 				}
 			end,
-			get = function() return ED.Database:GetSetting("QuestTextNameDisplayMode") end,
+			get = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") end,
 			set = function(val)
-				ED.Database:SetSetting("QuestTextNameDisplayMode", val);
+				ED.Database:SetSetting("NPCAndQuestNameDisplayMode", val);
 				ED.QuestText.RefreshPlayerPreferredName();
+			end,
+		},
+		{
+			type = "checkbox",
+			label = L.USE_RP_NAME_FOR_QUEST_TEXT,
+			tooltip = L.USE_RP_NAME_FOR_QUEST_TEXT_HELP,
+			disabled = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3 end,
+			get = function() return ED.Database:GetSetting("UseRPNameInQuestText") end,
+			set = function(val)
+				ED.Database:SetSetting("UseRPNameInQuestText", val)
+			end,
+		},
+		{
+			type = "checkbox",
+			label = L.USE_RP_NAME_FOR_NPC_DIALOGUE,
+			tooltip = L.USE_RP_NAME_FOR_NPC_DIALOGUE_HELP,
+			disabled = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3 end,
+			get = function() return ED.Database:GetSetting("UseRPNameInNPCDialogue") end,
+			set = function(val)
+				ED.Database:SetSetting("UseRPNameInNPCDialogue", val)
 			end,
 		},
 		{
