@@ -272,8 +272,8 @@ function ChatFormatter:FormatMessage(entry)
 	if not entry or not entry.m then return ""; end
 
 	-- Timestamp
-	local now       = time();
-	local age       = now - (entry.t or now);
+	local now = time();
+	local age = now - (entry.t or now);
 	local timestamp;
 
 	if age < 30 * 60 then
