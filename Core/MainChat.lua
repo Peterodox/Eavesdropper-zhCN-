@@ -40,7 +40,7 @@ function MainChat:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 		local handled, newMessage, newSender = ED.AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...);
 		if handled ~= nil then return handled, newMessage, newSender, ...; end
 	elseif event == "CHAT_MSG_MONSTER_SAY" then
-		message = ED.GossipText.SubstitutePlayerPreferredName(message);
+		message = ED.NPCDialogue.SubstitutePlayerPreferredName(message);
 		return false, message, sender, ...;
 	else
 		local handled, newMessage, newSender = ED.Keywords:HandleChecks(chatFrame, event, message, sender, ...);

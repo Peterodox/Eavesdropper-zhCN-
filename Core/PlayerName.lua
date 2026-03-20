@@ -11,11 +11,11 @@ function PlayerName:RefreshPlayerPreferredName()
 	PlayerName.preferredName = ED.Globals.player_character_name;
 	-- Request MSP data with a cache bust to make sure we get latest.
 	local fullName, firstName = ED.MSP.TryGetMSPData(ED.Utils.GetUnitName(), ED.Globals.player_guid);
-	local questTextNameDisplayMode = ED.Database:GetSetting("QuestTextNameDisplayMode");
-	local useRPName = questTextNameDisplayMode ~= 3;
+	local nameDisplayMode = ED.Database:GetSetting("NPCAndQuestNameDisplayMode");
+	local useRPName = nameDisplayMode ~= 3;
 
 	if useRPName then
-		if questTextNameDisplayMode == 2 and firstName then
+		if nameDisplayMode == 2 and firstName then
 			PlayerName.preferredName = firstName;
 		elseif fullName then
 			PlayerName.preferredName = fullName;

@@ -65,8 +65,8 @@ local GLOBAL_DEFAULTS = {
 ---@field NotificationTargetSoundFile string?
 ---@field NotificationTargetFlashTaskbar boolean?
 ---@field NotificationThrottle number?
+---@field NPCAndQuestNameDisplayMode number?
 ---@field PreferMouseOver boolean?
----@field QuestTextNameDisplayMode number?
 ---@field TargetOnly boolean?
 ---@field TargetPriority EavesdropperTargetPriority?
 ---@field TimestampBrackets boolean?
@@ -75,6 +75,8 @@ local GLOBAL_DEFAULTS = {
 ---@field UseRPFirstName boolean?
 ---@field UseRPNameColor boolean?
 ---@field UseRPNameForTargets boolean?
+---@field UseRPNameInNPCDialogue boolean?
+---@field UseRPNameInQuestText boolean?
 ---@field UseRPNameInRolls boolean?
 ---@field WindowPosition EavesdropperWindowPosition?
 ---@field WindowSize EavesdropperWindowSize?
@@ -114,8 +116,8 @@ local DEFAULT_PROFILE = {
 	NotificationTargetSoundFile = "UI_VoiceChat_ChatMessageOutgoing",
 	NotificationTargetFlashTaskbar = true,
 	NotificationThrottle = 3,
+	NPCAndQuestNameDisplayMode = 1,
 	PreferMouseOver = true,
-	QuestTextNameDisplayMode = 1,
 	TargetOnly = false,
 	TargetPriority = Enums.TARGET_PRIORITY.PRIORITIZE_MOUSEOVER,
 	TimestampBrackets = true,
@@ -124,6 +126,8 @@ local DEFAULT_PROFILE = {
 	UseRPFirstName = false,
 	UseRPNameColor = true,
 	UseRPNameForTargets = true,
+	UseRPNameInNPCDialogue = true,
+	UseRPNameInQuestText = true,
 	UseRPNameInRolls = true,
 	WindowPosition = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_POSITION),
 	WindowSize = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_SIZE),
@@ -364,8 +368,8 @@ end
 ---| "NotificationTargetSoundFile"
 ---| "NotificationTargetFlashTaskbar"
 ---| "NotificationThrottle"
+---| "NPCAndQuestNameDisplayMode"
 ---| "PreferMouseOver"
----| "QuestTextNameDisplayMode"
 ---| "TargetOnly"
 ---| "TargetPriority"
 ---| "TimestampBrackets"
@@ -374,6 +378,8 @@ end
 ---| "UseRPFirstName"
 ---| "UseRPNameColor"
 ---| "UseRPNameForTargets"
+---| "UseRPNameInNPCDialogue"
+---| "UseRPNameInQuestText"
 ---| "UseRPNameInRolls"
 ---| "Filters"
 ---| "WindowPosition"

@@ -89,8 +89,17 @@ L = {
 	USE_RP_NAME_FOR_TARGETS = "Format Emote Targets",
 	USE_RP_NAME_FOR_TARGETS_HELP = "Toggles whether target names within Blizzard emotes (e.g., /wave, /point) use a character's RP name or their original in-game name.|n|n|cnWARNING_FONT_COLOR:Note: Due to how Blizzard handles emote strings, name substitution may not work consistently in all situations.|r",
 
+	NPC_DIALOGUE_AND_QUEST_TEXT = "NPC Dialogue & Quest Text",
+	NPC_DIALOGUE_AND_QUEST_TEXT_HELP = "Choose how your character's name is displayed.",
+
+	NPC_AND_QUEST_NAME_DISPLAY = "NPC & Quest Name Display",
+	NPC_AND_QUEST_NAME_DISPLAY_HELP = "Choose how your character's name is formatted within NPC dialogue and quest text.|n|n|cnWARNING_FONT_COLOR:Note: This option defaults to 'Original (OOC) Name' if no supported RP addon (TRP, MRP, or XRP) is detected.|r",
+
 	USE_RP_NAME_FOR_QUEST_TEXT = "Format Quest Text",
-	USE_RP_NAME_FOR_QUEST_TEXT_HELP = "Toggles whether names in quest text use your character's RP name (full or first) or original in-game name.|n|nNote: This requires a supported addon (e.g. Dialogue UI) to be loaded.|n|n|cnWARNING_FONT_COLOR:Note: This option is disabled and defaults to 'Original (OOC) Name' when no suitable RP addon (TRP, MRP, XRP) is loaded.|r",
+	USE_RP_NAME_FOR_QUEST_TEXT_HELP = "Toggles whether your name appearing in quest text uses your chosen 'NPC & Quest Name Display' or your original in-game name.|n|n|cnWARNING_FONT_COLOR:Note: This requires a supported interaction addon (e.g., Dialogue UI) to be active.|r",
+
+	USE_RP_NAME_FOR_NPC_DIALOGUE = "Format NPC Dialogue",
+	USE_RP_NAME_FOR_NPC_DIALOGUE_HELP = "Toggles whether your name appearing in NPC Dialogue (Say, Emote, etc.) uses your chosen 'NPC & Quest Name Display' or your original in-game name.|n|n|cnWARNING_FONT_COLOR:Note: Chat bubbles will still show your original name, as they cannot be modified by addons.|r",
 
 	TIMESTAMP_BRACKETS = "Timestamp Brackets",
 	TIMESTAMP_BRACKETS_HELP = "Toggles the visibility of brackets around message timestamps (e.g., [5m] vs 5m).",

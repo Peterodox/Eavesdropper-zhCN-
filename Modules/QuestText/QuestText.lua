@@ -23,7 +23,7 @@ end
 
 ---@param questText string
 function QuestText.SubstitutePlayerPreferredName(questText)
-	if not INSTALLED_QUEST_TEXT_ADDON or ED.Database:GetSetting("QuestTextNameDisplayMode") == 3 then
+	if not INSTALLED_QUEST_TEXT_ADDON or ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3 or not ED.Database:GetSetting("UseRPNameInQuestText") then
 		return questText;
 	end
 
