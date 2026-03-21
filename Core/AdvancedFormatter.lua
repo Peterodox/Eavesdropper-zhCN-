@@ -112,7 +112,11 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		msgSender = ED.PlayerCache:GetSenderDataFromGUID(guid) or msgSender;
 	end
 
-	msgSender, guid = ED.PlayerCache:InsertAndRetrieve(msgSender, guid);
+	local newMsgSender, newGuid = ED.PlayerCache:InsertAndRetrieve(msgSender, guid);
+	if newMsgSender then
+		msgSender = newMsgSender;
+		guid = newGuid;
+	end
 
 	local entry = {
 		t = time(),
@@ -128,16 +132,16 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 	if ED.Utils.IsOwnPlayer(sender, event) then
 		msgFinalText = entry.m;
 	else
-		msgFinalText = ED.Utils.StripRealmSuffix(entry.s) .. " " .. ED.ChatFormatter:MsgFormatTextEmoteNoName(entry, name);
+		msgFinalText = ED.Utils.StripRealmSuffix(entry.s) .. " " .. ED.ChatFormatter.MsgFormatTextEmoteNoName(entry, name);
 	end
 
 	local msgToSend = msgFinalText;
 
 	if entry.e == "CHAT_MSG_TEXT_EMOTE" and applyRPName then
-		msgToSend = ED.ChatFormatter:FormatTextEmoteTargetWithRPName(entry, msgFinalText);
+		msgToSend = ED.ChatFormatter.FormatTextEmoteTargetWithRPName(entry, msgFinalText);
 		self:EnableNameFormatting(entry.e);
 	elseif entry.e == "ROLL" and applyRPName then
-		msgToSend = ED.ChatFormatter:MsgFormatTextEmote(entry, name);
+		msgToSend = ED.ChatFormatter.MsgFormatTextEmote(entry, name);
 	end
 
 	return false, msgToSend, sender, ...;

@@ -7,21 +7,26 @@ local Constants = ED.Constants;
 ---@type EavesdropperEnums
 local Enums = ED.Enums;
 
----@class EavesdropperFrameModule
-local FrameModule = {};
+---@class EavesdropperDedicatedFrame
+local DedicatedFrame = {};
+
+---@type table<string, EavesdropperDedicatedFrame>
+DedicatedFrame.frames = DedicatedFrame.frames or {};
 
 local L = ED.Localization;
 
--- Private frame state
-local EAVESDROP_TARGET = nil;
-
-Eavesdropper_FrameMixin = {};
+Eavesdropper_Dedicated_FrameMixin = {};
 
 -- ============================================================
--- OnLoad / OnHide
+-- OnLoad / OnShow / OnHide
 -- ============================================================
 
-function Eavesdropper_FrameMixin:OnLoad()
+function Eavesdropper_Dedicated_FrameMixin:OnLoad()
+	-- Extract player from frame name
+	local name = self:GetName();
+	local player = name:match("^Eavesdropper_Dedicated_Frame_(.+)$");
+	self.eavesdropped_player = player;
+
 	self:EnableMouseWheel(true);
 	self:UpdateMouseLock();
 	self.clickblock = 0;
@@ -34,7 +39,18 @@ function Eavesdropper_FrameMixin:OnLoad()
 	self.ChatBox:SetMaxLines(300);
 	self.ChatBox.ScrollMarker.Text:SetText(L.SCROLLMARKER_TEXT);
 
-	if ED.Database and not ED.Database:GetSetting("LockWindow") then
+	-- Frame-local state (not persisted to DB)
+	self.LockWindow = false;
+	self.LockTitleBar = true;
+	self:HandleHoverState(Enums.FRAME.MOUSE_HOVER_STATE.ON);
+	self.HideCloseButton = false;
+	self.LockScroll = false;
+	self.EnableMouse = false;
+
+	-- Inherit font size from main frame settings
+	self.FontSize = ED.Database:GetSetting("FontSize");
+
+	if not self.LockWindow then
 		self.ResizeHandle:Show();
 	end
 
@@ -47,32 +63,80 @@ function Eavesdropper_FrameMixin:OnLoad()
 	closeBtn:SetHighlightAtlas("uitools-icon-close");
 	closeBtn:SetScript("OnClick", function()
 		self:Hide();
-		ED.Database:SetCharSetting("WindowVisible", false);
 	end);
 
-	if ED.Database and ED.Database:GetSetting("HideCloseButton") then
+	if self.HideCloseButton then
 		self.TitleBar.CloseButton:Hide();
 	end
 
 	-- Configure title button
 	local titleBtn = self.TitleBar.TitleButton;
-	titleBtn.Text:SetText("Eavesdropper");
+	local newPlayer, newGuid = ED.PlayerCache:InsertAndRetrieve(player);
+	if newPlayer and newGuid then
+		local _, firstName = ED.MSP.TryGetMSPData(newPlayer, newGuid);
+		self.titlebar_name = firstName;
+	else
+		self.titlebar_name = player and ED.Utils.StripRealmSuffix(player);
+	end
+	titleBtn.Text:SetText(self.titlebar_name);
+	titleBtn:SetScript("OnClick", function()
+		ED.Config:ShowConfigMenu(self, true);
+	end);
 
 	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
 		self:OnChatboxRefresh();
 	end);
 end
 
--- Unnecessary, for now.
-function Eavesdropper_FrameMixin:OnHide()
+function Eavesdropper_Dedicated_FrameMixin:OnShow()
+	self:RefreshChat();
+	if not self.chatTicker then
+		self.chatTicker = C_Timer.NewTicker(ED.Constants.CHAT_UPDATE_THROTTLE_DEFAULT, function()
+			self:RefreshChat();
+		end);
+	end
+end
+
+function Eavesdropper_Dedicated_FrameMixin:OnHide()
+	if self.chatTicker then
+		self.chatTicker:Cancel();
+		self.chatTicker = nil;
+	end
+
+	-- Stop any new-indicator animations
+	if self.NewIndicator then
+		if self.NewIndicator.NewIndicatorFadeIn then self.NewIndicator.NewIndicatorFadeIn:Stop(); end
+		if self.NewIndicator.NewIndicatorFadeOut then self.NewIndicator.NewIndicatorFadeOut:Stop(); end
+		self.NewIndicator.isFadedIn = false;
+		self.NewIndicator.isFadedOut = false;
+	end
+
+	if self.newIndicatorTimer then
+		self.newIndicatorTimer:Cancel();
+		self.newIndicatorTimer = nil;
+	end
+
+	self:UnregisterAllEvents();
+	self:SetScript("OnEnter", nil);
+	self:SetScript("OnLeave", nil);
+
+	self:SetParent(nil);
+
+	DedicatedFrame.frames[self.eavesdropped_player] = nil;
+
+	-- Clean up global reference
+	local name = self:GetName();
+	if name and _G[name] == self then
+		_G[name] = nil;
+	end
 end
 
 -- ============================================================
 -- Mouse / Interaction
 -- ============================================================
 
-function Eavesdropper_FrameMixin:OnHyperlinkClick(link, text, button)
-	if ED.Database and not ED.Database:GetSetting("EnableMouse") then return; end
+function Eavesdropper_Dedicated_FrameMixin:OnHyperlinkClick(link, text, button)
+	if not self.EnableMouse then return; end
 
 	-- Suppress rapid clicks when scroll position just changed
 	if GetTime() < (self.clickblock or 0) + Constants.FRAME.CLICKBLOCK_TIME then return; end
@@ -94,12 +158,12 @@ function Eavesdropper_FrameMixin:OnHyperlinkClick(link, text, button)
 	self.fade_time = GetTime();
 end
 
-function Eavesdropper_FrameMixin:OnScrollMarkerMouseUp()
+function Eavesdropper_Dedicated_FrameMixin:OnScrollMarkerMouseUp()
 	self.ChatBox:ScrollToBottom();
 	self:OnChatboxRefresh();
 end
 
-function Eavesdropper_FrameMixin:OnChatboxRefresh()
+function Eavesdropper_Dedicated_FrameMixin:OnChatboxRefresh()
 	if self.ChatBox:GetScrollOffset() ~= 0 then
 		if not self.ChatBox.ScrollMarker:IsShown() then
 			self.ChatBox.ScrollMarker:Show();
@@ -114,7 +178,7 @@ function Eavesdropper_FrameMixin:OnChatboxRefresh()
 end
 
 ---Returns true if the cursor is over any part of this frame or its chrome
-function Eavesdropper_FrameMixin:IsHoveringOverEavesdropperFrame()
+function Eavesdropper_Dedicated_FrameMixin:IsHoveringOverEavesdropperFrame()
 	-- Check Eavesdropper frame itself.
 	if self and self:IsMouseOver() then
 		return true;
@@ -130,52 +194,53 @@ function Eavesdropper_FrameMixin:IsHoveringOverEavesdropperFrame()
 	return false;
 end
 
-function Eavesdropper_FrameMixin:OnEnter()
+function Eavesdropper_Dedicated_FrameMixin:OnEnter()
 	if self.isMouseOver then return; end
 	self.isMouseOver = true;
+
+	-- Fade out the new-message indicator when the user hovers
+	if self.NewIndicator and self.NewIndicator.isFadedIn and not self.NewIndicator.isFadedOut then
+		self.NewIndicator.NewIndicatorFadeIn:Stop();
+		self.NewIndicator.NewIndicatorFadeOut:Stop();
+		self.NewIndicator.NewIndicatorFadeOut:Play();
+		self.NewIndicator.isFadedOut = true;
+		self.NewIndicator.isFadedIn = false;
+	end
+
 	self:HandleHoverState(Enums.FRAME.MOUSE_HOVER_STATE.ON);
 end
 
-function Eavesdropper_FrameMixin:OnLeave()
+function Eavesdropper_Dedicated_FrameMixin:OnLeave()
 	if not self:IsHoveringOverEavesdropperFrame() then
 		self.isMouseOver = false;
 		self:HandleHoverState(Enums.FRAME.MOUSE_HOVER_STATE.OFF);
 	end
 end
 
-function Eavesdropper_FrameMixin:OnDragStart()
+function Eavesdropper_Dedicated_FrameMixin:OnDragStart()
 	-- Only drag when the cursor is on the title bar
 	local isTitlebar = GetMouseFoci()[1] == self.TitleBar;
-	if not ED.Database or ED.Database:GetSetting("LockWindow") or not isTitlebar then return; end
+	if self.LockWindow or not isTitlebar then return; end
 
 	self:StopMovingOrSizing();
 	self:StartMoving();
 end
 
-function Eavesdropper_FrameMixin:OnDragStop()
+function Eavesdropper_Dedicated_FrameMixin:OnDragStop()
 	self:StopMovingOrSizing();
-
-	if not ED.Database then return; end
-
-	local point, _, relativePoint, x, y = self:GetPoint(1);
-	ED.Database:SetSetting("WindowPosition", { point = point, relativePoint = relativePoint, x = x, y = y });
+	-- Position is intentionally not persisted; dedicated frames reset on reload
 end
 
-function Eavesdropper_FrameMixin:OnResizeFinished()
-	if not ED.Database then return; end
-
-	local w, h = self:GetSize();
-	local point, _, relativePoint, x, y = self:GetPoint(1);
-	ED.Database:SetSetting("WindowSize", { width = w, height = h });
-	ED.Database:SetSetting("WindowPosition", { point = point, relativePoint = relativePoint, x = x, y = y });
+function Eavesdropper_Dedicated_FrameMixin:OnResizeFinished()
+	-- Size is intentionally not persisted; dedicated frames reset on reload
 end
 
 -- Unused — reserved for future use
-function Eavesdropper_FrameMixin:OnSizeChanged()
+function Eavesdropper_Dedicated_FrameMixin:OnSizeChanged()
 end
 
-function Eavesdropper_FrameMixin:OnMouseWheel(delta)
-	if ED.Database and ED.Database:GetSetting("LockScroll") then return; end
+function Eavesdropper_Dedicated_FrameMixin:OnMouseWheel(delta)
+	if self.LockScroll then return; end
 
 	if delta > 0 then
 		if IsAltKeyDown() then
@@ -198,9 +263,9 @@ function Eavesdropper_FrameMixin:OnMouseWheel(delta)
 	self.fade_time = GetTime();
 end
 
----Mouse-click propagation depends on EnableMouse; handled without OnUpdate
-function Eavesdropper_FrameMixin:UpdateMouseLock()
-	local isLocked = ED.Database and ED.Database:GetSetting("EnableMouse");
+-- This is a bit more involved as we don't use OnUpdate to check OnEnter/OnLeave checks for the frame
+function Eavesdropper_Dedicated_FrameMixin:UpdateMouseLock()
+	local isLocked = self.EnableMouse;
 
 	-- Always keep the parent frame mouse-enabled
 	self:EnableMouse(true);
@@ -225,52 +290,27 @@ function Eavesdropper_FrameMixin:UpdateMouseLock()
 	end
 end
 
----Returns true if the frame is currently tracking name
-function Eavesdropper_FrameMixin:EavesdroppingOn(name)
-	local filter = self.players and self.players[name];
-	return filter == 1;
-end
-
----Called when the magnifier target changes; triggers a full target refresh
-function Eavesdropper_FrameMixin:UpdateMagnifier()
-	if not self then return; end
-
-	ED.Debug:Print("Magnified Changed!");
-	self:UpdateTarget();
-end
-
 -- ============================================================
 -- Layout / Appearance
 -- ============================================================
 
-function Eavesdropper_FrameMixin:RestoreLayout()
+function Eavesdropper_Dedicated_FrameMixin:RestoreLayout()
 	if not ED.Database then return; end
 
-	local pos = ED.Database:GetSetting("WindowPosition");
-	if pos then
-		self:ClearAllPoints();
-		self:SetPoint(pos.point, UIParent, pos.relativePoint, pos.x, pos.y);
-	end
-
-	local size = ED.Database:GetSetting("WindowSize");
-	if size then
-		self:SetSize(size.width, size.height);
-	end
-
-	if not ED.Database:GetSetting("LockWindow") then
+	if not self.LockWindow then
 		self.ResizeHandle:Show();
 	else
 		self.ResizeHandle:Hide();
 	end
 
-	if ED.Database:GetSetting("HideCloseButton") then
+	if self.HideCloseButton then
 		self.TitleBar.CloseButton:Hide();
 	else
 		self.TitleBar.CloseButton:Show();
 	end
 end
 
-function Eavesdropper_FrameMixin:ApplyThemeColors()
+function Eavesdropper_Dedicated_FrameMixin:ApplyThemeColors()
 	if not ED.Database then return; end
 
 	-- Background color
@@ -293,8 +333,8 @@ function Eavesdropper_FrameMixin:ApplyThemeColors()
 	end
 end
 
-function Eavesdropper_FrameMixin:ShowTitleBar(show)
-	if ED.Database:GetSetting("LockTitleBar") then
+function Eavesdropper_Dedicated_FrameMixin:ShowTitleBar(show)
+	if self.LockTitleBar then
 		show = Enums.FRAME.MOUSE_HOVER_STATE.ON;
 	end
 
@@ -307,15 +347,15 @@ function Eavesdropper_FrameMixin:ShowTitleBar(show)
 	end
 end
 
-function Eavesdropper_FrameMixin:ShowResizeHandle(show)
-	if not ED.Database:GetSetting("LockWindow") and show and not self.ResizeHandle:IsShown() then
+function Eavesdropper_Dedicated_FrameMixin:ShowResizeHandle(show)
+	if not self.LockWindow and show and not self.ResizeHandle:IsShown() then
 		self.ResizeHandle:Show();
 	elseif not show and self.ResizeHandle:IsShown() then
 		self.ResizeHandle:Hide();
 	end
 end
 
-function Eavesdropper_FrameMixin:HandleHoverState(show)
+function Eavesdropper_Dedicated_FrameMixin:HandleHoverState(show)
 	self:ShowTitleBar(show);
 end
 
@@ -323,79 +363,16 @@ end
 -- Visibility
 -- ============================================================
 
-function Eavesdropper_FrameMixin:HandleVisibility()
+function Eavesdropper_Dedicated_FrameMixin:HandleVisibility()
 	-- Hide in combat if the setting is on
 	if ED.Database:GetSetting("HideInCombat") and InCombatLockdown() then
 		self:Hide();
 		return;
 	end
 
-	local shouldShow = true;
-
-	if ED.Database:GetSetting("HideWhenEmpty") then
-		-- Hide when there is no target or the chat box is empty
-		if not EAVESDROP_TARGET or self.ChatBox:GetNumMessages() == 0 then
-			shouldShow = false;
-		end
-	elseif not ED.Database:GetCharSetting("WindowVisible") then
-		-- HideWhenEmpty is off; fall back to last closed position
-		shouldShow = false;
-	end
-
-	-- Settings panel open always overrides hide
-	if shouldShow or ED.Frame.settingsOpened then
-		self:Show();
-	else
-		self:Hide();
-	end
-end
-
--- ============================================================
--- Target tracking
--- ============================================================
-
----Update the eavesdropped target based on mouseover, target, and magnifier
-function Eavesdropper_FrameMixin:UpdateTarget()
-	ED.Debug:Print("UpdateTarget");
-	if InCombatLockdown() then return; end
-
-	-- Resolve target from magnifier
-	local magnifiedName, magnifiedGUID = ED.Magnifier:GetMagnified();
-	local target = magnifiedName or (magnifiedGUID and canaccessvalue(magnifiedGUID) and ED.PlayerCache:GetSenderDataFromGUID(magnifiedGUID));
-
-	-- Nothing to track and nothing previously tracked
-	if not target and not EAVESDROP_TARGET then return; end
-
-	-- Skip if same target and recently updated (throttle 10 sec by default)
-	-- Logically we never hit this, as UpdateTarget is typically already on a 10s timer, so this is a safety net)
-	local now = GetTime();
-	if EAVESDROP_TARGET == target and now - (self.lastUpdate or 0) < Constants.CHAT_UPDATE_THROTTLE_DEFAULT then
-		return;
-	end
-
-	local hardUpdate = EAVESDROP_TARGET ~= target;
-	EAVESDROP_TARGET = target;
-
-	-- Recycle players table
-	self.players = self.players or {};
-	wipe(self.players);
-
-	local companionSupport = ED.Database:GetSetting("CompanionSupport");
-
-	if target and (companionSupport or magnifiedName) then
-		self.players[target] = 1;
-		self.eavesdropped_player = target;
-	else
-		self.eavesdropped_player = nil;
-	end
-
-	-- Refresh when target changed or chat is scrolled to the bottom
-	if hardUpdate or (self.ChatBox and self.ChatBox:AtBottom()) then
-		self:RefreshChat();
-		self.lastUpdate = now;
-	end
-
-	self:HandleVisibility();
+	-- Dedicated frames are always shown; we intentionally skip HideWhenEmpty
+	-- to avoid silently hiding a frame the user explicitly opened
+	self:Show();
 end
 
 -- ============================================================
@@ -403,7 +380,7 @@ end
 -- ============================================================
 
 ---Repopulate the chat box from stored history
-function Eavesdropper_FrameMixin:RefreshChat()
+function Eavesdropper_Dedicated_FrameMixin:RefreshChat()
 	if not self.ChatBox then return; end
 
 	self.refreshing = true;
@@ -412,11 +389,7 @@ function Eavesdropper_FrameMixin:RefreshChat()
 	local maxMessages = ED.Database:GetSetting("MaxHistory");
 	local player = self.eavesdropped_player;
 
-	local titleName = ED.Database:GetSetting("UpdateTitleBarWithName")
-		and player
-		and ED.Utils.StripRealmSuffix(player)
-		or "Eavesdropper";
-	self.TitleBar.TitleButton.Text:SetText(titleName);
+	self.TitleBar.TitleButton.Text:SetText(self.titlebar_name);
 
 	if player then
 		-- Try full name (with realm) first, fall back to bare name
@@ -441,7 +414,7 @@ end
 ---Add a chat entry to the frame
 ---@param entry EavesdropperChatEntry
 ---@param fromHistory boolean
-function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
+function Eavesdropper_Dedicated_FrameMixin:AddMessage(entry, fromHistory)
 	if not entry then return; end
 
 	if not ED.ChatFilters:HasEvent(entry.e, self) then return; end
@@ -461,48 +434,91 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local formatted, firstName = ED.ChatFormatter:FormatMessage(entry);
 	self.ChatBox:AddMessage(formatted, r, g, b);
-
-	if ED.Database:GetSetting("UpdateTitleBarWithName") then
-		self.TitleBar.TitleButton.Text:SetText(firstName);
-	end
+	self.titlebar_name = firstName;
+	self.TitleBar.TitleButton.Text:SetText(firstName);
 end
 
----Safe wrapper to add a chat message
+---Safe wrapper to add a chat message; also handles the new-message indicator
 ---@param entry EavesdropperChatEntry
-function Eavesdropper_FrameMixin:TryAddMessage(entry)
+function Eavesdropper_Dedicated_FrameMixin:TryAddMessage(entry)
 	if self.ChatBox:GetScrollOffset() == 0 then
 		self.clickblock = GetTime();
 	end
 
 	self:AddMessage(entry);
+
+	-- Show new-message indicator for incoming messages when not hovered
+	if not entry.p
+		and ED.Database:GetGlobalSetting("DedicatedWindowsNewIndicator")
+		and self.NewIndicator
+		and not self.isMouseOver
+	then
+		if not self.NewIndicator.isFadedIn then
+			self.NewIndicator:Show();
+			self.NewIndicator.NewIndicatorFadeIn:Stop();
+			self.NewIndicator.NewIndicatorFadeOut:Stop();
+			self.NewIndicator.NewIndicatorFadeIn:Play();
+			self.NewIndicator.isFadedIn = true;
+			self.NewIndicator.isFadedOut = false;
+		end
+
+		if self.newIndicatorTimer then
+			self.newIndicatorTimer:Cancel();
+			self.newIndicatorTimer = nil;
+		end
+
+		self.newIndicatorTimer = C_Timer.NewTimer(ED.Constants.CHAT_NEW_INDICATOR_FADE_OUT, function()
+			if self.NewIndicator and self.NewIndicator.NewIndicatorFadeOut and not self.NewIndicator.isFadedOut then
+				self.NewIndicator.NewIndicatorFadeIn:Stop();
+				self.NewIndicator.NewIndicatorFadeOut:Stop();
+				self.NewIndicator.NewIndicatorFadeOut:Play();
+				self.NewIndicator.isFadedOut = true;
+				self.NewIndicator.isFadedIn = false;
+			end
+			self.newIndicatorTimer = nil;
+		end);
+	end
 end
 
----Apply all profile settings: font, filters, layout, colors, history, and settings UI
-function Eavesdropper_FrameMixin:ApplyProfileSettings()
+---Apply all window settings: font, filters, layout, colors, and history
+function Eavesdropper_Dedicated_FrameMixin:ApplyWindowSettings()
 	ED.ChatBox:ApplyFontOptions(self);
 	ED.ChatFilters:UpdateFilters(self);
 	self:RestoreLayout();
 	self:ApplyThemeColors();
 	self:RefreshChat();
+end
 
-	if ED.SettingsFrame then
-		ED.SettingsFrame:RefreshWidgets();
+-- ============================================================
+-- DedicatedFrame manager
+-- ============================================================
+
+---Iterate all dedicated frames
+---@param func fun(frame: EavesdropperDedicatedFrame)
+function DedicatedFrame:ForEachFrame(func)
+	for _, frame in pairs(self.frames) do
+		if frame then
+			func(frame);
+		end
 	end
 end
 
--- ============================================================
--- FrameModule
--- ============================================================
+---Show an existing dedicated frame for sender, or create and initialise one
+function DedicatedFrame:AddFrame(sender)
+	local frame = _G["Eavesdropper_Dedicated_Frame_" .. sender];
 
-function FrameModule:Init()
-	local frame = CreateFrame("Frame", "Eavesdropper_Frame", UIParent, "Eavesdropper_FrameTemplate");
-	ED.Frame = frame;
-	frame:HandleVisibility(); -- Takes HideWhenEmpty & HideInCombat in account
+	if frame then
+		frame:Show();
+	else
+		frame = CreateFrame("Frame", "Eavesdropper_Dedicated_Frame_" .. sender, UIParent, "Eavesdropper_Dedicated_FrameTemplate");
+		frame:HandleVisibility();
+		frame:ApplyWindowSettings();
+		ED.ChatFilters:Init(frame);
+	end
 
-	frame:ApplyProfileSettings();
-	ED.ChatFilters:Init(frame);
+	self.frames[sender] = frame;
+
+	return frame;
 end
 
-ED.FrameModule = FrameModule;
-
-return FrameModule;
+ED.DedicatedFrame = DedicatedFrame;

@@ -14,6 +14,7 @@ local Settings = {};
 local SharedMedia = LibStub("LibSharedMedia-3.0");
 
 local L = ED.Localization;
+
 Eavesdropper_SettingsMixin = {};
 
 local fontList = {};
@@ -22,8 +23,12 @@ for _, fontName in ipairs(SharedMedia:List("font")) do
 end
 
 local lastSelectedTab;
-
 local allWidgets = {};
+
+-- ============================================================
+-- Widget refresh
+-- ============================================================
+
 function Eavesdropper_SettingsMixin:RefreshWidgets()
 	for _, widget in pairs(allWidgets) do
 		if widget.Refresh then
@@ -31,6 +36,10 @@ function Eavesdropper_SettingsMixin:RefreshWidgets()
 		end
 	end
 end
+
+-- ============================================================
+-- Tab management
+-- ============================================================
 
 function Eavesdropper_SettingsMixin:AddTab()
 	local tabs = self.Tabs;
@@ -46,6 +55,7 @@ function Eavesdropper_SettingsMixin:AddTab()
 	else
 		tab:SetPoint("TOPLEFT", 10, -20);
 	end
+
 	local tabIndex = tabCount;
 
 	local function OnShow(tabButton)
@@ -84,6 +94,11 @@ function Eavesdropper_SettingsMixin:SetTab(index)
 	lastSelectedTab = index;
 end
 
+-- ============================================================
+-- Panel / view management
+-- ============================================================
+
+---Creates a non-scrollable panel for a settings tab
 function Eavesdropper_SettingsMixin:AddFrame()
 	local frame = CreateFrame("Frame", nil, self);
 	frame:SetPoint("TOP", 0, -65);
@@ -116,10 +131,9 @@ function Eavesdropper_SettingsMixin:AddScrollableFrame()
 	-- Extend mouse interaction into the scrollbar area
 	scrollFrame:SetHitRectInsets(0, -paddingRight, 0, 0);
 
-	-- Create scroll child to hold content
+	-- Scroll child holds all content
 	local scrollChild = CreateFrame("Frame", nil, scrollFrame);
 	scrollChild:SetPoint("TOPLEFT");
-
 	scrollFrame:SetScrollChild(scrollChild);
 
 	scrollFrame:HookScript("OnSizeChanged", function(_, width, height)
@@ -137,6 +151,7 @@ function Eavesdropper_SettingsMixin:AddScrollableFrame()
 	return frame, scrollChild;
 end
 
+---Populates a tab panel with a list of options
 function Eavesdropper_SettingsMixin:PopulateTab(tab, options)
 	local previousContainer = nil;
 	for _, data in ipairs(options) do
@@ -175,6 +190,10 @@ function Eavesdropper_SettingsMixin:PopulateTab(tab, options)
 	return previousContainer;
 end
 
+-- ============================================================
+-- OnLoad
+-- ============================================================
+
 function Eavesdropper_SettingsMixin:OnLoad()
 	ButtonFrameTemplate_HidePortrait(self);
 	ButtonFrameTemplate_HideButtonBar(self);
@@ -187,7 +206,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 
 	self.CloseButton:SetScript("OnClick", function()
 		self:Hide();
-	end)
+	end);
 
 	local pos = ED.Database:GetGlobalSetting("SettingsWindowPosition");
 	if pos then
@@ -195,6 +214,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		self:SetPoint(pos.point, UIParent, pos.relativePoint, pos.x, pos.y);
 	end
 
+	-- Create tabs and their panels
 	local generalTab = self:AddTab();
 	generalTab:SetText(L.GENERAL_TITLE);
 	local generalPanel, generalContent = self:AddScrollableFrame(); -- luacheck: no unused (generalPanel)
@@ -213,6 +233,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 
 	PanelTemplates_SetNumTabs(self, #self.Tabs);
 
+	-- --------------------------------------------------------
+	-- General options
+	-- --------------------------------------------------------
+
 	local generalOptions = {
 		{
 			type = "subtitle",
@@ -225,20 +249,14 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.TARGET_PRIORITY,
 			tooltip = L.TARGET_PRIORITY_HELP,
 			values = {
-				[1] = L.TARGET_PRIORITY_PRIORITIZE_MOUSEOVER;
-				[2] = L.TARGET_PRIORITY_PRIORITIZE_TARGET;
-				[3] = L.TARGET_PRIORITY_MOUSEOVER_ONLY;
-				[4] = L.TARGET_PRIORITY_TARGET_ONLY;
-				[5] = L.TARGET_PRIORITY_FOCUS_ONLY;
+				[1] = L.TARGET_PRIORITY_PRIORITIZE_MOUSEOVER,
+				[2] = L.TARGET_PRIORITY_PRIORITIZE_TARGET,
+				[3] = L.TARGET_PRIORITY_MOUSEOVER_ONLY,
+				[4] = L.TARGET_PRIORITY_TARGET_ONLY,
+				[5] = L.TARGET_PRIORITY_FOCUS_ONLY,
 			},
-			sorting = {
-				1,
-				2,
-				3,
-				4,
-				5,
-			},
-			get = function() return ED.Database:GetSetting("TargetPriority") end,
+			sorting = { 1, 2, 3, 4, 5 },
+			get = function() return ED.Database:GetSetting("TargetPriority"); end,
 			set = function(val)
 				ED.Database:SetSetting("TargetPriority", val);
 				ED.Magnifier:HandleUpdate(ED.Enums.MAGNIFIER_REASON.SETTINGS);
@@ -248,7 +266,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.INCLUDE_COMPANIONS,
 			tooltip = L.INCLUDE_COMPANIONS_HELP,
-			get = function() return ED.Database:GetSetting("CompanionSupport") end,
+			get = function() return ED.Database:GetSetting("CompanionSupport"); end,
 			set = function(val)
 				ED.Database:SetSetting("CompanionSupport", val);
 				ED.Frame:RefreshChat();
@@ -259,17 +277,13 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.FOCUS,
 			tooltip = L.FOCUS_HELP,
 			values = {
-				[1] = L.FOCUS_OVERRIDE;
-				[2] = L.FOCUS_FALLBACK;
-				[3] = L.FOCUS_IGNORE;
+				[1] = L.FOCUS_OVERRIDE,
+				[2] = L.FOCUS_FALLBACK,
+				[3] = L.FOCUS_IGNORE,
 			},
-			sorting = {
-				1,
-				2,
-				3,
-			},
-			disabled = function() return not (ED.Database:GetSetting("TargetPriority") == 1 or ED.Database:GetSetting("TargetPriority") == 2) end,
-			get = function() return ED.Database:GetSetting("FocusTarget") end,
+			sorting = { 1, 2, 3 },
+			disabled = function() return not (ED.Database:GetSetting("TargetPriority") == 1 or ED.Database:GetSetting("TargetPriority") == 2); end,
+			get = function() return ED.Database:GetSetting("FocusTarget"); end,
 			set = function(val)
 				ED.Database:SetSetting("FocusTarget", val);
 				ED.Magnifier:HandleUpdate(ED.Enums.MAGNIFIER_REASON.SETTINGS);
@@ -287,7 +301,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			min = 10,
 			max = 300,
 			step = 1,
-			get = function() return ED.Database:GetSetting("MaxHistory") end,
+			get = function() return ED.Database:GetSetting("MaxHistory"); end,
 			set = function(val)
 				ED.Database:SetSetting("MaxHistory", val);
 				ED.Frame:RefreshChat();
@@ -298,23 +312,19 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.NAME_DISPLAY_MODE,
 			tooltip = L.NAME_DISPLAY_MODE_HELP,
 			values = {
-				[1] = L.NAME_DISPLAY_MODE_FULL_NAME;
-				[2] = L.NAME_DISPLAY_MODE_FIRST_NAME;
-				[3] = L.NAME_DISPLAY_MODE_ORIGINAL_NAME;
+				[1] = L.NAME_DISPLAY_MODE_FULL_NAME,
+				[2] = L.NAME_DISPLAY_MODE_FIRST_NAME,
+				[3] = L.NAME_DISPLAY_MODE_ORIGINAL_NAME,
 			},
-			sorting = {
-				1,
-				2,
-				3,
-			},
-			disabled = function() return not ED.MSP.IsEnabled() end,
+			sorting = { 1, 2, 3 },
+			disabled = function() return not ED.MSP.IsEnabled(); end,
 			disabledValues = function()
 				return {
 					[1] = not ED.MSP.IsEnabled(),
 					[2] = not ED.MSP.IsEnabled(),
-				}
+				};
 			end,
-			get = function() return ED.Database:GetSetting("NameDisplayMode") end,
+			get = function() return ED.Database:GetSetting("NameDisplayMode"); end,
 			set = function(val)
 				ED.Database:SetSetting("NameDisplayMode", val);
 				ED.Frame:RefreshChat();
@@ -324,8 +334,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.USE_RP_NAME_COLOR,
 			tooltip = L.USE_RP_NAME_COLOR_HELP,
-			disabled = function() return ED.Database:GetSetting("NameDisplayMode") == 3 end,
-			get = function() return ED.Database:GetSetting("UseRPNameColor") end,
+			disabled = function() return ED.Database:GetSetting("NameDisplayMode") == 3; end,
+			get = function() return ED.Database:GetSetting("UseRPNameColor"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameColor", val);
 				ED.Frame:RefreshChat();
@@ -335,7 +345,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.TIMESTAMP_BRACKETS,
 			tooltip = L.TIMESTAMP_BRACKETS_HELP,
-			get = function() return ED.Database:GetSetting("TimestampBrackets") end,
+			get = function() return ED.Database:GetSetting("TimestampBrackets"); end,
 			set = function(val)
 				ED.Database:SetSetting("TimestampBrackets", val);
 				ED.Frame:RefreshChat();
@@ -349,7 +359,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.APPLY_ON_MAIN_CHAT,
 			tooltip = L.APPLY_ON_MAIN_CHAT_HELP,
-			get = function() return ED.Database:GetSetting("ApplyOnMainChat") end,
+			get = function() return ED.Database:GetSetting("ApplyOnMainChat"); end,
 			set = function(val)
 				ED.Database:SetSetting("ApplyOnMainChat", val);
 				ED.MainChat:ToggleAdvancedFormatting();
@@ -359,8 +369,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.USE_RP_NAME_FOR_TARGETS,
 			tooltip = L.USE_RP_NAME_FOR_TARGETS_HELP,
-			disabled = function() return ED.Database:GetSetting("NameDisplayMode") == 3 end,
-			get = function() return ED.Database:GetSetting("UseRPNameForTargets") end,
+			disabled = function() return ED.Database:GetSetting("NameDisplayMode") == 3; end,
+			get = function() return ED.Database:GetSetting("UseRPNameForTargets"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameForTargets", val);
 				ED.Frame:RefreshChat();
@@ -370,10 +380,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.USE_RP_NAME_IN_ROLLS,
 			tooltip = L.USE_RP_NAME_IN_ROLLS_HELP,
-			disabled = function() return ED.Database:GetSetting("NameDisplayMode") == 3 end,
-			get = function() return ED.Database:GetSetting("UseRPNameInRolls") end,
+			disabled = function() return ED.Database:GetSetting("NameDisplayMode") == 3; end,
+			get = function() return ED.Database:GetSetting("UseRPNameInRolls"); end,
 			set = function(val)
-				ED.Database:SetSetting("UseRPNameInRolls", val)
+				ED.Database:SetSetting("UseRPNameInRolls", val);
 				ED.Frame:RefreshChat();
 			end,
 		},--[[ Decide on if we make this a separate category
@@ -387,23 +397,20 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.NPC_AND_QUEST_NAME_DISPLAY,
 			tooltip = L.NPC_AND_QUEST_NAME_DISPLAY_HELP,
 			values = {
-				[1] = L.NAME_DISPLAY_MODE_FULL_NAME;
-				[2] = L.NAME_DISPLAY_MODE_FIRST_NAME;
-				[3] = L.NAME_DISPLAY_MODE_ORIGINAL_NAME;
+				[1] = L.NAME_DISPLAY_MODE_FULL_NAME,
+				[2] = L.NAME_DISPLAY_MODE_FIRST_NAME,
+				[3] = L.NAME_DISPLAY_MODE_ORIGINAL_NAME,
 			},
-			sorting = {
-				1,
-				2,
-				3,
-			},
-			disabled = function() return not ED.MSP.IsEnabled() or not ED.QuestText.SupportedAddonsInstalled() end,
+			sorting = { 1, 2, 3 },
+			disabled = function() return not ED.MSP.IsEnabled() or not ED.QuestText.SupportedAddonsInstalled(); end,
 			disabledValues = function()
 				return {
 					[1] = not ED.MSP.IsEnabled(),
 					[2] = not ED.MSP.IsEnabled(),
-				}
+				};
 			end,
-			get = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") end,
+			buildAdded = "0.3.0|120001",
+			get = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode"); end,
 			set = function(val)
 				ED.Database:SetSetting("NPCAndQuestNameDisplayMode", val);
 				ED.QuestText.RefreshPlayerPreferredName();
@@ -413,20 +420,22 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.USE_RP_NAME_FOR_QUEST_TEXT,
 			tooltip = L.USE_RP_NAME_FOR_QUEST_TEXT_HELP,
-			disabled = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3 end,
-			get = function() return ED.Database:GetSetting("UseRPNameInQuestText") end,
+			buildAdded = "0.3.0|120001",
+			disabled = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3; end,
+			get = function() return ED.Database:GetSetting("UseRPNameInQuestText"); end,
 			set = function(val)
-				ED.Database:SetSetting("UseRPNameInQuestText", val)
+				ED.Database:SetSetting("UseRPNameInQuestText", val);
 			end,
 		},
 		{
 			type = "checkbox",
 			label = L.USE_RP_NAME_FOR_NPC_DIALOGUE,
 			tooltip = L.USE_RP_NAME_FOR_NPC_DIALOGUE_HELP,
-			disabled = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3 end,
-			get = function() return ED.Database:GetSetting("UseRPNameInNPCDialogue") end,
+			buildAdded = "0.3.0|120001",
+			disabled = function() return ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3; end,
+			get = function() return ED.Database:GetSetting("UseRPNameInNPCDialogue"); end,
 			set = function(val)
-				ED.Database:SetSetting("UseRPNameInNPCDialogue", val)
+				ED.Database:SetSetting("UseRPNameInNPCDialogue", val);
 			end,
 		},
 		{
@@ -441,15 +450,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function()
 				local color = ED.Database:GetSetting("ColorBackground");
 				if type(color) ~= "table" then
-					return {
-						r = 0;
-						g = 0;
-						b = 0;
-						a = 0.5;
-					};
+					return { r = 0, g = 0, b = 0, a = 0.5 };
 				end
 				return color;
-			end;
+			end,
 			set = function(val)
 				if type(val) ~= "table" then return; end
 
@@ -458,18 +462,19 @@ function Eavesdropper_SettingsMixin:OnLoad()
 
 				background:SetColorTexture(val.r, val.g, val.b, val.a);
 
+				ED.DedicatedFrame:ForEachFrame(function(frame)
+					local frameBg = frame.Background;
+					if not frameBg then return; end
+					frameBg:SetColorTexture(val.r, val.g, val.b, val.a);
+				end);
+
 				if val.r == 0 and val.g == 0 and val.b == 0 and val.a == 0.5 then
 					ED.Database:SetSetting("ColorBackground", nil);
 					return;
 				end
 
-				ED.Database:SetSetting("ColorBackground", {
-					r = val.r;
-					g = val.g;
-					b = val.b;
-					a = val.a;
-				});
-			end;
+				ED.Database:SetSetting("ColorBackground", { r = val.r, g = val.g, b = val.b, a = val.a });
+			end,
 		},
 		{
 			type = "colorswatch",
@@ -479,15 +484,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function()
 				local color = ED.Database:GetSetting("ColorTitleBar");
 				if type(color) ~= "table" then
-					return {
-						r = 0;
-						g = 0;
-						b = 0;
-						a = 0.25;
-					};
+					return { r = 0, g = 0, b = 0, a = 0.25 };
 				end
 				return color;
-			end;
+			end,
 			set = function(val)
 				if type(val) ~= "table" then return; end
 
@@ -496,25 +496,26 @@ function Eavesdropper_SettingsMixin:OnLoad()
 
 				background:SetColorTexture(val.r, val.g, val.b, val.a);
 
+				ED.DedicatedFrame:ForEachFrame(function(frame)
+					local frameTitleBg = frame.TitleBar.Background;
+					if not frameTitleBg then return; end
+					frameTitleBg:SetColorTexture(val.r, val.g, val.b, val.a);
+				end);
+
 				if val.r == 0 and val.g == 0 and val.b == 0 and val.a == 0.25 then
 					ED.Database:SetSetting("ColorTitleBar", nil);
 					return;
 				end
 
-				ED.Database:SetSetting("ColorTitleBar", {
-					r = val.r;
-					g = val.g;
-					b = val.b;
-					a = val.a;
-				});
-			end;
+				ED.Database:SetSetting("ColorTitleBar", { r = val.r, g = val.g, b = val.b, a = val.a });
+			end,
 		},
 		{
 			type = "checkbox",
 			label = L.THEMES_SETTINGS_ELVUI,
 			tooltip = L.THEMES_SETTINGS_ELVUI_HELP,
-			disabled = function() return not C_AddOns.IsAddOnLoaded("ElvUI") end,
-			get = function() return ED.Database:GetSetting("ElvUITheme") end,
+			disabled = function() return not C_AddOns.IsAddOnLoaded("ElvUI"); end,
+			get = function() return ED.Database:GetSetting("ElvUITheme"); end,
 			set = function(val)
 				ED.Database:SetSetting("ElvUITheme", val);
 				ReloadUI();
@@ -524,11 +525,14 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.HIDE_IN_COMBAT,
 			tooltip = L.HIDE_IN_COMBAT_HELP,
-			get = function() return ED.Database:GetSetting("HideInCombat") end,
+			get = function() return ED.Database:GetSetting("HideInCombat"); end,
 			set = function(val)
 				ED.Database:SetSetting("HideInCombat", val);
 				if InCombatLockdown() then
 					ED.Frame:Hide();
+					ED.DedicatedFrame:ForEachFrame(function(frame)
+						frame:Hide();
+					end);
 				end
 			end,
 		},
@@ -536,7 +540,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.HIDE_WHEN_EMPTY,
 			tooltip = L.HIDE_WHEN_EMPTY_HELP,
-			get = function() return ED.Database:GetSetting("HideWhenEmpty") end,
+			get = function() return ED.Database:GetSetting("HideWhenEmpty"); end,
 			set = function(val)
 				ED.Database:SetSetting("HideWhenEmpty", val);
 				-- If users turn this off, we can assume they want the frame to be visible.
@@ -549,7 +553,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.HIDE_CLOSE_BUTTON,
 			tooltip = L.HIDE_CLOSE_BUTTON_HELP,
-			get = function() return ED.Database:GetSetting("HideCloseButton") end,
+			get = function() return ED.Database:GetSetting("HideCloseButton"); end,
 			set = function(val)
 				ED.Database:SetSetting("HideCloseButton", val);
 				ED.Frame.TitleBar.CloseButton:SetShown(not val);
@@ -559,7 +563,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.TITLE_BAR_TARGET_NAME,
 			tooltip = L.TITLE_BAR_TARGET_NAME_HELP,
-			get = function() return ED.Database:GetSetting("UpdateTitleBarWithName") end,
+			get = function() return ED.Database:GetSetting("UpdateTitleBarWithName"); end,
 			set = function(val)
 				ED.Database:SetSetting("UpdateTitleBarWithName", val);
 				ED.Frame:RefreshChat();
@@ -569,7 +573,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.WELCOME_MSG .. "*",
 			tooltip = L.WELCOME_MSG_HELP,
-			get = function() return ED.Database:GetGlobalSetting("WelcomeMessage") end,
+			get = function() return ED.Database:GetGlobalSetting("WelcomeMessage"); end,
 			set = function(val)
 				ED.Database:SetGlobalSetting("WelcomeMessage", val);
 			end,
@@ -583,10 +587,13 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.FONT_FACE,
 			tooltip = L.FONT_FACE_HELP,
 			values = fontList,
-			get = function() return ED.Database:GetSetting("FontFace") end,
+			get = function() return ED.Database:GetSetting("FontFace"); end,
 			set = function(val)
 				ED.Database:SetSetting("FontFace", val);
-				ED.ChatBox:ApplyFontOptions();
+				ED.ChatBox:ApplyFontOptions(ED.Frame);
+				ED.DedicatedFrame:ForEachFrame(function(frame)
+					ED.ChatBox:ApplyFontOptions(frame);
+				end);
 			end,
 		},
 		{
@@ -596,10 +603,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			min = 6,
 			max = 24,
 			step = 1,
-			get = function() return ED.Database:GetSetting("FontSize") end,
+			get = function() return ED.Database:GetSetting("FontSize"); end,
 			set = function(val)
 				ED.Database:SetSetting("FontSize", val);
-				ED.ChatBox:ApplyFontOptions();
+				ED.ChatBox:ApplyFontOptions(ED.Frame);
 			end,
 		},
 		{
@@ -607,29 +614,72 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.FONT_OUTLINE,
 			tooltip = L.FONT_OUTLINE_HELP,
 			values = {
-				[1] = L.FONT_OUTLINE_NONE;
-				[2] = L.FONT_OUTLINE_THIN;
-				[3] = L.FONT_OUTLINE_THICK;
+				[1] = L.FONT_OUTLINE_NONE,
+				[2] = L.FONT_OUTLINE_THIN,
+				[3] = L.FONT_OUTLINE_THICK,
 			},
-			sorting = {
-				1,
-				2,
-				3,
-			},
-			get = function() return ED.Database:GetSetting("FontOutline") end,
+			sorting = { 1, 2, 3 },
+			get = function() return ED.Database:GetSetting("FontOutline"); end,
 			set = function(val)
 				ED.Database:SetSetting("FontOutline", val);
-				ED.ChatBox:ApplyFontOptions();
+				ED.ChatBox:ApplyFontOptions(ED.Frame);
+				ED.DedicatedFrame:ForEachFrame(function(frame)
+					ED.ChatBox:ApplyFontOptions(frame);
+				end);
 			end,
 		},
 		{
 			type = "checkbox",
 			label = L.FONT_SHADOW,
 			tooltip = L.FONT_SHADOW_HELP,
-			get = function() return ED.Database:GetSetting("FontShadow") end,
+			get = function() return ED.Database:GetSetting("FontShadow"); end,
 			set = function(val)
 				ED.Database:SetSetting("FontShadow", val);
-				ED.ChatBox:ApplyFontOptions();
+				ED.ChatBox:ApplyFontOptions(ED.Frame);
+				ED.DedicatedFrame:ForEachFrame(function(frame)
+					ED.ChatBox:ApplyFontOptions(frame);
+				end);
+			end,
+		},
+		{
+			type = "subtitle",
+			label = L.DEDICATED_WINDOWS,
+		},
+		{
+			type = "checkbox",
+			label = L.DEDICATED_WINDOWS .. "*",
+			tooltip = L.DEDICATED_WINDOWS_HELP,
+			buildAdded = "0.3.0|120001",
+			get = function() return ED.Database:GetGlobalSetting("DedicatedWindows"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("DedicatedWindows", val);
+				if not val then
+					ED.DedicatedFrame:ForEachFrame(function(frame)
+						frame:Hide();
+					end);
+				end
+			end,
+		},
+		{
+			type = "checkbox",
+			label = L.DEDICATED_WINDOWS_NEW_INDICATOR .. "*",
+			tooltip = L.DEDICATED_WINDOWS_NEW_INDICATOR_HELP,
+			buildAdded = "0.3.0|120001",
+			disabled = function() return not ED.Database:GetGlobalSetting("DedicatedWindows"); end,
+			get = function() return ED.Database:GetGlobalSetting("DedicatedWindowsNewIndicator"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("DedicatedWindowsNewIndicator", val);
+			end,
+		},
+		{
+			type = "checkbox",
+			label = L.DEDICATED_WINDOWS_UNIT_POPUPS .. "*",
+			tooltip = L.DEDICATED_WINDOWS_UNIT_POPUPS_HELP,
+			buildAdded = "0.3.0|120001",
+			disabled = function() return not ED.Database:GetGlobalSetting("DedicatedWindows"); end,
+			get = function() return ED.Database:GetGlobalSetting("DedicatedWindowsUnitPopups"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("DedicatedWindowsUnitPopups", val);
 			end,
 		},
 		{
@@ -640,7 +690,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.MINIMAP_BUTTON .. "*",
 			tooltip = L.MINIMAP_BUTTON_HELP,
-			get = function() return not ED.Database:GetGlobalSetting("MinimapButton").Hide end,
+			get = function() return not ED.Database:GetGlobalSetting("MinimapButton").Hide; end,
 			set = function(val)
 				local minimap = ED.Database:GetGlobalSetting("MinimapButton");
 				minimap.Hide = not val;
@@ -652,8 +702,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.ADDON_COMPARTMENT_BUTTON .. "*",
 			tooltip = L.ADDON_COMPARTMENT_BUTTON_HELP,
-			disabled = function() return ED.Database:GetGlobalSetting("MinimapButton").Hide end,
-			get = function() return ED.Database:GetGlobalSetting("MinimapButton").ShowAddonCompartmentButton end,
+			disabled = function() return ED.Database:GetGlobalSetting("MinimapButton").Hide; end,
+			get = function() return ED.Database:GetGlobalSetting("MinimapButton").ShowAddonCompartmentButton; end,
 			set = function(val)
 				local minimap = ED.Database:GetGlobalSetting("MinimapButton");
 				minimap.ShowAddonCompartmentButton = val;
@@ -662,6 +712,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			end,
 		},
 	};
+
+	-- --------------------------------------------------------
+	-- Notifications options
+	-- --------------------------------------------------------
 
 	local notificationsOptions = {
 		{
@@ -673,7 +727,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.NOTIFICATIONS_PLAY_SOUND,
 			tooltip = L.NOTIFICATIONS_PLAY_SOUND_HELP,
-			get = function() return ED.Database:GetSetting("NotificationEmotesSound") end,
+			get = function() return ED.Database:GetSetting("NotificationEmotesSound"); end,
 			set = function(val)
 				ED.Database:SetSetting("NotificationEmotesSound", val);
 			end,
@@ -683,21 +737,21 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.NOTIFICATIONS_SOUND_FILE,
 			tooltip = L.NOTIFICATIONS_SOUND_FILE_HELP,
 			values = ED.Config.soundList,
-			disabled = function() return not ED.Database:GetSetting("NotificationEmotesSound") end,
-			get = function() return ED.Database:GetSetting("NotificationEmotesSoundFile") end,
+			disabled = function() return not ED.Database:GetSetting("NotificationEmotesSound"); end,
+			get = function() return ED.Database:GetSetting("NotificationEmotesSoundFile"); end,
 			set = function(val)
-			local soundPath = SharedMedia:Fetch("sound", val);
-			if soundPath then
-				PlaySoundFile(soundPath, "Master");
-				ED.Database:SetSetting("NotificationEmotesSoundFile", val);
-			end
+				local soundPath = SharedMedia:Fetch("sound", val);
+				if soundPath then
+					PlaySoundFile(soundPath, "Master");
+					ED.Database:SetSetting("NotificationEmotesSoundFile", val);
+				end
 			end,
 		},
 		{
 			type = "checkbox",
 			label = L.NOTIFICATION_FLASH_TASKBAR,
 			tooltip = L.NOTIFICATION_FLASH_TASKBAR_HELP,
-			get = function() return ED.Database:GetSetting("NotificationEmotesFlashTaskbar") end,
+			get = function() return ED.Database:GetSetting("NotificationEmotesFlashTaskbar"); end,
 			set = function(val)
 				ED.Database:SetSetting("NotificationEmotesFlashTaskbar", val);
 			end,
@@ -711,7 +765,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.NOTIFICATIONS_PLAY_SOUND,
 			tooltip = L.NOTIFICATIONS_PLAY_SOUND_HELP,
-			get = function() return ED.Database:GetSetting("NotificationTargetSound") end,
+			get = function() return ED.Database:GetSetting("NotificationTargetSound"); end,
 			set = function(val)
 				ED.Database:SetSetting("NotificationTargetSound", val);
 			end,
@@ -721,8 +775,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.NOTIFICATIONS_SOUND_FILE,
 			tooltip = L.NOTIFICATIONS_SOUND_FILE_HELP,
 			values = ED.Config.soundList,
-			disabled = function() return not ED.Database:GetSetting("NotificationTargetSound") end,
-			get = function() return ED.Database:GetSetting("NotificationTargetSoundFile") end,
+			disabled = function() return not ED.Database:GetSetting("NotificationTargetSound"); end,
+			get = function() return ED.Database:GetSetting("NotificationTargetSoundFile"); end,
 			set = function(val)
 				local soundPath = SharedMedia:Fetch("sound", val);
 				if soundPath then
@@ -735,12 +789,57 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.NOTIFICATION_FLASH_TASKBAR,
 			tooltip = L.NOTIFICATION_FLASH_TASKBAR_HELP,
-			get = function() return ED.Database:GetSetting("NotificationTargetFlashTaskbar") end,
+			get = function() return ED.Database:GetSetting("NotificationTargetFlashTaskbar"); end,
 			set = function(val)
 				ED.Database:SetSetting("NotificationTargetFlashTaskbar", val);
 			end,
 		},
+		{
+			type = "subtitle",
+			label = L.DEDICATED,
+			subLabel = L.DEDICATED_HELP,
+		},
+		{
+			type = "checkbox",
+			label = L.NOTIFICATIONS_PLAY_SOUND,
+			tooltip = L.NOTIFICATIONS_PLAY_SOUND_HELP,
+			buildAdded = "0.3.0|120001",
+			get = function() return ED.Database:GetSetting("NotificationDedicatedSound"); end,
+			set = function(val)
+				ED.Database:SetSetting("NotificationDedicatedSound", val);
+			end,
+		},
+		{
+			type = "dropdown",
+			label = L.NOTIFICATIONS_SOUND_FILE,
+			tooltip = L.NOTIFICATIONS_SOUND_FILE_HELP,
+			buildAdded = "0.3.0|120001",
+			values = ED.Config.soundList,
+			disabled = function() return not ED.Database:GetSetting("NotificationDedicatedSound"); end,
+			get = function() return ED.Database:GetSetting("NotificationDedicatedSoundFile"); end,
+			set = function(val)
+				local soundPath = SharedMedia:Fetch("sound", val);
+				if soundPath then
+					PlaySoundFile(soundPath, "Master");
+					ED.Database:SetSetting("NotificationDedicatedSoundFile", val);
+				end
+			end,
+		},
+		{
+			type = "checkbox",
+			label = L.NOTIFICATION_FLASH_TASKBAR,
+			tooltip = L.NOTIFICATION_FLASH_TASKBAR_HELP,
+			buildAdded = "0.3.0|120001",
+			get = function() return ED.Database:GetSetting("NotificationDedicatedFlashTaskbar"); end,
+			set = function(val)
+				ED.Database:SetSetting("NotificationDedicatedFlashTaskbar", val);
+			end,
+		},
 	};
+
+	-- --------------------------------------------------------
+	-- Keywords options
+	-- --------------------------------------------------------
 
 	local keywordsOptions = {
 		{
@@ -752,7 +851,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.KEYWORDS_ENABLE,
 			tooltip = L.KEYWORDS_ENABLE_HELP,
-			get = function() return ED.Database:GetSetting("EnableKeywords") end,
+			get = function() return ED.Database:GetSetting("EnableKeywords"); end,
 			set = function(val)
 				ED.Database:SetSetting("EnableKeywords", val);
 				ED.MainChat:ToggleKeywords();
@@ -792,7 +891,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.KEYWORDS_ENABLE_PARTIAL_MATCHING,
 			tooltip = L.KEYWORDS_ENABLE_PARTIAL_MATCHING_HELP,
-			get = function() return ED.Database:GetSetting("EnablePartialKeywords") end,
+			get = function() return ED.Database:GetSetting("EnablePartialKeywords"); end,
 			set = function(val)
 				ED.Database:SetSetting("EnablePartialKeywords", val);
 			end,
@@ -806,7 +905,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.NOTIFICATIONS_PLAY_SOUND,
 			tooltip = L.NOTIFICATIONS_PLAY_SOUND_HELP,
-			get = function() return ED.Database:GetSetting("NotificationKeywordsSound") end,
+			get = function() return ED.Database:GetSetting("NotificationKeywordsSound"); end,
 			set = function(val)
 				ED.Database:SetSetting("NotificationKeywordsSound", val);
 			end,
@@ -816,8 +915,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.NOTIFICATIONS_SOUND_FILE,
 			tooltip = L.NOTIFICATIONS_SOUND_FILE_HELP,
 			values = ED.Config.soundList,
-			disabled = function() return not ED.Database:GetSetting("NotificationKeywordsSound") end,
-			get = function() return ED.Database:GetSetting("NotificationKeywordsSoundFile") end,
+			disabled = function() return not ED.Database:GetSetting("NotificationKeywordsSound"); end,
+			get = function() return ED.Database:GetSetting("NotificationKeywordsSoundFile"); end,
 			set = function(val)
 				local soundPath = SharedMedia:Fetch("sound", val);
 				if soundPath then
@@ -830,12 +929,16 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.NOTIFICATION_FLASH_TASKBAR,
 			tooltip = L.NOTIFICATION_FLASH_TASKBAR_HELP,
-			get = function() return ED.Database:GetSetting("NotificationKeywordsFlashTaskbar") end,
+			get = function() return ED.Database:GetSetting("NotificationKeywordsFlashTaskbar"); end,
 			set = function(val)
 				ED.Database:SetSetting("NotificationKeywordsFlashTaskbar", val);
 			end,
 		},
 	};
+
+	-- --------------------------------------------------------
+	-- Profiles options
+	-- --------------------------------------------------------
 
 	local profilesOptions = {
 		{
@@ -894,6 +997,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		},
 	};
 
+	-- --------------------------------------------------------
+	-- Inset (about on Profiles)
+	-- --------------------------------------------------------
+
 	local insetWidgets = {
 		{
 			type = "logo",
@@ -928,6 +1035,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		},
 	};
 
+	-- --------------------------------------------------------
+	-- Populate & finalise
+	-- --------------------------------------------------------
+
 	self:PopulateTab(generalContent, generalOptions);
 	self:PopulateTab(keywordsContent, keywordsOptions);
 	self:PopulateTab(notificationsContent, notificationsOptions);
@@ -946,6 +1057,10 @@ function Eavesdropper_SettingsMixin:OnLoad()
 	ED.ElvUI.RegisterSkinnableElement(self, "frame");
 end
 
+-- ============================================================
+-- Drag
+-- ============================================================
+
 function Eavesdropper_SettingsMixin:OnDragStart()
 	self:StartMoving();
 end
@@ -956,8 +1071,12 @@ function Eavesdropper_SettingsMixin:OnDragStop()
 	if not ED.Database then return; end
 
 	local point, _, relativePoint, x, y = self:GetPoint(1);
-	ED.Database:SetGlobalSetting("SettingsWindowPosition", { point = point, relativePoint = relativePoint, x = x, y = y, });
+	ED.Database:SetGlobalSetting("SettingsWindowPosition", { point = point, relativePoint = relativePoint, x = x, y = y });
 end
+
+-- ============================================================
+-- OnShow / OnHide
+-- ============================================================
 
 function Eavesdropper_SettingsMixin:OnShow()
 	ED.Frame.settingsOpened = true;
@@ -972,6 +1091,10 @@ function Eavesdropper_SettingsMixin:OnHide()
 	ED.Frame.settingsOpened = false;
 	ED.Frame:HandleVisibility();
 end
+
+-- ============================================================
+-- Settings module
+-- ============================================================
 
 ---@param view number? Optional tab index, defaults to 1.
 function Settings:ShowSettings(view)
