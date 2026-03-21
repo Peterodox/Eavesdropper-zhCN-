@@ -439,8 +439,8 @@ function Eavesdropper_Dedicated_FrameMixin:AddMessage(entry, fromHistory)
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local formatted, firstName = ED.ChatFormatter:FormatMessage(entry);
 	self.ChatBox:AddMessage(formatted, r, g, b);
-	self.titlebar_name = firstName;
-	self.TitleBar.TitleButton.Text:SetText(firstName);
+	self.titlebar_name = ED.Utils.StripColorCodes(firstName);
+	self.TitleBar.TitleButton.Text:SetText(self.titlebar_name);
 end
 
 ---Safe wrapper to add a chat message; also handles the new-message indicator
