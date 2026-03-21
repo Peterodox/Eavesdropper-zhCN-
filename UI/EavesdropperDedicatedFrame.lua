@@ -26,6 +26,7 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	local name = self:GetName();
 	local player = name:match("^Eavesdropper_Dedicated_Frame_(.+)$");
 	self.eavesdropped_player = player;
+	self.titlebar_name = nil;
 
 	self:EnableMouseWheel(true);
 	self:UpdateMouseLock();
@@ -75,8 +76,9 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	if newPlayer and newGuid then
 		local _, firstName = ED.MSP.TryGetMSPData(newPlayer, newGuid);
 		self.titlebar_name = firstName;
-	else
-		self.titlebar_name = player and ED.Utils.StripRealmSuffix(player);
+	end
+	if not self.titlebar_name then
+		self.titlebar_name = ED.Utils.StripRealmSuffix(player);
 	end
 	titleBtn.Text:SetText(self.titlebar_name);
 	titleBtn:SetScript("OnClick", function()
