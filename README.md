@@ -37,7 +37,8 @@ Each Dedicated Window has its own unique:
 
 **Note:** Dedicated Windows are session-based and do not persist through UI reloads or logouts.
 
-![Dedicated Windows Combined](Previews/Combos/DedicatedWindows.png)
+[![Dedicated Windows Combined](Previews/Combos/DedicatedWindows.png)](Previews/Combos/DedicatedWindows.png)
+*Click the image to view it in full size.*
 
 ## Keywords
 Never miss a mention. Define custom keywords to be highlighted in the main chat window and set up optional audio notifications for when they are triggered.
@@ -73,5 +74,7 @@ Eavesdropper can replace standard character names in system emotes (like `/point
 
 > **Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
 
-![Advanced Formatting Combined](Previews/Combos/AdvancedFormatting.png)
-![Quest Text Dialogue UI](Previews/NPCDialogueAndQuestText/DialogueUI.png)
+[![Advanced Formatting Combined](Previews/Combos/AdvancedFormatting.png)](Previews/Combos/AdvancedFormatting.png)
+*Click the image to view it in full size.*
+[![Quest Text Dialogue UI](Previews/NPCDialogueAndQuestText/DialogueUI.png)](Previews/NPCDialogueAndQuestText/DialogueUI.png)
+*Click the image to view it in full size.*
