@@ -2,9 +2,10 @@
 Eavesdropper helps you stay immersed in busy RP environments by focusing on the interactions that matter most. 
 
 **Key Features:**
-- **Dedicated History:** A focused window for your current target or mouseover.
+- **History Window:** A focused, real-time feed for your current target or mouseover.
+- **Dedicated Windows:** Create unique, independent windows for specific targets to track multiple conversations simultaneously.
 - **Keyword Highlights:** Custom keywords highlighted in chat with optional sound alerts.
-- **Notification Support:** Play a sound and flash the taskbar when your target performs an action, or when a Blizzard emote is directed at you.
+- **Notification Support:** Play a sound and flash the taskbar when your target performs an action, or when a Blizzard emote is directed at you, or a Dedicated Window receives a message.
 - **Seamless Multi-Message Compatibility:** Built-in support for multi-message addons like Chattery, EmoteSplitter, and Yapper.
 - **Advanced RP Name Formatting:** Replaces standard names with RP names in rolls, Blizzard emotes, NPC dialogue, and Quest Text (via Dialogue UI).
 
@@ -30,10 +31,24 @@ Never miss a mention. Define custom keywords to be highlighted in the main chat 
 
 ![Keywords](Previews/Keywords/Tooltip.png)
 
+## Dedicated Windows
+Create individual Eavesdropper windows for specific targets by right-clicking a unit portrait or chat name and selecting **"Eavesdrop On"**.
+
+Each Dedicated Window has its own unique:
+- Filters
+- Font Size
+- New Message indicator
+- Notifications (Sounds & Flash)
+
+**Note:** Dedicated Windows are session-based and do not persist through UI reloads or logouts.
+
+![Dedicated Windows Combined](Previews/Combos/DedicatedWindowsCombined.png)
+
 ## Notifications
 Eavesdropper can play a sound notification and flash the taskbar when:
 - Your current target takes an action (e.g., `/say`, emotes, etc.).
 - A Blizzard emote is directed at you (e.g., `/point` or `/wave`).
+- A new message is received in a **Dedicated Window**.
 
 ![Notifications](Previews/Notifications/Notifications.png)
 
@@ -58,5 +73,5 @@ Eavesdropper can replace standard character names in system emotes (like `/point
 
 > **Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
 
-![Advanced Formatting](Previews/Combos/AFCombined.png)
+![Advanced Formatting Combined](Previews/Combos/AFCombined.png)
 ![Quest Text Dialogue UI](Previews/NPCDialogueAndQuestText/DialogueUI.png)
