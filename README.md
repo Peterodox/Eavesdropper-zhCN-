@@ -24,7 +24,7 @@ Keep track of the conversation with a customizable frame that displays the recen
 ### Filters
 Toggle visibility on the fly. You can filter the history window to show only specific types of interactions at any time.
 
-![Filters Versus](Previews/Combos/Versus.png)
+![Filters Versus](Previews/Combos/Filters.png)
 
 ## Dedicated Windows
 Create individual Eavesdropper windows for specific targets by right-clicking a unit portrait or chat name and selecting **"Eavesdrop On"**.
@@ -37,7 +37,7 @@ Each Dedicated Window has its own unique:
 
 **Note:** Dedicated Windows are session-based and do not persist through UI reloads or logouts.
 
-![Dedicated Windows Combined](Previews/Combos/DedicatedWindowsCombined.png)
+![Dedicated Windows Combined](Previews/Combos/DedicatedWindows.png)
 
 ## Keywords
 Never miss a mention. Define custom keywords to be highlighted in the main chat window and set up optional audio notifications for when they are triggered.
@@ -73,5 +73,5 @@ Eavesdropper can replace standard character names in system emotes (like `/point
 
 > **Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
 
-![Advanced Formatting Combined](Previews/Combos/AFCombined.png)
+![Advanced Formatting Combined](Previews/Combos/AdvancedFormatting.png)
 ![Quest Text Dialogue UI](Previews/NPCDialogueAndQuestText/DialogueUI.png)
