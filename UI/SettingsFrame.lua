@@ -1373,7 +1373,7 @@ function Eavesdropper_SettingsMixin:OnHide()
 	ED.Frame:HandleVisibility();
 
 	if self.alphaChannelMode and self.SetAlphaChannelMode then
-		self:SetAlphaChannelMode(nil);
+		ED.ScreenshotHelper.SetAlphaChannelMode(nil);
 	end
 end
 
