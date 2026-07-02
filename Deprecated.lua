@@ -1,6 +1,6 @@
 -- Copyright The Eavesdropper Authors
 -- Inspired by Total RP 3
--- SPDX-License-Identifier: Apache-2.0
+-- SPDX-License-Identifier: GPL-3.0-or-later
 
 -- Anything in this file is deprecated and will be removed in future versions
 -- of Eavesdropper, potentially without warning.
