@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.  
 
+## [Unreleased]
+
+### Changed
+- **Eavesdropper is now licensed under GNU GPLv3** instead of Apache 2.0 (as required by our relicensing process) ([#108](https://github.com/Raenore/Eavesdropper/pull/108)).  
+  - The core change is that GPLv3 strictly disallows closed-source variants. It ensures the software remains completely free and open for users, while protecting the codebase from being locked behind proprietary walls.
+  - Eavesdropper was made to be forever free and maintained by whoever might take over after me and to achieve that future forks or derivatives should be (legally) required to remain open-source forever.
+
 ## [0.5.0] - 2026-06-30  
 Significant update featuring a modernized Settings menu, initial keybindings support, expanded multi-message compatibility, and various interface fixes.  
 
