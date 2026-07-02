@@ -1,5 +1,5 @@
 -- Copyright The Eavesdropper Authors
--- SPDX-License-Identifier: Apache-2.0
+-- SPDX-License-Identifier: GPL-3.0-or-later
 
 function ED.ProcessCommand(msg)
 	local originalMsg = type(msg) == "string" and msg or "";
