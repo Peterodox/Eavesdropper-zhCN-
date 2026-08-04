@@ -14,6 +14,7 @@ Maintenance update switching the license to GNU GPLv3, improving Total RP 3 & MS
 - Resolved an error on login that could break the addon while [Total RP 3](https://www.curseforge.com/wow/addons/total-rp-3) was still loading, most noticeable on laggy realms or during heavy server load (like NA's Tournament of Ages / ToA) ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).
   - Eavesdropper now waits for Total RP 3 to report that it has finished loading before reading any profile data, instead of assuming it is ready as soon as it is present.  
   - Your keyword tokens and RP name in quest text are also refreshed once Total RP 3 finishes loading, so they no longer stay blank for the rest of the session (or until keywords were changed).  
+  - Special thanks to [LocalHaunt / Moth](#) for reporting this error and testing the accompanying fix.  
 - Keyword tokens (`<firstname>`, `<lastname>`, `<class>`, `<race>`) and the RP name used in quest and NPC text now work for [MRP](https://www.curseforge.com/wow/addons/my-role-play), [XRP](https://www.curseforge.com/wow/addons/xrp) and other MSP addons, where they previously only worked with Total RP 3 ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).  
 - RP names of three or more words (e.g. "Pitlord Pete Odox") now fill in the first and last name correctly, and names of a single word now fill in the first name instead of being left blank ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).  
 - Resolved a potential error on non-English clients when reading an RP name through an MSP addon ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).  
@@ -94,7 +95,8 @@ Significant feature update introducing Group Windows, session persistence for de
 ## Full Changelog  
 The complete changelog, including older versions, can always be found on [Eavesdropper's GitHub Wiki](https://github.com/Raenore/Eavesdropper/wiki/Full-Changelog).  
 
-[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.4.1...HEAD
+[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.5.1...HEAD
+[0.5.1]: https://github.com/Raenore/Eavesdropper/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Raenore/Eavesdropper/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/Raenore/Eavesdropper/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Raenore/Eavesdropper/compare/0.3.0...0.4.0
