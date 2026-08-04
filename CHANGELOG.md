@@ -2,12 +2,21 @@
 
 All notable changes to this project will be documented in this file.  
 
-## [Unreleased]
+## [0.5.1] - 2026-08-04  
+Maintenance update switching the license to GNU GPLv3, improving Total RP 3 & MSP initialization during login, and fixing keyword token parsing across non-TRP3 RP addons.  
 
 ### Changed
 - **Eavesdropper is now licensed under GNU GPLv3** instead of Apache 2.0 (as required by our relicensing process) ([#108](https://github.com/Raenore/Eavesdropper/pull/108)).  
   - The core change is that GPLv3 strictly disallows closed-source variants. It ensures the software remains completely free and open for users, while protecting the codebase from being locked behind proprietary walls.
   - Eavesdropper was made to be forever free and maintained by whoever might take over after me and to achieve that future forks or derivatives should be (legally) required to remain open-source forever.
+
+### Fixed
+- Resolved an error on login that could break the addon while [Total RP 3](https://www.curseforge.com/wow/addons/total-rp-3) was still loading, most noticeable on laggy realms or during heavy server load ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).
+  - Eavesdropper now waits for Total RP 3 to report that it has finished loading before reading any profile data, instead of assuming it is ready as soon as it is present.  
+  - Your keyword tokens and RP name in quest text are also refreshed once Total RP 3 finishes loading, so they no longer stay blank for the rest of the session (or until keywords were changed).  
+- Keyword tokens (`<firstname>`, `<lastname>`, `<class>`, `<race>`) and the RP name used in quest and NPC text now work for [MRP](https://www.curseforge.com/wow/addons/my-role-play), [XRP](https://www.curseforge.com/wow/addons/xrp) and other MSP addons, where they previously only worked with Total RP 3 ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).  
+- RP names of three or more words (e.g. "Pitlord Pete Odox") now fill in the first and last name correctly, and names of a single word now fill in the first name instead of being left blank ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).  
+- Resolved a potential error on non-English clients when reading an RP name through an MSP addon ([#110](https://github.com/Raenore/Eavesdropper/pull/110)).  
 
 ## [0.5.0] - 2026-06-30  
 Significant update featuring a modernized Settings menu, initial keybindings support, expanded multi-message compatibility, and various interface fixes.  
