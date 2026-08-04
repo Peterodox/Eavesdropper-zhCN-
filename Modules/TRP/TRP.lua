@@ -8,6 +8,12 @@ if not C_AddOns.IsAddOnLoaded("totalRP3") then
 	return;
 end
 
+-- Flags TRP3 as safe to call for the rest of the addon.
+-- Not in onStart, so that disabling the Eavesdropper module inside TRP3 does not disable it.
+TRP3_API.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.WORKFLOW_ON_LOADED, function()
+	ED.MSP.SetTRPReady();
+end);
+
 ---Registers the Eavesdropper toolbar button once TRP3's workflow is fully loaded.
 local function onStart()
 	TRP3_API.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.WORKFLOW_ON_LOADED, function()

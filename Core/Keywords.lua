@@ -81,7 +81,7 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 	-- Handle TRP NPC talk detection pattern.
 	local msg = message;
 	local trpNPCDetection = false;
-	if event == "CHAT_MSG_EMOTE" and TRP3_API and message == " " then
+	if event == "CHAT_MSG_EMOTE" and ED.MSP.IsTRPReady() and message == " " then
 		trpNPCDetection = true;
 		msg = TRP3_API.chat.getNPCMessageName();
 	end

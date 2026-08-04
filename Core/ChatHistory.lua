@@ -294,7 +294,7 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 	end
 
 	-- TRP NPC emote: replace the blank message with the NPC name.
-	if event == "CHAT_MSG_EMOTE" and TRP3_API and message == " " then
+	if event == "CHAT_MSG_EMOTE" and ED.MSP.IsTRPReady() and message == " " then
 		message = TRP3_API.chat.getNPCMessageName();
 	end
 

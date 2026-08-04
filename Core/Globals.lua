@@ -11,6 +11,7 @@
 ---@field addon_settings_icon string
 ---@field addon_build string
 ---@field author string
+---@field initialized boolean
 ---@field magnifier_nil_throttle number
 ---@field player_character_name string?
 ---@field player_sender_name string?
@@ -25,6 +26,8 @@ ED.Globals = {
 	--[===[@non-debug@
 	DEBUG_MODE = false,
 	--@end-non-debug@]===]
+
+	initialized = false;
 
 	addon_title = C_AddOns.GetAddOnMetadata("Eavesdropper", "Title"),
 	addon_version = C_AddOns.GetAddOnMetadata("Eavesdropper", "Version"),
