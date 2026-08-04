@@ -98,7 +98,8 @@ Significant feature update introducing Group Windows, session persistence for de
 ## Full Changelog
 The complete changelog, including older versions, can always be found on [Eavesdropper's GitHub Wiki](https://github.com/Raenore/Eavesdropper/wiki/Full-Changelog).
 
-[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.4.1...HEAD
+[unreleased]: https://github.com/Raenore/Eavesdropper/compare/0.5.1...HEAD
+[0.5.1]: https://github.com/Raenore/Eavesdropper/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Raenore/Eavesdropper/compare/0.4.1...0.5.0
 [0.4.1]: https://github.com/Raenore/Eavesdropper/compare/0.4.0...0.4.1
 [0.4.0]: https://github.com/Raenore/Eavesdropper/compare/0.3.0...0.4.0
