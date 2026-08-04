@@ -79,6 +79,9 @@ function ED.Init()
 			end;
 		end
 
+		-- Login-time setup is complete; deferred callbacks may now touch the DB and modules.
+		ED.Globals.initialized = true;
+
 		C_Timer.After(1, function()
 			ED.Frame:RefreshChat();
 			ED.Magnifier:HandleUpdate(ED.Enums.MAGNIFIER_REASON.LOGIN);

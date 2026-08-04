@@ -13,6 +13,9 @@ MSP.cache = {
 	time = 0,
 };
 
+---True once TRP3 has fired WORKFLOW_ON_LOADED. TRP3_API existing does not mean it is ready
+local trp3Ready = false;
+
 ---Returns true if any of the six data slots contain a non-empty value.
 ---@param data string?[]
 ---@return boolean
@@ -49,7 +52,7 @@ local function GetClassColor(playerGUID)
 	if not englishClass then return; end
 
 	local color;
-	if TRP3_API then
+	if trp3Ready then
 		color = TRP3_API.GetClassDisplayColor(englishClass);
 		color = TRP3_API.GenerateReadableColor(color, TRP3_API.Colors.Black);
 		color = color:GenerateHexColor();
@@ -187,11 +190,31 @@ function MSP.IsEnabled()
 	return msp ~= nil;
 end
 
+---Returns true if TRP3 has finished loading and its API is safe to call.
+---@return boolean
+function MSP.IsTRPReady()
+	return trp3Ready;
+end
+
 local invalidateCache = false;
 
 ---Invalidates the MSP cache, forcing the next TryGetMSPData call to fetch fresh data.
 function MSP.InvalidateCache()
 	invalidateCache = true;
+end
+
+---Called from the TRP3 module once WORKFLOW_ON_LOADED fires. Any result cached before this
+---point was resolved without TRP3 data, so the cache is dropped as well.
+function MSP.SetTRPReady()
+	if trp3Ready then return; end
+
+	trp3Ready = true;
+	MSP.InvalidateCache();
+
+	if not ED.Globals.initialized then return; end
+
+	ED.Keywords:ParseList();
+	ED.QuestText.RefreshPlayerPreferredName();
 end
 
 ---Attempts to retrieve the MSP/TRP3 name and colour of a player, using a short-lived cache.
@@ -230,11 +253,11 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 	local fullName, firstName, nameColor, lastName, className, raceName;
 
 	-- Check TRP cache if exists
-	if AddOn_TotalRP3 and playerGUID then
+	if trp3Ready and AddOn_TotalRP3 and playerGUID then
 		local player = AddOn_TotalRP3.Player.static.CreateFromGUID(playerGUID);
 		if player then
 			local profileID = player:GetProfileID();
-			local hasNonDefaultProfile = profileID and TRP3_API and TRP3_API.profile.isDefaultProfile(profileID) == false;
+			local hasNonDefaultProfile = profileID and TRP3_API.profile.isDefaultProfile(profileID) == false;
 
 			if hasNonDefaultProfile then
 				fullName  = NormalizeString(player:GetFullName());
@@ -249,7 +272,7 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 
 	-- no TRP cache (or no TRP at all, do a fresh request).
 	if not fullName then
-		if TRP3_API then
+		if trp3Ready then
 			fullName, firstName, nameColor, lastName, className, raceName = GetTRPData(playerName, playerGUID);
 		else
 			fullName, firstName, nameColor, lastName, className, raceName = GetMSPData(playerName, playerGUID);
