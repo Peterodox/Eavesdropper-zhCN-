@@ -124,7 +124,13 @@ local function GetMSPData(playerName, playerGUID)
 		fullName = StripTitle(fullName);
 	end
 
-	local firstName, lastName = fullName:match("^(%S+)%s+(%S+)$");
+	-- MSP carries the name as a single NA string, match the last two words rather than requiring exactly two.
+	local firstName, lastName = fullName:match("(%S+)%s+(%S+)%s*$");
+
+	-- Single word names have no last name, so the name itself is the first name.
+	if not firstName then
+		firstName = fullName:match("^%s*(%S+)%s*$");
+	end
 
 	local className, raceName = GetMSPClassAndRace(playerName, playerGUID);
 
