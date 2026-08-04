@@ -62,6 +62,24 @@ local function GetClassColor(playerGUID)
 	return color;
 end
 
+---Returns the flat MSP field table for a player, or nil if no usable data is held.
+---Our own fields live in msp.my; msp.char only ever holds data received from others.
+---@param playerName string
+---@param playerGUID string
+---@return table? fields
+local function GetMSPFields(playerName, playerGUID)
+	if playerGUID and playerGUID == ED.Globals.player_guid then
+		return msp.my;
+	end
+
+	local char = msp.char[playerName];
+	if char and char.supported then
+		return char.field;
+	end
+
+	return nil;
+end
+
 ---Retrieves class and race strings from MSP data, falling back to WoW API values.
 ---@param playerName string
 ---@param playerGUID string
@@ -70,9 +88,10 @@ end
 local function GetMSPClassAndRace(playerName, playerGUID)
 	local className, _, raceName = GetPlayerInfoByGUID(playerGUID);
 
-	if msp.char[playerName] and msp.char[playerName].supported then
-		className = ED.Utils.StripColorCodes(msp.char[playerName].field.RC) or className;
-		raceName = ED.Utils.StripColorCodes(msp.char[playerName].field.RA) or raceName;
+	local fields = GetMSPFields(playerName, playerGUID);
+	if fields then
+		className = ED.Utils.StripColorCodes(fields.RC) or className;
+		raceName = ED.Utils.StripColorCodes(fields.RA) or raceName;
 	end
 
 	return className, raceName;
@@ -88,16 +107,23 @@ end
 ---@return string? className
 ---@return string? raceName
 local function GetMSPData(playerName, playerGUID)
-	if not msp.char[playerName] or not msp.char[playerName].supported then
-		return nil, nil, nil;
-	end
+	local fields = GetMSPFields(playerName, playerGUID);
+	if not fields then return nil, nil, nil; end
 
-	local fullName = msp.char[playerName].field.NA;
+	-- msp.my is created empty by LibMSP, so NA is not guaranteed to be present.
+	local fullName = fields.NA;
+	if not fullName or fullName == "" then return nil, nil, nil; end
+
 	local nameColor = fullName:match("^|c(%x%x%x%x%x%x%x%x)") or GetClassColor(playerGUID);
 	fullName = fullName:gsub("^|c%x%x%x%x%x%x%x%x", ""):gsub("|r$", "");
 	if fullName == "" then return nil, nil, nil; end
 
-	fullName = GetLocale() == "enUS" and StripTitle(fullName);
+	-- TRP3 has a dedicated title field, so titles are only stripped on the MSP path, and only
+	-- on enUS since COMMON_TITLES holds English honorifics.
+	if GetLocale() == "enUS" then
+		fullName = StripTitle(fullName);
+	end
+
 	local firstName, lastName = fullName:match("^(%S+)%s+(%S+)$");
 
 	local className, raceName = GetMSPClassAndRace(playerName, playerGUID);
