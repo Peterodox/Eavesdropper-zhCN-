@@ -743,7 +743,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "checkbox",
 			label = L.OVERRIDE_NAME_DISPLAY,
 			tooltip = L.OVERRIDE_NAME_DISPLAY_HELP,
-			buildAdded = "0.5.2-0.6.0|120100",
+			buildAdded = "0.6.0|120100",
 			disabled = function() return not ED.Database:GetSetting("ApplyOnMainChat"); end,
 			get = function() return ED.Database:GetSetting("AdvNameDisplayModeOverride"); end,
 			set = function(val)
@@ -771,7 +771,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 					[2] = not ED.MSP.IsEnabled(),
 				};
 			end,
-			buildAdded = "0.5.2-0.6.0|120100",
+			buildAdded = "0.6.0|120100",
 			get = function() return ED.Database:GetSetting("AdvNameDisplayMode"); end,
 			set = function(val)
 				ED.Database:SetSetting("AdvNameDisplayMode", val);
