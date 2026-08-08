@@ -446,7 +446,7 @@ function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode)
 	msgText = ED.Utils.WrapTextInColor(msgText, entryColor);
 
 	if entry.e == "CHAT_MSG_TEXT_EMOTE" and applyRPName then
-		msgText = FormatTextEmoteTargetWithRPName(entry, msgText);
+		msgText = FormatTextEmoteTargetWithRPName(entry, msgText, forceDisplayMode);
 	end
 
 	return timestamp .. msgText, firstName;
