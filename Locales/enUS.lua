@@ -121,8 +121,17 @@ L = {
 	ADVANCED_FORMATTING = "Advanced Formatting",
 	ADVANCED_FORMATTING_HELP = "These options handle RP name formatting in system messages, emotes, and NPC interactions.",
 
+	MAIN_CHAT = "Main Chat",
+	MAIN_CHAT_HELP = "These options handle Advanced Formatting within the main Blizzard chat window.",
+
 	APPLY_ON_MAIN_CHAT = "Apply to Main Chat",
 	APPLY_ON_MAIN_CHAT_HELP = "Toggles whether Advanced Formatting is applied to the main Blizzard chat window in addition to the Eavesdropper history window.|n|n|cnWARNING_FONT_COLOR:Note: Formatting is not retroactive. If the required RP data is unavailable at the time a message is received, standard in-game names will be displayed.|r",
+
+	OVERRIDE_NAME_DISPLAY = "Override Name Display",
+	OVERRIDE_NAME_DISPLAY_HELP = "Toggles whether Advanced Formatting in the main Blizzard chat window uses its own name format instead of your 'Name Display' setting.",
+
+	ADV_FORMATTING_NAME_DISPLAY = "Adv. Formatting Name Display",
+	ADV_FORMATTING_NAME_DISPLAY_HELP = "Choose how character names are formatted by Advanced Formatting within the main Blizzard chat window.|n|n|cnWARNING_FONT_COLOR:Note: This option is only applied while 'Override Name Display' is enabled, and defaults to 'Original (OOC) Name' when no suitable RP addon (TRP, MRP, XRP) is loaded.|r",
 
 	DISPLAY = "Display",
 	DISPLAY_HELP = "Configure the visual style and color themes of Eavesdropper.",

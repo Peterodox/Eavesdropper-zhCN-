@@ -64,6 +64,8 @@ local GLOBAL_DEFAULTS = {
 };
 
 ---@class EavesdropperProfile
+---@field AdvNameDisplayMode number?
+---@field AdvNameDisplayModeOverride boolean?
 ---@field ApplyOnMainChat boolean?
 ---@field ColorBackground EavesdropperColor?
 ---@field ColorTitleBar EavesdropperColor?
@@ -122,6 +124,8 @@ local GLOBAL_DEFAULTS = {
 
 ---@type EavesdropperProfile
 local DEFAULT_PROFILE = {
+	AdvNameDisplayMode = 1,
+	AdvNameDisplayModeOverride = false,
 	ApplyOnMainChat = true,
 	ColorBackground = ED.Utils.ShallowCopy(Constants.DEFAULT_BACKGROUND_COLOR),
 	ColorTitleBar = ED.Utils.ShallowCopy(Constants.DEFAULT_BACKGROUND_COLOR),
@@ -479,6 +483,8 @@ function Database:ResetProfile()
 end
 
 ---@alias EavesdropperSettingKey
+---| "AdvNameDisplayMode"
+---| "AdvNameDisplayModeOverride"
 ---| "ApplyOnMainChat"
 ---| "ColorBackground"
 ---| "ColorTitleBar"
