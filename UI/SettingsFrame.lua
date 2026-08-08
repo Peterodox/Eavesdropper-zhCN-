@@ -653,16 +653,6 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		},
 		{
 			type = "checkbox",
-			label = L.APPLY_ON_MAIN_CHAT,
-			tooltip = L.APPLY_ON_MAIN_CHAT_HELP,
-			get = function() return ED.Database:GetSetting("ApplyOnMainChat"); end,
-			set = function(val)
-				ED.Database:SetSetting("ApplyOnMainChat", val);
-				ED.MainChat:ToggleAdvancedFormatting();
-			end,
-		},
-		{
-			type = "checkbox",
 			label = L.USE_RP_NAME_FOR_TARGETS,
 			tooltip = L.USE_RP_NAME_FOR_TARGETS_HELP,
 			disabled = function() return ED.Database:GetSetting("NameDisplayMode") == 3; end,
@@ -732,6 +722,59 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("UseRPNameInNPCDialogue"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameInNPCDialogue", val);
+			end,
+		},
+		{
+			type = "subtitle",
+			label = L.MAIN_CHAT,
+			subLabel = L.MAIN_CHAT_HELP,
+		},
+		{
+			type = "checkbox",
+			label = L.APPLY_ON_MAIN_CHAT,
+			tooltip = L.APPLY_ON_MAIN_CHAT_HELP,
+			get = function() return ED.Database:GetSetting("ApplyOnMainChat"); end,
+			set = function(val)
+				ED.Database:SetSetting("ApplyOnMainChat", val);
+				ED.MainChat:ToggleAdvancedFormatting();
+			end,
+		},
+		{
+			type = "checkbox",
+			label = L.OVERRIDE_NAME_DISPLAY,
+			tooltip = L.OVERRIDE_NAME_DISPLAY_HELP,
+			buildAdded = "0.5.2-0.6.0|120100",
+			disabled = function() return not ED.Database:GetSetting("ApplyOnMainChat"); end,
+			get = function() return ED.Database:GetSetting("AdvNameDisplayModeOverride"); end,
+			set = function(val)
+				ED.Database:SetSetting("AdvNameDisplayModeOverride", val);
+			end,
+		},
+		{
+			type = "dropdown",
+			label = L.ADV_FORMATTING_NAME_DISPLAY,
+			tooltip = L.ADV_FORMATTING_NAME_DISPLAY_HELP,
+			values = {
+				[1] = L.NAME_DISPLAY_MODE_FULL_NAME,
+				[2] = L.NAME_DISPLAY_MODE_FIRST_NAME,
+				[3] = L.NAME_DISPLAY_MODE_ORIGINAL_NAME,
+			},
+			sorting = { 1, 2, 3 },
+			disabled = function()
+				return not ED.MSP.IsEnabled()
+					or not ED.Database:GetSetting("ApplyOnMainChat")
+					or not ED.Database:GetSetting("AdvNameDisplayModeOverride");
+			end,
+			disabledValues = function()
+				return {
+					[1] = not ED.MSP.IsEnabled(),
+					[2] = not ED.MSP.IsEnabled(),
+				};
+			end,
+			buildAdded = "0.5.2-0.6.0|120100",
+			get = function() return ED.Database:GetSetting("AdvNameDisplayMode"); end,
+			set = function(val)
+				ED.Database:SetSetting("AdvNameDisplayMode", val);
 			end,
 		},
 	};
@@ -1200,7 +1243,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 
 	self:CreateCategory(L.GENERAL_TITLE, true, generalOptions);
 	self:CreateCategory(L.APPEARANCE_TITLE, true, appearanceOptions);
-	self:CreateCategory(L.ADV_FORMATTING, false, advancedFormattingOptions);
+	self:CreateCategory(L.ADV_FORMATTING, true, advancedFormattingOptions);
 	self:CreateCategory(L.KEYWORDS_TITLE, true, keywordsOptions);
 	self:CreateCategory(L.DEDICATED, false, dedicatedOptions);
 	self:CreateCategory(L.GROUPS, false, groupOptions);

@@ -7,6 +7,13 @@ local AdvancedFormatter = {};
 ---Whether the sender name filter is currently registered.
 AdvancedFormatter.senderNameFormatted = false;
 
+---Returns the main chat name display mode override, or nil to fall back to NameDisplayMode.
+---@return number?
+local function ResolveMainChatDisplayMode()
+	if not ED.Database:GetSetting("AdvNameDisplayModeOverride") then return; end
+	return ED.Database:GetSetting("AdvNameDisplayMode");
+end
+
 ---@param event string
 ---@param _ any
 ---@param _ any
@@ -48,7 +55,7 @@ local function CreateChatName(event, _, _, sender, _, _, _, _, _, _, _, _, _, gu
 		sm = false,
 	};
 
-	local senderFormatted, _ = ED.ChatFormatter:GetFormattedName(entry);
+	local senderFormatted, _ = ED.ChatFormatter:GetFormattedName(entry, ResolveMainChatDisplayMode());
 	if senderFormatted then
 		sender = senderFormatted;
 	end
@@ -128,7 +135,7 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		sm = false,
 	};
 
-	local name, applyRPName = ED.ChatFormatter:GetFormattedName(entry);
+	local name, applyRPName = ED.ChatFormatter:GetFormattedName(entry, ResolveMainChatDisplayMode());
 	local msgFinalText;
 
 	if ED.Utils.IsOwnPlayer(sender, event) then
@@ -140,7 +147,7 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 	local msgToSend = msgFinalText;
 
 	if entry.e == "CHAT_MSG_TEXT_EMOTE" and applyRPName then
-		msgToSend = ED.ChatFormatter.FormatTextEmoteTargetWithRPName(entry, msgFinalText);
+		msgToSend = ED.ChatFormatter.FormatTextEmoteTargetWithRPName(entry, msgFinalText, ResolveMainChatDisplayMode());
 		self:EnableNameFormatting(entry.e);
 	elseif entry.e == "ROLL" and applyRPName then
 		msgToSend = ED.ChatFormatter.MsgFormatTextEmote(entry, name);

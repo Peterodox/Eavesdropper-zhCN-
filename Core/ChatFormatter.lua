@@ -307,17 +307,20 @@ end
 ---Replaces the emote target's OOC name with their RP name in a formatted text-emote string.
 ---@param entry EavesdropperChatEntry
 ---@param msgText string
+---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
 ---@return string
-local function FormatTextEmoteTargetWithRPName(entry, msgText)
+local function FormatTextEmoteTargetWithRPName(entry, msgText, forceDisplayMode)
 	local bareName, sender, senderEntry = ED.PlayerCache:ResolveEmoteSender(entry.m, entry.s);
 	if not bareName or not sender then return msgText; end
 
 	local targetFullName, targetFirstName, targetNameColor = ED.MSP.TryGetMSPData(sender, senderEntry.guid);
 	if not targetFullName then return msgText; end
 
+	local nameDisplayMode = forceDisplayMode or ED.Database:GetSetting("NameDisplayMode");
+
 	local targetName;
 	if targetNameColor then
-		if ED.Database:GetSetting("NameDisplayMode") == 2 and targetFirstName then
+		if nameDisplayMode == 2 and targetFirstName then
 			targetName = ED.Utils.WrapTextInColor(targetFirstName, targetNameColor);
 		elseif targetFullName then
 			targetName = ED.Utils.WrapTextInColor(targetFullName, targetNameColor);
@@ -345,7 +348,7 @@ ChatFormatter.GetEntryColor = GetEntryColor;
 
 ---Returns the display name for a chat entry, applying RP name and colour based on current settings.
 ---@param entry EavesdropperChatEntry
----@param forceDisplayMode boolean? If true, force first name usage.
+---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
 ---@return string name, boolean applyRPName, string? firstName
 function ChatFormatter:GetFormattedName(entry, forceDisplayMode)
 	local name = entry.s;
@@ -393,7 +396,7 @@ end
 ---Formats a full chat entry for display: timestamp, sender name, message body, and entry colour.
 ---@param entry EavesdropperChatEntry
 ---@param forGroup boolean? If true, uses group-aware formatting that always embeds the sender name.
----@param forceDisplayMode boolean? If true, force specific display mode.
+---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
 ---@return string formattedMsg
 ---@return string? firstName
 function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode)
