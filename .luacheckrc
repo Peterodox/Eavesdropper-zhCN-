@@ -645,6 +645,7 @@ stds.wow = {
 		"ReloadUI",
 		"RemoveChatWindowChannel",
 		"ResetCursor",
+		"Round",
 		"RoundToSignificantDigits",
 		"RunNextFrame",
 		"SafePack",

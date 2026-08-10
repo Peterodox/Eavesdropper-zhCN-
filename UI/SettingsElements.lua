@@ -380,7 +380,7 @@ local function CreateSlider(parent, data)
 
 	---@param val number
 	local function RoundToStep(val)
-		return math.floor(val / stepVal + 0.5) * stepVal;
+		return Round(val / stepVal) * stepVal;
 	end
 
 	---@param val number

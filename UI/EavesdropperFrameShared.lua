@@ -394,7 +394,7 @@ function Eavesdropper_SharedFrameMixin:ResizeTitleButton()
 
 	local textWidth = titleButton.Text:GetStringWidth() + TitleButtonPadding;
 	local maxWidth = self.TitleBar:GetWidth() - CloseButtonReserved;
-	local width = math.max(MinTitleButtonWidth, math.min(textWidth, maxWidth));
+	local width = Clamp(textWidth, MinTitleButtonWidth, maxWidth);
 
 	titleButton:SetWidth(width);
 end
