@@ -71,12 +71,12 @@ function Utils.NormalizeColors(message)
 	return message;
 end
 
----StripColorCodes Removes WoW color codes from text
+---StripColorCodes Removes WoW color codes from text, both the hex and named color forms
 ---@param text string
 ---@return string
 function Utils.StripColorCodes(text)
 	if type(text) ~= "string" then return text; end
-	text = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|r", "");
+	text = text:gsub("|c%x%x%x%x%x%x%x%x", ""):gsub("|cn[^:]+:", ""):gsub("|r", "");
 	return text;
 end
 
@@ -288,6 +288,21 @@ function Utils.SetMenuTooltip(element, text, title)
 		GameTooltip_SetTitle(tooltip, title or MenuUtil.GetElementText(desc));
 		GameTooltip_AddNormalLine(tooltip, text);
 	end);
+end
+
+---Prompts that ask for a profile name; only one of them may be open at a time.
+local PROFILE_NAME_POPUPS = {
+	"EAVESDROPPER_COPY_PROFILE",
+	"EAVESDROPPER_NEW_PROFILE",
+	"EAVESDROPPER_RENAME_PROFILE",
+};
+
+---HideProfileNamePopups Hides every profile name prompt.
+---Each prompt calls this before showing itself, so a stale one can never act on an outdated name.
+function Utils.HideProfileNamePopups()
+	for _, popupName in ipairs(PROFILE_NAME_POPUPS) do
+		StaticPopup_Hide(popupName);
+	end
 end
 
 -- ============================================================================

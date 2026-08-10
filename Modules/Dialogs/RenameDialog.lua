@@ -3,10 +3,11 @@
 
 local L = ED.Localization;
 
+---@type EavesdropperConstants
+local Constants = ED.Constants;
+
 ---@class EavesdropperRenameDialog
 local RenameDialog = {};
-
-local MaxProfileNameLength = 32;
 
 ---Attempts to rename the profile from oldName to the trimmed text in the edit box.
 ---@param oldName string?
@@ -22,7 +23,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	maxLetters = MaxProfileNameLength,
+	maxLetters = Constants.MAX_PROFILE_NAME_LENGTH,
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
@@ -57,10 +58,10 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 	end,
 };
 
----Prompts for a new name for a profile, replacing the copy prompt if it is open.
+---Prompts for a new name for a profile, replacing any other open profile name prompt.
 ---@param profileName string The profile being renamed.
 function RenameDialog:Show(profileName)
-	StaticPopup_Hide("EAVESDROPPER_COPY_PROFILE");
+	ED.Utils.HideProfileNamePopups();
 
 	StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(profileName);
 	StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = profileName });

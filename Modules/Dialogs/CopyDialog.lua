@@ -3,10 +3,11 @@
 
 local L = ED.Localization;
 
+---@type EavesdropperConstants
+local Constants = ED.Constants;
+
 ---@class EavesdropperCopyDialog
 local CopyDialog = {};
-
-local MaxProfileNameLength = 32;
 
 ---Attempts to duplicate sourceName into a new profile named after the trimmed edit box text.
 ---@param sourceName string?
@@ -22,7 +23,7 @@ StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	maxLetters = MaxProfileNameLength,
+	maxLetters = Constants.MAX_PROFILE_NAME_LENGTH,
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
@@ -54,10 +55,10 @@ StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"] = {
 	end,
 };
 
----Prompts for the name of a new profile copied from an existing one, replacing the rename prompt if it is open.
+---Prompts for the name of a new profile copied from an existing one, replacing any other open profile name prompt.
 ---@param profileName string The profile being copied from.
 function CopyDialog:Show(profileName)
-	StaticPopup_Hide("EAVESDROPPER_RENAME_PROFILE");
+	ED.Utils.HideProfileNamePopups();
 
 	StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"].text = L.POPUP_COPY_PROFILE:format(profileName);
 	StaticPopup_Show("EAVESDROPPER_COPY_PROFILE", nil, nil, { sourceName = profileName });

@@ -373,6 +373,10 @@ Constants.MAGNIFIER_CHANGE_THROTTLE = 0.15;
 ---@type number
 Constants.MAGNIFIER_NIL_THROTTLE = 0.5;
 
+---Maximum number of characters a profile name may contain.
+---@type number
+Constants.MAX_PROFILE_NAME_LENGTH = 32;
+
 ---Short prefix strings prepended to messages by channel type.
 ---@type table<string, string>
 Constants.MESSAGE_PREFIXES = {

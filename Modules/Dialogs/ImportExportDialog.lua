@@ -27,7 +27,6 @@ local INSTRUCTIONS_HEIGHT = 34;
 local EDITBOX_PADDING = 5;
 local EDITBOX_INSET = 4;
 local EDITBOX_INSET_RIGHT = 24; -- Leaves room for the ScrollBar
-local MAX_PROFILE_NAME_LENGTH = 32;
 
 ---Substitutes readable wording for the unpackaged dev build.
 ---@param version string?
@@ -224,7 +223,7 @@ function Eavesdropper_ImportExportDialogMixin:BuildBody()
 	nameEditBox:SetHeight(Constants.SETTINGS.WIDGET_HEIGHT);
 	nameEditBox:SetFontObject("ChatFontNormal");
 	nameEditBox:SetAutoFocus(false);
-	nameEditBox:SetMaxLetters(MAX_PROFILE_NAME_LENGTH);
+	nameEditBox:SetMaxLetters(Constants.MAX_PROFILE_NAME_LENGTH);
 	nameEditBox:SetScript("OnTextChanged", function(box, userInput)
 		-- The flag means "the user has a name of their own", not "the user touched this",
 		if userInput then

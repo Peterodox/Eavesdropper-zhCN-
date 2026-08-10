@@ -1184,33 +1184,31 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			hideLabel = true,
 			gearButton = true,
 			deleteButton = true,
+			defaultEntry = Constants.DEFAULT_PROFILE_NAME,
 			buildAdded = "0.6.0|120100",
+			actionEntries = {
+				{
+					label = L.PROFILES_NEWPROFILE,
+					atlas = "editmode-new-layout-plus",
+					disabledAtlas = "editmode-new-layout-plus-disabled",
+					func = function() ED.NewProfileDialog:Show(); end,
+				},
+				{
+					label = L.PROFILES_RESETBUTTON,
+					tooltip = L.PROFILES_RESETBUTTON_HELP,
+					texture = "Interface\\AddOns\\Eavesdropper\\Resources\\Reset",
+					func = function()
+						ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_RESET, function()
+							ED.Database:ResetProfile();
+							self:RefreshWidgets();
+						end);
+					end,
+				},
+			},
 			values = function() return ED.Database:GetAllProfiles(); end,
 			get = function() return ED.Database:GetProfileName(); end,
 			set = function(val)
 				ED.Database:SetProfile(val);
-			end,
-		},
-		{
-			type = "editbox",
-			label = L.PROFILES_NEWPROFILE,
-			tooltip = L.PROFILES_NEWPROFILE_HELP,
-			get = function() end,
-			set = function(val)
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_NEWPROFILE:format(val), function()
-					ED.Database:CreateProfile(val);
-				end);
-			end,
-		},
-		{
-			type = "button",
-			label = L.PROFILES_RESETBUTTON,
-			tooltip = L.PROFILES_RESETBUTTON_HELP,
-			func = function()
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_RESET, function()
-					ED.Database:ResetProfile();
-					self:RefreshWidgets();
-				end);
 			end,
 		},
 		{

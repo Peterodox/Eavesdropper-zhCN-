@@ -392,11 +392,13 @@ function Database:GetAllProfiles(excludeCurrent, excludeDefault)
 	return results;
 end
 
----Creates a new profile and switches to it. If the profile already exists, switches to it.
+---Creates a new profile and switches to it. Refuses an existing name so it never acts as a plain switch.
 ---@param profileName string
 ---@return boolean success
 function Database:CreateProfile(profileName)
 	if not profileName or profileName == "" then return false; end
+	if self:ProfileExists(profileName) then return false; end
+
 	self:SetProfile(profileName);
 	return true;
 end
