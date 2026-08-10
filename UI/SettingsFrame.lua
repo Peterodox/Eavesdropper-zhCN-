@@ -337,8 +337,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "slider",
 			label = L.HISTORY_SIZE,
 			tooltip = L.HISTORY_SIZE_HELP,
-			min = 10,
-			max = 300,
+			min = Constants.CHAT_BOX.MIN_HISTORY,
+			max = Constants.CHAT_BOX.MAX_HISTORY,
 			step = 1,
 			get = function() return ED.Database:GetSetting("MaxHistory"); end,
 			set = function(val)
@@ -598,8 +598,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "slider",
 			label = L.FONT_SIZE,
 			tooltip = L.FONT_SIZE_HELP,
-			min = 6,
-			max = 24,
+			min = Constants.CHAT_BOX.MIN_FONT_SIZE,
+			max = Constants.CHAT_BOX.MAX_FONT_SIZE,
 			step = 1,
 			get = function() return ED.Database:GetSetting("FontSize"); end,
 			set = function(val)
@@ -1175,6 +1175,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		{
 			type = "subtitle",
 			label = L.PROFILES_TITLE,
+			subLabel = L.PROFILES_TITLE_HELP,
 		},
 		{
 			type = "dropdown",
@@ -1233,6 +1234,36 @@ function Eavesdropper_SettingsMixin:OnLoad()
 				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_DELETE:format(val), function()
 					ED.Database:DeleteProfile(val);
 				end);
+			end,
+		},
+		{
+			type = "subtitle",
+			label = L.PROFILES_TRANSFER,
+			subLabel = L.PROFILES_TRANSFER_HELP,
+		},
+		{
+			type = "button",
+			label = L.PROFILES_IMPORTBUTTON,
+			tooltip = L.PROFILES_IMPORTBUTTON_HELP,
+			buildAdded = "0.6.0|120100",
+			func = function()
+				ED.ImportExportDialog:ShowImport();
+			end,
+		},
+		{
+			type = "dropdown",
+			style = "button",
+			label = L.PROFILES_EXPORTBUTTON,
+			tooltip = L.PROFILES_EXPORTBUTTON_HELP,
+			buildAdded = "0.6.0|120100",
+			values = {
+				profile = L.PROFILES_EXPORT_PROFILE,
+				global  = L.PROFILES_EXPORT_GLOBAL,
+			},
+			sorting = { "profile", "global" },
+			get = function() end,
+			set = function(val)
+				ED.ImportExportDialog:ShowExport(val);
 			end,
 		},
 	};

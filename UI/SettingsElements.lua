@@ -82,7 +82,8 @@ end
 -- Tooltip helpers
 -- ============================================================
 
-local function AttachTooltip(frame, title, description, anchorFrame, anchor, isFocused)
+---Attaches a standard settings tooltip to a widget
+function SettingsElements.AttachTooltip(frame, title, description, anchorFrame, anchor, isFocused)
 	if not title or not description then return; end
 	anchor = anchor or "ANCHOR_TOP";
 	local target = anchorFrame or frame;
@@ -99,6 +100,8 @@ local function AttachTooltip(frame, title, description, anchorFrame, anchor, isF
 		GameTooltip:Hide();
 	end);
 end
+
+local AttachTooltip = SettingsElements.AttachTooltip;
 
 local function AttachSliderTooltip(sliderWidget, title, description)
 	if not sliderWidget or not title or not description then return; end
@@ -150,7 +153,7 @@ end
 -- ============================================================
 
 ---Creates a left-label / right-control pair anchored inside parent
-local function CreateLabeledFrame(parent, data)
+function SettingsElements.CreateLabeledFrame(parent, data)
 	local labelText = data.label or "";
 
 	local left = CreateFrame("Frame", nil, parent);
@@ -176,6 +179,8 @@ local function CreateLabeledFrame(parent, data)
 
 	return left, right, label;
 end
+
+local CreateLabeledFrame = SettingsElements.CreateLabeledFrame;
 
 -- ============================================================
 -- Widget constructors

@@ -52,6 +52,8 @@ Core\Enums.lua
 Core\Globals.lua
 Core\Debug.lua
 Core\Utils.lua
+Core\EncodingUtil.lua
+Core\ProfileTransfer.lua
 Core\Database.lua
 Core\Events.lua
 
@@ -78,6 +80,8 @@ Modules\Flyway\Flyway.lua
 Modules\Flyway\FlywayPatches.lua
 Modules\Dialogs\ConfirmDialog.lua
 Modules\Dialogs\GroupDialog.lua
+Modules\Dialogs\ImportExportDialog.lua
+Modules\Dialogs\ImportExportDialog.xml
 Modules\Dialogs\LinkDialog.lua
 Modules\Dialogs\RenameDialog.lua
 Modules\Minimap\Minimap.lua

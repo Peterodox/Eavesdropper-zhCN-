@@ -204,6 +204,17 @@ stds.wow = {
 			},
 		},
 
+		C_EncodingUtil = {
+			fields = {
+				"CompressString",
+				"DecodeBase64",
+				"DecompressString",
+				"DeserializeCBOR",
+				"EncodeBase64",
+				"SerializeCBOR",
+			},
+		},
+
 		C_EquipmentSet = {
 			fields = {
 				"GetEquipmentSetID",
@@ -369,6 +380,21 @@ stds.wow = {
 
 		Enum = {
 			fields = {
+				Base64Variant = {
+					fields = {
+						"Standard",
+						"StandardUrlSafe",
+					},
+				},
+
+				CompressionMethod = {
+					fields = {
+						"Deflate",
+						"Zlib",
+						"Gzip",
+					},
+				},
+
 				TooltipDataLineType = {
 					fields = {
 						"UnitOwner",

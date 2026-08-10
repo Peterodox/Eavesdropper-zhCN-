@@ -250,6 +250,10 @@ L = {
 
 	-- Profiles Tab
 	PROFILES_TITLE = "Profiles",
+	PROFILES_TITLE_HELP = "Separate setups you can switch between per character.",
+
+	PROFILES_TRANSFER = "Import & Export",
+	PROFILES_TRANSFER_HELP = "Move settings in and out of the game as a text string.",
 
 	PROFILES_CURRENTPROFILE = "Current Profile",
 	PROFILES_CURRENTPROFILE_HELP = "Select or rename one of your available profiles for this character.",
@@ -273,6 +277,55 @@ L = {
 
 	PROFILES_RENAMEPROFILE = "Rename Profile",
 	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for the current profile.",
+
+	PROFILES_IMPORTBUTTON = "Import Settings",
+	PROFILES_IMPORTBUTTON_HELP = "Import a profile or your account-wide settings from a shareable text string.|n|nThere is nothing to pick here; the string itself says which of the two it holds.",
+
+	PROFILES_EXPORTBUTTON = "Export Settings",
+	PROFILES_EXPORTBUTTON_HELP = "Export the current profile, or your account-wide settings, to a text string you can keep or share outside of the game.|n|nProfiles and account-wide settings are exported separately.",
+
+	PROFILES_EXPORT_PROFILE = "Profile",
+	PROFILES_EXPORT_GLOBAL = "Account Settings",
+
+	-- Import/Export Dialog
+	IMPORTEXPORT_TITLE_EXPORT_PROFILE = "Export Profile",
+	IMPORTEXPORT_TITLE_EXPORT_GLOBAL = "Export Account Settings",
+	IMPORTEXPORT_TITLE_IMPORT = "Import Settings",
+
+	IMPORTEXPORT_INSTRUCTIONS_EXPORT = "Press |cnGREEN_FONT_COLOR:Ctrl+C|r to copy the string below, then paste it wherever you want to keep or share it.",
+	IMPORTEXPORT_INSTRUCTIONS_IMPORT = "Paste a profile or account settings string below.",
+
+	IMPORTEXPORT_DETECTED_PROFILE = "This is a |cnGREEN_FONT_COLOR:profile|r string. Choose the profile to import it into below.",
+	IMPORTEXPORT_DETECTED_GLOBAL = "This is an |cnGREEN_FONT_COLOR:account settings|r string. Importing it changes settings for every character and profile.",
+
+	IMPORTEXPORT_NAME_LABEL = "Import As",
+	IMPORTEXPORT_NAME_LABEL_HELP = "The profile the pasted settings are imported into.|n|nThis is filled in from the string automatically, but you can change it to import into a differently named profile.",
+	IMPORTEXPORT_OVERWRITE = "Overwrite",
+	IMPORTEXPORT_OVERWRITE_HELP = "Allow the import to replace a profile that already uses this name.|n|n|cnWARNING_FONT_COLOR:Note: Every setting in that profile will be replaced.|r",
+	IMPORTEXPORT_BUTTON_IMPORT = "Import",
+	IMPORTEXPORT_VERSION_DEV = "Dev",
+
+	IMPORTEXPORT_CONFIRM_PROFILE = "Are you sure you want to import '%s'?|n|nExported |cnGREEN_FONT_COLOR:%s|r from version |cnGREEN_FONT_COLOR:%s|r.",
+	IMPORTEXPORT_CONFIRM_OVERWRITE = "Are you sure you want to overwrite the profile '%s'?|n|nExported |cnGREEN_FONT_COLOR:%s|r from version |cnGREEN_FONT_COLOR:%s|r.|n|n|cnWARNING_FONT_COLOR:Note: Every setting in that profile will be replaced.|r",
+	IMPORTEXPORT_CONFIRM_GLOBAL = "Are you sure you want to import these account-wide settings?|n|nExported |cnGREEN_FONT_COLOR:%s|r from version |cnGREEN_FONT_COLOR:%s|r.|n|n|cnWARNING_FONT_COLOR:Note: This affects every character and profile.|r",
+	IMPORTEXPORT_CONFIRM_RELOAD = "Account-wide settings have been imported. Some of them only take effect after a reload.|n|nReload your interface now?",
+
+	IMPORTEXPORT_SUCCESS_PROFILE = "Imported the profile '%s' and switched to it.",
+	IMPORTEXPORT_SUCCESS_PROFILE_SKIPPED = "Imported the profile '%s' and switched to it. |cnWARNING_FONT_COLOR:%d |4setting:settings; could not be read and |4was:were; skipped.|r",
+	IMPORTEXPORT_SUCCESS_GLOBAL = "Imported your account-wide settings.",
+	IMPORTEXPORT_SUCCESS_GLOBAL_SKIPPED = "Imported your account-wide settings. |cnWARNING_FONT_COLOR:%d |4setting:settings; could not be read and |4was:were; skipped.|r",
+
+	IMPORTEXPORT_ERROR_NAME_EMPTY = "Enter a name for the profile to import into.",
+	IMPORTEXPORT_ERROR_NAME_TAKEN = "A profile named '%s' already exists. Choose another name, or enable 'Overwrite'.",
+	IMPORTEXPORT_ERROR_WRITE_FAILED = "That string could not be imported.",
+	IMPORTEXPORT_ERROR_EXPORT_FAILED = "Your settings could not be exported.",
+
+	IMPORTEXPORT_ERROR_PEM_DECODE = "That does not look like an Eavesdropper string. Make sure you copied all of it, including the |cnGREEN_FONT_COLOR:-----BEGIN-----|r and |cnGREEN_FONT_COLOR:-----END-----|r lines.",
+	IMPORTEXPORT_ERROR_PEM_LABEL = title .. " does not recognize that kind of string. It may have come from another addon, or from a newer version.",
+	IMPORTEXPORT_ERROR_DECOMPRESS = "That string could not be unpacked and is most likely damaged or incomplete.",
+	IMPORTEXPORT_ERROR_DESERIALIZE_CBOR = "That string could not be read and is most likely damaged.",
+	IMPORTEXPORT_ERROR_PACKED_DATA_INVALID = "That string is malformed and cannot be imported.",
+	IMPORTEXPORT_ERROR_SCHEMA_TOO_NEW = "That string was created by a newer version of " .. title .. " and cannot be read. Update the addon and try again.",
 
 	ADDONINFO_BUILD = "|cnNORMAL_FONT_COLOR:Build:|r %s",
 	ADDONINFO_BUILD_OUTDATED = title .. " is not optimized for this game build.|n|n|cnWARNING_FONT_COLOR:This may cause unexpected behavior.|r",

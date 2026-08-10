@@ -63,8 +63,14 @@ local GLOBAL_DEFAULTS = {
 	WelcomeMessage = true,
 };
 
+---Global keys an import must never touch. ProfileTransfer drops these too; this is the
+---backstop against a hand-edited string.
+local GLOBAL_IMPORT_EXCLUDED = {
+	Flyway = true,
+};
+
 ---@class EavesdropperProfile
----@field AdvNameDisplayMode number?
+---@field AdvNameDisplayMode EavesdropperNameDisplayMode?
 ---@field AdvNameDisplayModeOverride boolean?
 ---@field ApplyOnMainChat boolean?
 ---@field ColorBackground EavesdropperColor?
@@ -88,7 +94,7 @@ local GLOBAL_DEFAULTS = {
 ---@field LockTitleBar boolean?
 ---@field LockWindow boolean?
 ---@field MaxHistory number?
----@field NameDisplayMode number?
+---@field NameDisplayMode EavesdropperNameDisplayMode?
 ---@field NotificationDedicatedSound boolean?
 ---@field NotificationDedicatedSoundFile string?
 ---@field NotificationDedicatedFlashTaskbar boolean?
@@ -105,7 +111,7 @@ local GLOBAL_DEFAULTS = {
 ---@field NotificationTargetSoundFile string?
 ---@field NotificationTargetFlashTaskbar boolean?
 ---@field NotificationThrottle number?
----@field NPCAndQuestNameDisplayMode number?
+---@field NPCAndQuestNameDisplayMode EavesdropperNameDisplayMode?
 ---@field PreferMouseOver boolean?
 ---@field TargetOnly boolean?
 ---@field TargetPriority EavesdropperTargetPriority?
@@ -449,6 +455,46 @@ function Database:CopyProfile(sourceName)
 	return true;
 end
 
+---Replaces a profile's contents with an imported settings table, then switches to it.
+---Written in one go instead of a SetSetting per key, so the widgets refresh once.
+---Imported data arrives fully resolved, so it is pruned back to a sparse diff.
+---@param profileName string
+---@param data table Sanitized settings; see ED.ProfileTransfer.SanitizeProfile.
+---@param overwrite boolean? Needed to write over an existing profile.
+---@return boolean success
+function Database:ImportProfile(profileName, data, overwrite)
+	if not profileName or profileName == "" then return false; end
+	if type(data) ~= "table" then return false; end
+	if not EavesdropperDB or not EavesdropperDB.profiles then return false; end
+
+	local exists = self:ProfileExists(profileName);
+	if exists and not overwrite then return false; end
+
+	local db = EavesdropperDB;
+	db.profiles[profileName] = db.profiles[profileName] or {};
+
+	local target = db.profiles[profileName];
+
+	-- Refill in place; currentProfile holds a reference to this table.
+	for k in pairs(target) do
+		target[k] = nil;
+	end
+
+	local copy = ED.Utils.DeepCopy(data);
+	for k, v in pairs(copy) do
+		target[k] = v;
+	end
+
+	pruneProfile(target);
+	self:SetProfile(profileName);
+
+	if ED.SettingsFrame then
+		ED.SettingsFrame:RefreshWidgets();
+	end
+
+	return true;
+end
+
 ---Deletes a profile from saved variables. Prevents deleting the active profile.
 ---@param profileName string
 ---@return boolean success
@@ -705,6 +751,27 @@ function Database:SetGlobalSetting(key, value)
 	if ED.SettingsFrame then
 		ED.SettingsFrame:RefreshWidgets();
 	end
+end
+
+---Applies an imported table of account-wide settings.
+---Written per key through SetGlobalSetting, whose in-place table merge is what keeps
+---LibDBIcon's reference alive.
+---@param data table Sanitized settings; see ED.ProfileTransfer.SanitizeGlobals.
+---@return boolean success
+function Database:ImportGlobals(data)
+	if type(data) ~= "table" then return false; end
+
+	for key, value in pairs(data) do
+		if not GLOBAL_IMPORT_EXCLUDED[key] then
+			self:SetGlobalSetting(key, value);
+		end
+	end
+
+	if ED.Minimap then
+		ED.Minimap:UpdateMinimapButtons();
+	end
+
+	return true;
 end
 
 ED.Database = Database;
