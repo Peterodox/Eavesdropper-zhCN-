@@ -4,6 +4,14 @@
 ---@class EavesdropperScreenshotHelper
 local ScreenshotHelper = {};
 
+---Frames rendering above the fullscreen backdrop, which have to be hidden manually
+local externalFrames = {
+	"PTR_IssueReporter",
+};
+
+---Frames hidden on entering a mode, restored when it is exited
+local hiddenFrames = {};
+
 ---Colorize an object and all their children
 ---@param object any
 ---@param colorize boolean
@@ -112,7 +120,28 @@ function ScreenshotHelper.SetupObjectColorByMode(object, alphaChannelMode)
 	ScreenshotHelper.SetupObjectColor(object, colorize, colorValue);
 end
 
+---Hide frames the fullscreen backdrop cannot cover, or restore the ones we hid
+---@param hide boolean
+function ScreenshotHelper.SetExternalFramesHidden(hide)
+	if hide then
+		for _, frameName in ipairs(externalFrames) do
+			local frame = _G[frameName];
+			if frame and frame.IsShown and frame:IsShown() then
+				hiddenFrames[#hiddenFrames + 1] = frame;
+				frame:Hide();
+			end
+		end
+	else
+		for _, frame in ipairs(hiddenFrames) do
+			frame:Show();
+		end
+		wipe(hiddenFrames);
+	end
+end
+
 function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
+	ScreenshotHelper.SetExternalFramesHidden(alphaChannelMode == 1 or alphaChannelMode == 2);
+
 	if not ED.SettingsFrame then
 		ED.Settings:Init();
 	end
