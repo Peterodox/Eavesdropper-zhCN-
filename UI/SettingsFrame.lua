@@ -1182,6 +1182,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			label = L.PROFILES_CURRENTPROFILE,
 			tooltip = L.PROFILES_CURRENTPROFILE_HELP,
 			gearButton = true,
+			deleteButton = true,
 			values = function() return ED.Database:GetAllProfiles(); end,
 			get = function() return ED.Database:GetProfileName(); end,
 			set = function(val)
@@ -1220,19 +1221,6 @@ function Eavesdropper_SettingsMixin:OnLoad()
 				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_RESET, function()
 					ED.Database:ResetProfile();
 					self:RefreshWidgets();
-				end);
-			end,
-		},
-		{
-			type = "dropdown",
-			label = L.PROFILES_DELETEPROFILE,
-			tooltip = L.PROFILES_DELETEPROFILE_HELP,
-			style = "button",
-			values = function() return ED.Database:GetAllProfiles(true, true); end,
-			get = function() end,
-			set = function(val)
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_DELETE:format(val), function()
-					ED.Database:DeleteProfile(val);
 				end);
 			end,
 		},

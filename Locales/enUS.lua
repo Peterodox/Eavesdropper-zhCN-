@@ -268,12 +268,13 @@ L = {
 	PROFILES_RESETBUTTON_HELP = "Restore all settings in the active profile to their original defaults.",
 
 	PROFILES_DELETEPROFILE = "Delete Profile",
-	PROFILES_DELETEPROFILE_HELP = "Permanently remove a profile from the database.|n|n|cnWARNING_FONT_COLOR:Note: You cannot delete the 'Default' profile or the one currently in use.|r",
+	PROFILES_DELETEPROFILE_HELP = "Permanently remove this profile from the database.|n|n- Deleting the profile you are using drops this character back to 'Default'.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be deleted.|r",
 
 	PROFILES_CONFIRM_NEWPROFILE = "Are you sure you want to create the profile '%s'?",
 	PROFILES_CONFIRM_COPYFROM = "Are you sure you want to copy all settings from '%s'? This will overwrite your current configuration.",
 	PROFILES_CONFIRM_RESET = "Are you sure you want to reset the current profile to its original defaults?",
 	PROFILES_CONFIRM_DELETE = "Are you sure you want to permanently delete the profile '%s'?",
+	PROFILES_CONFIRM_DELETE_CURRENT = "Are you sure you want to permanently delete the profile '%s'?|n|nAll characters with this as their active profile will be reset to 'Default'.",
 
 	PROFILES_RENAMEPROFILE = "Rename Profile",
 	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for the current profile.",

@@ -512,24 +512,52 @@ local function CreateDropDown(parent, data)
 					dropdownOption:SetEnabled(not isEntryDisabled);
 				end
 
-				if data.gearButton and text ~= "Default" then
+				-- The Default profile can never be renamed or deleted, so it gets no row buttons at all.
+				local isDefaultProfile = text == Constants.DEFAULT_PROFILE_NAME;
+				if (data.gearButton or data.deleteButton) and not isDefaultProfile then
 					dropdownOption:AddInitializer(function(button, description, menu) -- luacheck: no unused (description)
-						local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-						gearButton:SetPoint("RIGHT");
-						gearButton:SetScript("OnClick", function()
-							menu:Close();
-							StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(text);
-							StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = text });
-						end);
+						local rightAnchor;
 
-						MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
-							GameTooltip_SetTitle(tooltip, L.PROFILES_RENAMEPROFILE);
-							GameTooltip_AddNormalLine(tooltip, L.PROFILES_RENAMEPROFILE_HELP);
-						end);
+						if data.gearButton then
+							local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+							gearButton:SetPoint("RIGHT");
+							gearButton:SetScript("OnClick", function()
+								menu:Close();
+								StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(text);
+								StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = text });
+							end);
 
-						-- Perhaps one day, this is the Block/Cancel button
-						-- local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
-						-- cancelButton:SetPoint("RIGHT", gearButton, "LEFT", -3, 0);
+							MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
+								GameTooltip_SetTitle(tooltip, L.PROFILES_RENAMEPROFILE);
+								GameTooltip_AddNormalLine(tooltip, L.PROFILES_RENAMEPROFILE_HELP);
+							end);
+
+							rightAnchor = gearButton;
+						end
+
+						if data.deleteButton then
+							local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
+							if rightAnchor then
+								cancelButton:SetPoint("RIGHT", rightAnchor, "LEFT", -3, 0);
+							else
+								cancelButton:SetPoint("RIGHT");
+							end
+
+							cancelButton:SetScript("OnClick", function()
+								menu:Close();
+								-- Deleting the active profile drops this character back to Default, so warn separately.
+								local isCurrent = text == ED.Database:GetProfileName();
+								local prompt = isCurrent and L.PROFILES_CONFIRM_DELETE_CURRENT or L.PROFILES_CONFIRM_DELETE;
+								ED.ConfirmDialog:Show(prompt:format(text), function()
+									ED.Database:DeleteProfile(text);
+								end);
+							end);
+
+							MenuUtil.HookTooltipScripts(cancelButton, function(tooltip)
+								GameTooltip_SetTitle(tooltip, L.PROFILES_DELETEPROFILE);
+								GameTooltip_AddNormalLine(tooltip, L.PROFILES_DELETEPROFILE_HELP);
+							end);
+						end
 					end);
 				end
 			end

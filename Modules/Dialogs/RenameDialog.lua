@@ -14,8 +14,7 @@ local function tryRename(oldName, newName)
 	local trimmed = string.trim(newName);
 	if not oldName or trimmed == "" or trimmed == oldName then return false; end
 	if ED.Database:ProfileExists(trimmed) then return false; end
-	ED.Database:RenameProfile(oldName, trimmed);
-	return true;
+	return ED.Database:RenameProfile(oldName, trimmed);
 end
 
 StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {

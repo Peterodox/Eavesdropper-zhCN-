@@ -215,6 +215,10 @@ Constants.DEFAULT_HIGHLIGHT_COLOR = {
 	b = 0,
 };
 
+---Name of the profile that always exists; it can never be renamed or deleted.
+---@type string
+Constants.DEFAULT_PROFILE_NAME = "Default";
+
 ---Sound entries registered with LibSharedMedia on startup.
 ---@type table<number, table<string, number>>
 Constants.DEFAULT_SOUND_LIST = {

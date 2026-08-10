@@ -263,12 +263,14 @@ function Database:Init()
 
 	local db = EavesdropperDB;
 	local playerKey = ED.Utils.GetUnitName();
-	local profileName = db.profileKeys[playerKey] or "Default";
+	local profileName = db.profileKeys[playerKey] or Constants.DEFAULT_PROFILE_NAME;
 
 	ED.Globals.player_character_name = UnitName("player");
 	ED.Globals.player_sender_name = playerKey;
 	ED.Globals.player_guid = UnitGUID("player");
 
+	-- The Default profile is guaranteed to exist so deletions always have somewhere to fall back to.
+	db.profiles[Constants.DEFAULT_PROFILE_NAME] = db.profiles[Constants.DEFAULT_PROFILE_NAME] or {};
 	db.profiles[profileName] = db.profiles[profileName] or {};
 
 	self.currentProfile = db.profiles[profileName];
@@ -369,7 +371,7 @@ function Database:GetAllProfiles(excludeCurrent, excludeDefault)
 
 	for name in pairs(EavesdropperDB.profiles) do
 		if not ((excludeCurrent and name == currentName) or
-				(excludeDefault and name == "Default")) then
+				(excludeDefault and name == Constants.DEFAULT_PROFILE_NAME)) then
 			results[name] = name;
 		end
 	end
@@ -393,7 +395,7 @@ end
 function Database:RenameProfile(oldName, newName)
 	if not EavesdropperDB or not EavesdropperDB.profiles then return false; end
 	if not oldName or not EavesdropperDB.profiles[oldName] then return false; end
-	if oldName == "Default" then return false; end
+	if oldName == Constants.DEFAULT_PROFILE_NAME then return false; end
 	if not newName or newName == "" then return false; end
 	if self:ProfileExists(newName) then return false; end
 
@@ -495,13 +497,19 @@ function Database:ImportProfile(profileName, data, overwrite)
 	return true;
 end
 
----Deletes a profile from saved variables. Prevents deleting the active profile.
+---Deletes a profile from saved variables. Deleting the active profile falls back to the Default one.
+---The Default profile itself can never be deleted.
 ---@param profileName string
 ---@return boolean success
 function Database:DeleteProfile(profileName)
 	if not profileName or profileName == "" then return false; end
-	if profileName == self:GetProfileName() then return false; end
+	if profileName == Constants.DEFAULT_PROFILE_NAME then return false; end
 	if not EavesdropperDB.profiles[profileName] then return true; end
+
+	-- Switch away first so the live reference never points at a removed table.
+	if profileName == self:GetProfileName() then
+		self:SetProfile(Constants.DEFAULT_PROFILE_NAME);
+	end
 
 	EavesdropperDB.profiles[profileName] = nil;
 
@@ -509,6 +517,10 @@ function Database:DeleteProfile(profileName)
 		if name == profileName then
 			EavesdropperDB.profileKeys[key] = nil;
 		end
+	end
+
+	if ED.SettingsFrame then
+		ED.SettingsFrame:RefreshWidgets();
 	end
 
 	return true;

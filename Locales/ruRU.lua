@@ -211,7 +211,7 @@ L = {
 	PROFILES_RESETBUTTON = "Сбросить профиль",
 	PROFILES_RESETBUTTON_HELP = "Сброс всех настроек текущего профиля до значений по умолчанию.|n|n|cnWARNING_FONT_COLOR:Внимание: сброс произойдет мгновенно и без подтверждения!|r",
 	PROFILES_DELETEPROFILE = "Удалить профиль",
-	PROFILES_DELETEPROFILE_HELP = "Безвозвратное удаление выбранного профиля из базы данных аддона.|n|n|cnWARNING_FONT_COLOR:Внимание: профиль будет удален мгновенно и без подтверждения!|r",
+	PROFILES_DELETEPROFILE_HELP = "Permanently remove this profile from the database.|n|n- Deleting the profile you are using drops this character back to 'Default'.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be deleted.|r", -- NEW
 
 	PROFILES_RENAMEPROFILE = "Rename Profile", -- NEW
 	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for the current profile.", -- NEW
@@ -220,6 +220,7 @@ L = {
 	PROFILES_CONFIRM_COPYFROM = "Are you sure you want to copy all settings from '%s'? This will overwrite your current configuration.", -- NEW
 	PROFILES_CONFIRM_RESET = "Are you sure you want to reset the current profile to its original defaults?", -- NEW
 	PROFILES_CONFIRM_DELETE = "Are you sure you want to permanently delete the profile '%s'?", -- NEW
+	PROFILES_CONFIRM_DELETE_CURRENT = "Are you sure you want to permanently delete the profile '%s'?|n|nThis is the profile you are currently using; this character will fall back to 'Default'.", -- NEW
 
 	ADDONINFO_BUILD = "|cnNORMAL_FONT_COLOR:Версия:|r %s",
 	ADDONINFO_BUILD_OUTDATED = title .. " не оптимизирован для этой версии игры.|n|n|cnWARNING_FONT_COLOR:Это может привести к ошибкам в работе аддона.|r",
