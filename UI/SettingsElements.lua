@@ -523,15 +523,13 @@ local function CreateDropDown(parent, data)
 						-- The gear entries are real children of this row; DeactivateSubmenu keeps hover from
 						-- opening them, so only the gear button itself does via ForceOpenSubmenu.
 						local copyEntry = dropdownOption:CreateButton(L.PROFILES_COPYPROFILE, function()
-							StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"].text = L.POPUP_COPY_PROFILE:format(text);
-							StaticPopup_Show("EAVESDROPPER_COPY_PROFILE", nil, nil, { sourceName = text });
+							ED.CopyDialog:Show(text);
 						end);
 						ED.Utils.SetMenuTooltip(copyEntry, L.PROFILES_COPYPROFILE_HELP);
 
 						if not isDefaultProfile then
 							local renameEntry = dropdownOption:CreateButton(L.PROFILES_RENAMEPROFILE, function()
-								StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(text);
-								StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = text });
+								ED.RenameDialog:Show(text);
 							end);
 							ED.Utils.SetMenuTooltip(renameEntry, L.PROFILES_RENAMEPROFILE_HELP);
 						end

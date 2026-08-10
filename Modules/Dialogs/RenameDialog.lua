@@ -1,6 +1,8 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
+local L = ED.Localization;
+
 ---@class EavesdropperRenameDialog
 local RenameDialog = {};
 
@@ -54,5 +56,14 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 		end
 	end,
 };
+
+---Prompts for a new name for a profile, replacing the copy prompt if it is open.
+---@param profileName string The profile being renamed.
+function RenameDialog:Show(profileName)
+	StaticPopup_Hide("EAVESDROPPER_COPY_PROFILE");
+
+	StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(profileName);
+	StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = profileName });
+end
 
 ED.RenameDialog = RenameDialog;
