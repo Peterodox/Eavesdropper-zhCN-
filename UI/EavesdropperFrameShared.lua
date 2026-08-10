@@ -500,6 +500,9 @@ function Eavesdropper_SharedFrameMixin:SetAlphaChannelMode(mode)
 	-- mode 2: Widgets use original colors + black fullscreen backdrop
 	-- other : Disable
 
+	-- Nothing to restore if this frame was never colorized
+	if not mode and not self.alphaChannelMode then return; end
+
 	self.alphaChannelMode = mode;
 
 	local frameStrata;
