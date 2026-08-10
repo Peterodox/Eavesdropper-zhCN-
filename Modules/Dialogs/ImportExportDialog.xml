@@ -6,7 +6,7 @@
 https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 
 	<!-- The window itself: background, border, title and close button. Everything inside
-	     it is built in ImportExportDialog.lua -->
+		 it is built in ImportExportDialog.lua -->
 	<Frame name="Eavesdropper_ImportExportDialogTemplate" mixin="Eavesdropper_ImportExportDialogMixin" virtual="true" enableMouse="true" hidden="true" registerForDrag="LeftButton" movable="true" clampedToScreen="true" frameStrata="DIALOG">
 		<Size x="400" y="380"/>
 		<Anchors>
