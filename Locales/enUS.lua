@@ -255,14 +255,11 @@ L = {
 	PROFILES_TRANSFER = "Import & Export",
 	PROFILES_TRANSFER_HELP = "Move settings in and out of the game as a text string.",
 
-	PROFILES_CURRENTPROFILE = "Current Profile",
-	PROFILES_CURRENTPROFILE_HELP = "Select or rename one of your available profiles for this character.",
+	PROFILES_MANAGE = "Manage Profiles",
+	PROFILES_MANAGE_HELP = "Switch this character to a different profile.|n|n- Hover a profile in the list for more options.|n- Use the gear to copy or rename it.|n- Use the red cancel icon to delete it.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be renamed or deleted.|r",
 
 	PROFILES_NEWPROFILE = "New Profile",
 	PROFILES_NEWPROFILE_HELP = "Create a new profile and apply it to this character.|n|n- Enter a unique name and press Enter to open the confirmation prompt.",
-
-	PROFILES_COPYFROM = "Copy From",
-	PROFILES_COPYFROM_HELP = "Import all settings from an existing profile into your current one.|n|n|cnWARNING_FONT_COLOR:Note: This will overwrite your current settings once confirmed.|r",
 
 	PROFILES_RESETBUTTON = "Reset Profile",
 	PROFILES_RESETBUTTON_HELP = "Restore all settings in the active profile to their original defaults.",
@@ -271,13 +268,18 @@ L = {
 	PROFILES_DELETEPROFILE_HELP = "Permanently remove this profile from the database.|n|n- Deleting the profile you are using drops this character back to 'Default'.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be deleted.|r",
 
 	PROFILES_CONFIRM_NEWPROFILE = "Are you sure you want to create the profile '%s'?",
-	PROFILES_CONFIRM_COPYFROM = "Are you sure you want to copy all settings from '%s'? This will overwrite your current configuration.",
 	PROFILES_CONFIRM_RESET = "Are you sure you want to reset the current profile to its original defaults?",
 	PROFILES_CONFIRM_DELETE = "Are you sure you want to permanently delete the profile '%s'?",
 	PROFILES_CONFIRM_DELETE_CURRENT = "Are you sure you want to permanently delete the profile '%s'?|n|nAll characters with this as their active profile will be reset to 'Default'.",
 
+	PROFILES_OPTIONS = "Profile Options",
+	PROFILES_OPTIONS_HELP = "Copy or rename this profile.",
+
 	PROFILES_RENAMEPROFILE = "Rename Profile",
-	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for the current profile.",
+	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for this profile.|n|n- Renaming the profile you are using keeps you on it.",
+
+	PROFILES_COPYPROFILE = "Copy Profile",
+	PROFILES_COPYPROFILE_HELP = "Create a new profile holding a copy of this profile's settings, then switch to it.",
 
 	PROFILES_IMPORTBUTTON = "Import Settings",
 	PROFILES_IMPORTBUTTON_HELP = "Import a profile or your account-wide settings from a shareable text string.|n|nThere is nothing to pick here; the string itself says which of the two it holds.",
@@ -350,6 +352,7 @@ L = {
 
 	POPUP_EAVESDROP_GROUP = "Eavesdropper Group name.|nEnter to confirm.",
 	POPUP_RENAME_PROFILE = "Rename profile '%s'.|nEnter to confirm.",
+	POPUP_COPY_PROFILE = "Name the new profile copied from '%s'.|nEnter to confirm.",
 
 	-- Message Prefixes (keep them shorthand)
 	MSG_PREFIX_PARTY = "P",

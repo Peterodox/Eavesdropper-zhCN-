@@ -79,6 +79,7 @@ Modules\ElvUI\ElvUI.lua
 Modules\Flyway\Flyway.lua
 Modules\Flyway\FlywayPatches.lua
 Modules\Dialogs\ConfirmDialog.lua
+Modules\Dialogs\CopyDialog.lua
 Modules\Dialogs\GroupDialog.lua
 Modules\Dialogs\ImportExportDialog.lua
 Modules\Dialogs\ImportExportDialog.xml

@@ -1179,10 +1179,12 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		},
 		{
 			type = "dropdown",
-			label = L.PROFILES_CURRENTPROFILE,
-			tooltip = L.PROFILES_CURRENTPROFILE_HELP,
+			label = L.PROFILES_MANAGE,
+			tooltip = L.PROFILES_MANAGE_HELP,
+			hideLabel = true,
 			gearButton = true,
 			deleteButton = true,
+			buildAdded = "0.6.0|120100",
 			values = function() return ED.Database:GetAllProfiles(); end,
 			get = function() return ED.Database:GetProfileName(); end,
 			set = function(val)
@@ -1197,19 +1199,6 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			set = function(val)
 				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_NEWPROFILE:format(val), function()
 					ED.Database:CreateProfile(val);
-				end);
-			end,
-		},
-		{
-			type = "dropdown",
-			label = L.PROFILES_COPYFROM,
-			tooltip = L.PROFILES_COPYFROM_HELP,
-			style = "button",
-			values = function() return ED.Database:GetAllProfiles(true, false); end,
-			get = function() end,
-			set = function(val)
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_COPYFROM:format(val), function()
-					ED.Database:CopyProfile(val);
 				end);
 			end,
 		},

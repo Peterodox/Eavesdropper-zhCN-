@@ -202,25 +202,28 @@ L = {
 
 	-- Profiles Tab
 	PROFILES_TITLE = "Профили",
-	PROFILES_CURRENTPROFILE = "Текущий профиль",
-	PROFILES_CURRENTPROFILE_HELP = "Выберите профиль настроек для этого персонажа.",
+	PROFILES_MANAGE = "Manage Profiles", -- NEW
+	PROFILES_MANAGE_HELP = "Switch this character to a different profile.|n|n- Hover a profile in the list for more options.|n- Use the gear to copy or rename it.|n- Use the red cancel icon to delete it.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be renamed or deleted.|r", -- NEW
 	PROFILES_NEWPROFILE = "Новый профиль",
 	PROFILES_NEWPROFILE_HELP = "Создать новый профиль. Введите название и нажмите Enter.",
-	PROFILES_COPYFROM = "Скопировать из",
-	PROFILES_COPYFROM_HELP = "Копирует все параметры из другого профиля в текущий.|n|n|cnWARNING_FONT_COLOR:Внимание: настройки будут перезаписаны мгновенно и без подтверждения!|r",
 	PROFILES_RESETBUTTON = "Сбросить профиль",
 	PROFILES_RESETBUTTON_HELP = "Сброс всех настроек текущего профиля до значений по умолчанию.|n|n|cnWARNING_FONT_COLOR:Внимание: сброс произойдет мгновенно и без подтверждения!|r",
 	PROFILES_DELETEPROFILE = "Удалить профиль",
 	PROFILES_DELETEPROFILE_HELP = "Permanently remove this profile from the database.|n|n- Deleting the profile you are using drops this character back to 'Default'.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be deleted.|r", -- NEW
 
+	PROFILES_OPTIONS = "Profile Options", -- NEW
+	PROFILES_OPTIONS_HELP = "Copy or rename this profile.", -- NEW
+
 	PROFILES_RENAMEPROFILE = "Rename Profile", -- NEW
-	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for the current profile.", -- NEW
+	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for this profile.|n|n- Renaming the profile you are using keeps you on it.", -- NEW
+
+	PROFILES_COPYPROFILE = "Copy Profile", -- NEW
+	PROFILES_COPYPROFILE_HELP = "Create a new profile holding a copy of this profile's settings, then switch to it.", -- NEW
 
 	PROFILES_CONFIRM_NEWPROFILE = "Are you sure you want to create the profile '%s'?", -- NEW
-	PROFILES_CONFIRM_COPYFROM = "Are you sure you want to copy all settings from '%s'? This will overwrite your current configuration.", -- NEW
 	PROFILES_CONFIRM_RESET = "Are you sure you want to reset the current profile to its original defaults?", -- NEW
 	PROFILES_CONFIRM_DELETE = "Are you sure you want to permanently delete the profile '%s'?", -- NEW
-	PROFILES_CONFIRM_DELETE_CURRENT = "Are you sure you want to permanently delete the profile '%s'?|n|nThis is the profile you are currently using; this character will fall back to 'Default'.", -- NEW
+	PROFILES_CONFIRM_DELETE_CURRENT = "Are you sure you want to permanently delete the profile '%s'?|n|nAll characters with this as their active profile will be reset to 'Default'.", -- NEW
 
 	ADDONINFO_BUILD = "|cnNORMAL_FONT_COLOR:Версия:|r %s",
 	ADDONINFO_BUILD_OUTDATED = title .. " не оптимизирован для этой версии игры.|n|n|cnWARNING_FONT_COLOR:Это может привести к ошибкам в работе аддона.|r",
@@ -242,6 +245,7 @@ L = {
 
 	POPUP_EAVESDROP_GROUP = "Eavesdropper Group name.|nEnter to confirm.", -- NEW
 	POPUP_RENAME_PROFILE = "Rename profile '%s'.|nEnter to confirm.", -- NEW
+	POPUP_COPY_PROFILE = "Name the new profile copied from '%s'.|nEnter to confirm.", -- NEW
 
 	MSG_PREFIX_PARTY = "P", -- NEW
 	MSG_PREFIX_RAID = "R", -- NEW

@@ -11,10 +11,9 @@ local MaxProfileNameLength = 32;
 ---@param newName string
 ---@return boolean success
 local function tryRename(oldName, newName)
-	local trimmed = string.trim(newName);
-	if not oldName or trimmed == "" or trimmed == oldName then return false; end
-	if ED.Database:ProfileExists(trimmed) then return false; end
-	return ED.Database:RenameProfile(oldName, trimmed);
+	if not oldName then return false; end
+	if not ED.Database:IsValidNewProfileName(newName) then return false; end
+	return ED.Database:RenameProfile(oldName, string.trim(newName));
 end
 
 StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
@@ -38,17 +37,13 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 		self.EditBox:HighlightText();
 		self.EditBox:SetFocus();
 	end,
-	EditBoxOnTextChanged = function(self, data)
+	EditBoxOnTextChanged = function(self)
 		local popup = self:GetParent();
 		local button1 = _G[popup:GetName() .. "Button1"];
 		if not button1 then return; end
 
-		local newName = string.trim(self:GetText());
-		local currentName = data and data.oldName or "";
-		local isDuplicate = ED.Database:ProfileExists(newName);
-		local isSame = newName == currentName;
-
-		button1:SetEnabled(newName ~= "" and not isDuplicate and not isSame);
+		-- The old name is itself an existing profile, so the duplicate check also rejects an unchanged name.
+		button1:SetEnabled(ED.Database:IsValidNewProfileName(self:GetText()));
 	end,
 	EditBoxOnEscapePressed = function(self)
 		StaticPopup_Hide("EAVESDROPPER_RENAME_PROFILE");

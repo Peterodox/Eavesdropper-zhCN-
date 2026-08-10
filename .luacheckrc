@@ -447,6 +447,9 @@ stds.wow = {
 			fields = {
 				"AttachAutoHideCancelButton",
 				"AttachAutoHideGearButton",
+				"SetUtilityButtonAnchor",
+				"SetUtilityButtonClickHandler",
+				"SetUtilityButtonLockedEnabledState",
 			},
 		},
 
@@ -463,6 +466,13 @@ stds.wow = {
 				"HookTooltipScripts",
 				"SetElementText",
 				"ShowTooltip",
+			},
+		},
+
+		MenuVariants = {
+			fields = {
+				"CancelButtonAnchor",
+				"GearButtonAnchor",
 			},
 		},
 

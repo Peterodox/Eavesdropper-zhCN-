@@ -153,8 +153,9 @@ end
 -- ============================================================
 
 ---Creates a left-label / right-control pair anchored inside parent
+---data.hideLabel leaves the label column empty (but is still used for tooltip title / header in dropdowns, etc.)
 function SettingsElements.CreateLabeledFrame(parent, data)
-	local labelText = data.label or "";
+	local labelText = not data.hideLabel and data.label or "";
 
 	local left = CreateFrame("Frame", nil, parent);
 	left:SetWidth(Constants.SETTINGS.LABEL_WIDTH);
@@ -512,45 +513,61 @@ local function CreateDropDown(parent, data)
 					dropdownOption:SetEnabled(not isEntryDisabled);
 				end
 
-				-- The Default profile can never be renamed or deleted, so it gets no row buttons at all.
+				-- Row gear/delete buttons follow Blizzard's Cooldown Manager layout rows:
+				-- https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_CooldownViewer/CooldownViewerSettings.lua#L1092
+				-- The Default profile is permanently named and undeletable, so it only gets the gear (copy only).
 				local isDefaultProfile = text == Constants.DEFAULT_PROFILE_NAME;
-				if (data.gearButton or data.deleteButton) and not isDefaultProfile then
-					dropdownOption:AddInitializer(function(button, description, menu) -- luacheck: no unused (description)
-						local rightAnchor;
+				local showDelete = data.deleteButton and not isDefaultProfile;
+				if data.gearButton or showDelete then
+					if data.gearButton then
+						-- The gear entries are real children of this row; DeactivateSubmenu keeps hover from
+						-- opening them, so only the gear button itself does via ForceOpenSubmenu.
+						local copyEntry = dropdownOption:CreateButton(L.PROFILES_COPYPROFILE, function()
+							StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"].text = L.POPUP_COPY_PROFILE:format(text);
+							StaticPopup_Show("EAVESDROPPER_COPY_PROFILE", nil, nil, { sourceName = text });
+						end);
+						ED.Utils.SetMenuTooltip(copyEntry, L.PROFILES_COPYPROFILE_HELP);
 
-						if data.gearButton then
-							local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-							gearButton:SetPoint("RIGHT");
-							gearButton:SetScript("OnClick", function()
-								menu:Close();
+						if not isDefaultProfile then
+							local renameEntry = dropdownOption:CreateButton(L.PROFILES_RENAMEPROFILE, function()
 								StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(text);
 								StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = text });
 							end);
-
-							MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
-								GameTooltip_SetTitle(tooltip, L.PROFILES_RENAMEPROFILE);
-								GameTooltip_AddNormalLine(tooltip, L.PROFILES_RENAMEPROFILE_HELP);
-							end);
-
-							rightAnchor = gearButton;
+							ED.Utils.SetMenuTooltip(renameEntry, L.PROFILES_RENAMEPROFILE_HELP);
 						end
 
-						if data.deleteButton then
-							local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
-							if rightAnchor then
-								cancelButton:SetPoint("RIGHT", rightAnchor, "LEFT", -3, 0);
-							else
-								cancelButton:SetPoint("RIGHT");
-							end
+						dropdownOption:DeactivateSubmenu();
+					end
 
-							cancelButton:SetScript("OnClick", function()
-								menu:Close();
+					dropdownOption:AddInitializer(function(button, description, menu)
+						local gearButton;
+
+						if data.gearButton then
+							gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+							MenuTemplates.SetUtilityButtonLockedEnabledState(gearButton, true);
+							MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
+							MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
+								description:ForceOpenSubmenu();
+							end);
+
+							MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
+								GameTooltip_SetTitle(tooltip, L.PROFILES_OPTIONS);
+								GameTooltip_AddNormalLine(tooltip, L.PROFILES_OPTIONS_HELP);
+							end);
+						end
+
+						if showDelete then
+							local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
+							MenuTemplates.SetUtilityButtonLockedEnabledState(cancelButton, true);
+							MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton or button);
+							MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
 								-- Deleting the active profile drops this character back to Default, so warn separately.
 								local isCurrent = text == ED.Database:GetProfileName();
 								local prompt = isCurrent and L.PROFILES_CONFIRM_DELETE_CURRENT or L.PROFILES_CONFIRM_DELETE;
 								ED.ConfirmDialog:Show(prompt:format(text), function()
 									ED.Database:DeleteProfile(text);
 								end);
+								menu:Close();
 							end);
 
 							MenuUtil.HookTooltipScripts(cancelButton, function(tooltip)

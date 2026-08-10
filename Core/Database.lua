@@ -326,6 +326,19 @@ function Database:ProfileExists(profileName)
 	return EavesdropperDB.profiles[profileName] ~= nil;
 end
 
+---Checks whether a trimmed name is usable for a brand new profile.
+---Shared by the rename and copy dialogs so both gate their accept button identically.
+---@param profileName string?
+---@return boolean valid
+function Database:IsValidNewProfileName(profileName)
+	if not profileName then return false; end
+
+	local trimmed = string.trim(profileName);
+	if trimmed == "" then return false; end
+
+	return not self:ProfileExists(trimmed);
+end
+
 ---Switches to a different profile.
 ---@param profileName string Name of the profile to switch to.
 ---@return nil
@@ -425,12 +438,14 @@ function Database:RenameProfile(oldName, newName)
 end
 
 ---Creates a new profile as a copy of an existing one and switches to it.
+---Refuses an existing target name; SetProfile would otherwise switch to it and CopyProfile would overwrite it.
 ---@param sourceName string
 ---@param newName string
 ---@return boolean success
 function Database:CloneProfile(sourceName, newName)
 	if not newName or newName == "" then return false; end
 	if not EavesdropperDB.profiles[sourceName] then return false; end
+	if self:ProfileExists(newName) then return false; end
 
 	self:SetProfile(newName);
 	return self:CopyProfile(sourceName);
