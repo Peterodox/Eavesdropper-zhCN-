@@ -175,6 +175,15 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 		end
 	end);
 
+	local importExportDialog = ED.ImportExportDialog and ED.ImportExportDialog.frame;
+	if importExportDialog then
+		if importExportDialog:IsVisible() then
+			importExportDialog:SetAlphaChannelMode(alphaChannelMode);
+		else
+			importExportDialog:SetAlphaChannelMode(nil);
+		end
+	end
+
 	if GameTooltip:IsVisible() then
 		ED.ScreenshotHelper.SetupObjectColorByMode(GameTooltip, alphaChannelMode);
 	end

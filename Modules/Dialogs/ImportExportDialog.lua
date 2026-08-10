@@ -154,6 +154,52 @@ function Eavesdropper_ImportExportDialogMixin:OnHide()
 	self.payloadType = nil;
 	self:SetStatus(nil);
 	self:SetDetected(nil);
+
+	if self.alphaChannelMode and self.SetAlphaChannelMode then
+		self:SetAlphaChannelMode(nil);
+	end
+end
+
+-- ============================================================
+-- Screenshot Helper
+-- ============================================================
+
+---@param mode number|nil
+function Eavesdropper_ImportExportDialogMixin:SetAlphaChannelMode(mode)
+	-- mode 1: All Widgets turn black + white fullscreen backdrop
+	-- mode 2: Widgets use original colors + black fullscreen backdrop
+	-- other : Disable
+
+	-- Nothing to restore if this dialog was never colorized
+	if not mode and not self.alphaChannelMode then return; end
+
+	self.alphaChannelMode = mode;
+
+	local colorize = mode == 1;
+
+	-- Captured before the colorize pass rewrites the icon escape sequence in the title
+	if colorize and not self.alphaChannelTitle then
+		self.alphaChannelTitle = self.NineSlice.Text:GetText();
+	end
+
+	ED.ScreenshotHelper.SetupObjectColorByMode(self, mode);
+
+	self.Background.BackgroundColor:SetVertexColor(1, 1, 1);
+
+	if colorize then
+		self.NineSlice.Text:SetText(nil);
+	elseif self.alphaChannelTitle then
+		self.NineSlice.Text:SetText(self.alphaChannelTitle);
+		self.alphaChannelTitle = nil;
+	end
+
+	if mode == 1 then
+		self.Background.BackgroundColor:SetColorTexture(0, 0, 0, 0.95);
+	elseif mode == 2 then
+		self.Background.BackgroundColor:SetColorTexture(0.12, 0.12, 0.12, 1);
+	else
+		self.Background.BackgroundColor:SetColorTexture(0.12, 0.12, 0.12, 0.95);
+	end
 end
 
 ---Builds the instructions, paste box, name row, status line and action button
