@@ -98,9 +98,14 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 			object:SetFixedColor(false);
 
 			-- Restore fontObject color. Fix things like StaticPopupButton.
-			local fontObject = object:GetFontObject();
-			if FontStyleColorBackup[fontObject] then
-				object:SetTextColor(unpack(FontStyleColorBackup[fontObject]));
+			-- Only button labels take their color from the font object; any other
+			-- FontString keeps the color it was given, so it must not be overwritten.
+			local parent = object:GetParent();
+			if parent and parent.GetFontString and parent:GetFontString() == object then
+				local fontObject = object:GetFontObject();
+				if FontStyleColorBackup[fontObject] then
+					object:SetTextColor(unpack(FontStyleColorBackup[fontObject]));
+				end
 			end
 		end
 	elseif object:IsObjectType("Texture") then
