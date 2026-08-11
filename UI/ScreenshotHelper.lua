@@ -105,6 +105,14 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 			ScreenshotHelper.SetupObjectColor(child, colorize, colorValue);
 		end
 	end
+
+	if object:IsObjectType("EditBox") then
+		if colorize then
+			object:SetHighlightColor(0, 0, 0, 1);
+		else
+			object:SetHighlightColor(0.3764, 0.3764, 0.3764, 1);
+		end
+	end
 end
 
 ---Colorize an object by alphaChannelMode
