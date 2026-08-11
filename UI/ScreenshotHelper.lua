@@ -196,6 +196,19 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 		ED.ScreenshotHelper.SetupObjectColorByMode(GameTooltip, alphaChannelMode);
 	end
 
+	-- StaticPopup frames are shared with Blizzard and other addons, so only the ones
+	-- currently showing one of our own dialogs are touched
+	local index = 1;
+	local dialog = _G["StaticPopup" .. index];
+	while dialog do
+		if dialog:IsVisible() and dialog.which and string.find(dialog.which, "EAVESDROPPER", 1, true) == 1 then
+			ED.ScreenshotHelper.SetupObjectColorByMode(dialog, alphaChannelMode);
+		end
+
+		index = index + 1;
+		dialog = _G["StaticPopup" .. index];
+	end
+
 	if Menu.GetManager():IsAnyMenuOpen() then
 		local openMenu = Menu.GetManager():GetOpenMenu();
 		if openMenu then
