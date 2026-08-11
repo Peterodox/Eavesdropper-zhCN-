@@ -17,6 +17,9 @@ local FontStyles = {
 	"UserScaledFontGameNormal",
 	"UserScaledFontGameDisable",
 	"UserScaledFontGameHighlight",
+	"GameFontNormal",
+	"GameFontDisable",
+	"GameFontHighlight",
 };
 
 local FontStyleColorBackup = {};
