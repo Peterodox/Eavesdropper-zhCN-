@@ -12,6 +12,22 @@ local externalFrames = {
 ---Frames hidden on entering a mode, restored when it is exited
 local hiddenFrames = {};
 
+---Store FontStyle/FontObject original color
+local FontStyles = {
+	"UserScaledFontGameNormal",
+	"UserScaledFontGameDisable",
+	"UserScaledFontGameHighlight",
+};
+
+local FontStyleColorBackup = {};
+
+for _, fontStyleName in ipairs(FontStyles) do
+	local object = _G[fontStyleName];
+	if object then
+		FontStyleColorBackup[object] = {object:GetTextColor()};
+	end
+end
+
 ---Colorize an object and all their children
 ---@param object any
 ---@param colorize boolean
@@ -77,6 +93,12 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 				object.originalColor = nil;
 			end
 			object:SetFixedColor(false);
+
+			-- Restore fontObject color. Fix things like StaticPopupButton.
+			local fontObject = object:GetFontObject();
+			if FontStyleColorBackup[fontObject] then
+				object:SetTextColor(unpack(FontStyleColorBackup[fontObject]));
+			end
 		end
 	elseif object:IsObjectType("Texture") then
 		if colorize then
