@@ -256,7 +256,7 @@ L = {
 	PROFILES_TRANSFER_HELP = "Move settings in and out of the game as a text string.",
 
 	PROFILES_MANAGE = "Manage Profiles",
-	PROFILES_MANAGE_HELP = "Switch this character to a different profile.|n|n- Pick 'New Profile' at the top to create one.|n- Hover a profile to reveal its copy, rename and delete buttons.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be renamed or deleted.|r",
+	PROFILES_MANAGE_HELP = "Manage your profiles. Hover over any profile to reveal more options.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be renamed or deleted.|r",
 
 	PROFILES_NEWPROFILE = "%s |cnPURE_GREEN_COLOR:New Profile|r",
 
