@@ -22,7 +22,7 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 					<Layer level="BACKGROUND" textureSubLevel="-3">
 						<Texture parentKey="BackgroundColor">
 							<Anchors>
-								<Anchor point="TOPLEFT" x="0" y="0"/>
+								<Anchor point="TOPLEFT" x="-1" y="0"/>
 								<Anchor point="BOTTOMRIGHT" x="1" y="0"/>
 							</Anchors>
 						</Texture>
