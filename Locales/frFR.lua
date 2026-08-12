@@ -130,7 +130,7 @@ L = {
 	OVERRIDE_NAME_DISPLAY = "Remplacer l'affichage des noms",
 	OVERRIDE_NAME_DISPLAY_HELP = "Active l'utilisation par la mise en forme avancée dans la fenêtre de discussion principale de Blizzard de son propre format de nom au lieu de votre paramètre 'Affichage des noms'.",
 
-	ADV_FORMATTING_NAME_DISPLAY = "Affichage des noms (Mise en forme avancée)",
+	ADV_FORMATTING_NAME_DISPLAY = "Affichage des noms (Mise en forme av.)",
 	ADV_FORMATTING_NAME_DISPLAY_HELP = "Choisit comment les noms de personnage sont affichés par la mise en forme avancée dans la fenêtre de discussion principale de Blizzard.|n|n|cnWARNING_FONT_COLOR:Note : cette option s'applique uniquement lorsque 'Remplacer l'affichage des noms' est activé, et utilise par défaut 'Nom original (HRP)' lorsqu'aucun addon RP approprié (TRP, MRP, XRP) n'est chargé.|r",
 
 	DISPLAY = "Affichage",
