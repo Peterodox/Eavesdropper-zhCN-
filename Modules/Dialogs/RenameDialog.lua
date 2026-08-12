@@ -1,28 +1,29 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
+local L = ED.Localization;
+
+---@type EavesdropperConstants
+local Constants = ED.Constants;
+
 ---@class EavesdropperRenameDialog
 local RenameDialog = {};
-
-local MaxProfileNameLength = 32;
 
 ---Attempts to rename the profile from oldName to the trimmed text in the edit box.
 ---@param oldName string?
 ---@param newName string
 ---@return boolean success
 local function tryRename(oldName, newName)
-	local trimmed = string.trim(newName);
-	if not oldName or trimmed == "" or trimmed == oldName then return false; end
-	if ED.Database:ProfileExists(trimmed) then return false; end
-	ED.Database:RenameProfile(oldName, trimmed);
-	return true;
+	if not oldName then return false; end
+	if not ED.Database:IsValidNewProfileName(newName) then return false; end
+	return ED.Database:RenameProfile(oldName, string.trim(newName));
 end
 
 StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	maxLetters = MaxProfileNameLength,
+	maxLetters = Constants.MAX_PROFILE_NAME_LENGTH,
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
@@ -39,17 +40,13 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 		self.EditBox:HighlightText();
 		self.EditBox:SetFocus();
 	end,
-	EditBoxOnTextChanged = function(self, data)
+	EditBoxOnTextChanged = function(self)
 		local popup = self:GetParent();
 		local button1 = _G[popup:GetName() .. "Button1"];
 		if not button1 then return; end
 
-		local newName = string.trim(self:GetText());
-		local currentName = data and data.oldName or "";
-		local isDuplicate = ED.Database:ProfileExists(newName);
-		local isSame = newName == currentName;
-
-		button1:SetEnabled(newName ~= "" and not isDuplicate and not isSame);
+		-- The old name is itself an existing profile, so the duplicate check also rejects an unchanged name.
+		button1:SetEnabled(ED.Database:IsValidNewProfileName(self:GetText()));
 	end,
 	EditBoxOnEscapePressed = function(self)
 		StaticPopup_Hide("EAVESDROPPER_RENAME_PROFILE");
@@ -60,5 +57,14 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 		end
 	end,
 };
+
+---Prompts for a new name for a profile, replacing any other open profile name prompt.
+---@param profileName string The profile being renamed.
+function RenameDialog:Show(profileName)
+	ED.Utils.HideProfileNamePopups();
+
+	StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(profileName);
+	StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = profileName });
+end
 
 ED.RenameDialog = RenameDialog;

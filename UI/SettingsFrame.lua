@@ -337,8 +337,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "slider",
 			label = L.HISTORY_SIZE,
 			tooltip = L.HISTORY_SIZE_HELP,
-			min = 10,
-			max = 300,
+			min = Constants.CHAT_BOX.MIN_HISTORY,
+			max = Constants.CHAT_BOX.MAX_HISTORY,
 			step = 1,
 			get = function() return ED.Database:GetSetting("MaxHistory"); end,
 			set = function(val)
@@ -598,8 +598,8 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "slider",
 			label = L.FONT_SIZE,
 			tooltip = L.FONT_SIZE_HELP,
-			min = 6,
-			max = 24,
+			min = Constants.CHAT_BOX.MIN_FONT_SIZE,
+			max = Constants.CHAT_BOX.MAX_FONT_SIZE,
 			step = 1,
 			get = function() return ED.Database:GetSetting("FontSize"); end,
 			set = function(val)
@@ -1175,12 +1175,36 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		{
 			type = "subtitle",
 			label = L.PROFILES_TITLE,
+			subLabel = L.PROFILES_TITLE_HELP,
 		},
 		{
 			type = "dropdown",
-			label = L.PROFILES_CURRENTPROFILE,
-			tooltip = L.PROFILES_CURRENTPROFILE_HELP,
+			label = L.PROFILES_MANAGE,
+			tooltip = L.PROFILES_MANAGE_HELP,
+			hideLabel = true,
 			gearButton = true,
+			deleteButton = true,
+			defaultEntry = Constants.DEFAULT_PROFILE_NAME,
+			buildAdded = "0.6.0|120100",
+			actionEntries = {
+				{
+					label = L.PROFILES_NEWPROFILE,
+					atlas = "editmode-new-layout-plus",
+					disabledAtlas = "editmode-new-layout-plus-disabled",
+					func = function() ED.NewProfileDialog:Show(); end,
+				},
+				{
+					label = L.PROFILES_RESETBUTTON,
+					tooltip = L.PROFILES_RESETBUTTON_HELP,
+					texture = "Interface\\AddOns\\Eavesdropper\\Resources\\Reset",
+					func = function()
+						ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_RESET, function()
+							ED.Database:ResetProfile();
+							self:RefreshWidgets();
+						end);
+					end,
+				},
+			},
 			values = function() return ED.Database:GetAllProfiles(); end,
 			get = function() return ED.Database:GetProfileName(); end,
 			set = function(val)
@@ -1188,51 +1212,33 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			end,
 		},
 		{
-			type = "editbox",
-			label = L.PROFILES_NEWPROFILE,
-			tooltip = L.PROFILES_NEWPROFILE_HELP,
-			get = function() end,
-			set = function(val)
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_NEWPROFILE:format(val), function()
-					ED.Database:CreateProfile(val);
-				end);
-			end,
-		},
-		{
-			type = "dropdown",
-			label = L.PROFILES_COPYFROM,
-			tooltip = L.PROFILES_COPYFROM_HELP,
-			style = "button",
-			values = function() return ED.Database:GetAllProfiles(true, false); end,
-			get = function() end,
-			set = function(val)
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_COPYFROM:format(val), function()
-					ED.Database:CopyProfile(val);
-				end);
-			end,
+			type = "subtitle",
+			label = L.PROFILES_TRANSFER,
+			subLabel = L.PROFILES_TRANSFER_HELP,
 		},
 		{
 			type = "button",
-			label = L.PROFILES_RESETBUTTON,
-			tooltip = L.PROFILES_RESETBUTTON_HELP,
+			label = L.PROFILES_IMPORTBUTTON,
+			tooltip = L.PROFILES_IMPORTBUTTON_HELP,
+			buildAdded = "0.6.0|120100",
 			func = function()
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_RESET, function()
-					ED.Database:ResetProfile();
-					self:RefreshWidgets();
-				end);
+				ED.ImportExportDialog:ShowImport();
 			end,
 		},
 		{
 			type = "dropdown",
-			label = L.PROFILES_DELETEPROFILE,
-			tooltip = L.PROFILES_DELETEPROFILE_HELP,
 			style = "button",
-			values = function() return ED.Database:GetAllProfiles(true, true); end,
+			label = L.PROFILES_EXPORTBUTTON,
+			tooltip = L.PROFILES_EXPORTBUTTON_HELP,
+			buildAdded = "0.6.0|120100",
+			values = {
+				profile = L.PROFILES_EXPORT_PROFILE,
+				global  = L.PROFILES_EXPORT_GLOBAL,
+			},
+			sorting = { "profile", "global" },
 			get = function() end,
 			set = function(val)
-				ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_DELETE:format(val), function()
-					ED.Database:DeleteProfile(val);
-				end);
+				ED.ImportExportDialog:ShowExport(val);
 			end,
 		},
 	};

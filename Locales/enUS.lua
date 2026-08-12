@@ -250,29 +250,83 @@ L = {
 
 	-- Profiles Tab
 	PROFILES_TITLE = "Profiles",
+	PROFILES_TITLE_HELP = "Store multiple setups and assign one to each character.",
 
-	PROFILES_CURRENTPROFILE = "Current Profile",
-	PROFILES_CURRENTPROFILE_HELP = "Select or rename one of your available profiles for this character.",
+	PROFILES_TRANSFER = "Import & Export",
+	PROFILES_TRANSFER_HELP = "Move settings in and out of the game as a text string.",
 
-	PROFILES_NEWPROFILE = "New Profile",
-	PROFILES_NEWPROFILE_HELP = "Create a new profile and apply it to this character.|n|n- Enter a unique name and press Enter to open the confirmation prompt.",
+	PROFILES_MANAGE = "Manage Profiles",
+	PROFILES_MANAGE_HELP = "Manage your profiles. Hover over any profile to reveal more options.|n|n|cnWARNING_FONT_COLOR:Note: The 'Default' profile cannot be renamed or deleted.|r",
 
-	PROFILES_COPYFROM = "Copy From",
-	PROFILES_COPYFROM_HELP = "Import all settings from an existing profile into your current one.|n|n|cnWARNING_FONT_COLOR:Note: This will overwrite your current settings once confirmed.|r",
+	PROFILES_NEWPROFILE = "%s |cnPURE_GREEN_COLOR:New Profile|r",
 
-	PROFILES_RESETBUTTON = "Reset Profile",
+	PROFILES_RESETBUTTON = "%s |cnNORMAL_FONT_COLOR:Reset Active Profile|r",
 	PROFILES_RESETBUTTON_HELP = "Restore all settings in the active profile to their original defaults.",
 
 	PROFILES_DELETEPROFILE = "Delete Profile",
-	PROFILES_DELETEPROFILE_HELP = "Permanently remove a profile from the database.|n|n|cnWARNING_FONT_COLOR:Note: You cannot delete the 'Default' profile or the one currently in use.|r",
+	PROFILES_DELETEPROFILE_HELP = "Permanently remove this profile from the database.|n|n- Any character using this profile is switched back to 'Default'.",
 
-	PROFILES_CONFIRM_NEWPROFILE = "Are you sure you want to create the profile '%s'?",
-	PROFILES_CONFIRM_COPYFROM = "Are you sure you want to copy all settings from '%s'? This will overwrite your current configuration.",
-	PROFILES_CONFIRM_RESET = "Are you sure you want to reset the current profile to its original defaults?",
-	PROFILES_CONFIRM_DELETE = "Are you sure you want to permanently delete the profile '%s'?",
+	PROFILES_OPTIONS = "Profile Options",
+	PROFILES_OPTIONS_HELP = "Copy or rename this profile.",
 
 	PROFILES_RENAMEPROFILE = "Rename Profile",
-	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for the current profile.",
+	PROFILES_RENAMEPROFILE_HELP = "Choose a new name for this profile.|n|n- Renaming the profile you are using keeps you on it.",
+
+	PROFILES_COPYPROFILE = "Copy Profile",
+	PROFILES_COPYPROFILE_HELP = "Create a new profile holding a copy of this profile's settings, then switch to it.",
+
+	PROFILES_CONFIRM_RESET = "Are you sure you want to reset the active profile to its original defaults?",
+	PROFILES_CONFIRM_DELETE = "Are you sure you want to permanently delete the profile '%s'?",
+	PROFILES_CONFIRM_DELETE_CURRENT = "Are you sure you want to permanently delete the profile '%s'?|n|nAll characters with this as their active profile will be reset to 'Default'.",
+
+	PROFILES_IMPORTBUTTON = "Import Settings",
+	PROFILES_IMPORTBUTTON_HELP = "Import a profile or your global settings from a shareable text string.",
+
+	PROFILES_EXPORTBUTTON = "Export Settings",
+	PROFILES_EXPORTBUTTON_HELP = "Export the current profile or your global settings to a text string you can keep or share outside of the game.|n|nEach is exported separately.",
+
+	PROFILES_EXPORT_PROFILE = "Profile",
+	PROFILES_EXPORT_GLOBAL = "Global",
+
+	-- Import/Export Dialog
+	IMPORTEXPORT_TITLE_EXPORT_PROFILE = "Export Profile",
+	IMPORTEXPORT_TITLE_EXPORT_GLOBAL = "Export Global Settings",
+	IMPORTEXPORT_TITLE_IMPORT = "Import Settings",
+
+	IMPORTEXPORT_INSTRUCTIONS_EXPORT = "Press |cnGREEN_FONT_COLOR:Ctrl+C|r to copy the string below, then paste it wherever you want to keep or share it.",
+	IMPORTEXPORT_INSTRUCTIONS_IMPORT = "Paste a profile or global settings string below.",
+
+	IMPORTEXPORT_DETECTED_PROFILE = "This is a |cnGREEN_FONT_COLOR:profile|r string. Choose which profile to import it into.",
+	IMPORTEXPORT_DETECTED_GLOBAL = "This is a |cnGREEN_FONT_COLOR:global settings|r string. Importing it changes settings for every character and profile.",
+
+	IMPORTEXPORT_NAME_LABEL = "Import As",
+	IMPORTEXPORT_NAME_LABEL_HELP = "The profile the pasted settings are imported into.|n|nThis is filled in from the string automatically, but you can change it to import under another name.",
+	IMPORTEXPORT_OVERWRITE = "Overwrite",
+	IMPORTEXPORT_OVERWRITE_HELP = "Allow the import to replace a profile that already uses this name.|n|n|cnWARNING_FONT_COLOR:Note: Every setting in that profile will be replaced.|r",
+	IMPORTEXPORT_BUTTON_IMPORT = "Import",
+	IMPORTEXPORT_VERSION_DEV = "Dev",
+
+	IMPORTEXPORT_CONFIRM_PROFILE = "Are you sure you want to import the profile '%s'?|n|nExported on |cnGREEN_FONT_COLOR:%s|r from version |cnGREEN_FONT_COLOR:%s|r.",
+	IMPORTEXPORT_CONFIRM_OVERWRITE = "Are you sure you want to overwrite the profile '%s'?|n|nExported on |cnGREEN_FONT_COLOR:%s|r from version |cnGREEN_FONT_COLOR:%s|r.|n|n|cnWARNING_FONT_COLOR:Note: Every setting in that profile will be replaced.|r",
+	IMPORTEXPORT_CONFIRM_GLOBAL = "Are you sure you want to import these global settings?|n|nExported on |cnGREEN_FONT_COLOR:%s|r from version |cnGREEN_FONT_COLOR:%s|r.|n|n|cnWARNING_FONT_COLOR:Note: This affects every character and profile.|r",
+	IMPORTEXPORT_CONFIRM_RELOAD = "Global settings have been imported. Some of them only take effect after a reload.|n|nReload your interface now?",
+
+	IMPORTEXPORT_SUCCESS_PROFILE = "Imported the profile '%s' and switched to it.",
+	IMPORTEXPORT_SUCCESS_PROFILE_SKIPPED = "Imported the profile '%s' and switched to it. |cnWARNING_FONT_COLOR:%d |4setting:settings; could not be read and |4was:were; skipped.|r",
+	IMPORTEXPORT_SUCCESS_GLOBAL = "Imported your global settings.",
+	IMPORTEXPORT_SUCCESS_GLOBAL_SKIPPED = "Imported your global settings. |cnWARNING_FONT_COLOR:%d |4setting:settings; could not be read and |4was:were; skipped.|r",
+
+	IMPORTEXPORT_ERROR_NAME_EMPTY = "Enter a name for the profile to import into.",
+	IMPORTEXPORT_ERROR_NAME_TAKEN = "A profile named '%s' already exists. Choose another name, or enable 'Overwrite'.",
+	IMPORTEXPORT_ERROR_WRITE_FAILED = "That string could not be imported.",
+	IMPORTEXPORT_ERROR_EXPORT_FAILED = "Your settings could not be exported.",
+
+	IMPORTEXPORT_ERROR_PEM_DECODE = "That does not look like an " .. title .. " string. Make sure you copied all of it, including the |cnGREEN_FONT_COLOR:-----BEGIN-----|r and |cnGREEN_FONT_COLOR:-----END-----|r lines.",
+	IMPORTEXPORT_ERROR_PEM_LABEL = title .. " does not recognize that kind of string. It may have come from another addon, or from a newer version.",
+	IMPORTEXPORT_ERROR_DECOMPRESS = "That string could not be unpacked and is most likely damaged or incomplete.",
+	IMPORTEXPORT_ERROR_DESERIALIZE_CBOR = "That string could not be read and is most likely damaged.",
+	IMPORTEXPORT_ERROR_PACKED_DATA_INVALID = "That string is malformed and cannot be imported.",
+	IMPORTEXPORT_ERROR_SCHEMA_TOO_NEW = "That string was created by a newer version of " .. title .. " and cannot be read. Update the addon and try again.",
 
 	ADDONINFO_BUILD = "|cnNORMAL_FONT_COLOR:Build:|r %s",
 	ADDONINFO_BUILD_OUTDATED = title .. " is not optimized for this game build.|n|n|cnWARNING_FONT_COLOR:This may cause unexpected behavior.|r",
@@ -296,6 +350,8 @@ L = {
 
 	POPUP_EAVESDROP_GROUP = "Eavesdropper Group name.|nEnter to confirm.",
 	POPUP_RENAME_PROFILE = "Rename profile '%s'.|nEnter to confirm.",
+	POPUP_COPY_PROFILE = "Name the new profile copied from '%s'.|nEnter to confirm.",
+	POPUP_NEW_PROFILE = "Name the new profile.|nEnter to confirm.",
 
 	-- Message Prefixes (keep them shorthand)
 	MSG_PREFIX_PARTY = "P",

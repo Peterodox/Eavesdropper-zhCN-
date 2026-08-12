@@ -56,7 +56,7 @@ function ChatBox:AdjustFontSize(frame, delta)
 		return;
 	end
 
-	size = math.min(Constants.CHAT_BOX.MAX_FONT_SIZE, math.max(Constants.CHAT_BOX.MIN_FONT_SIZE, size + delta));
+	size = Clamp(size + delta, Constants.CHAT_BOX.MIN_FONT_SIZE, Constants.CHAT_BOX.MAX_FONT_SIZE);
 
 	-- Only save for main frame
 	if frame == ED.Frame then

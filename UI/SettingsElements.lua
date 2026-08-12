@@ -82,7 +82,8 @@ end
 -- Tooltip helpers
 -- ============================================================
 
-local function AttachTooltip(frame, title, description, anchorFrame, anchor, isFocused)
+---Attaches a standard settings tooltip to a widget
+function SettingsElements.AttachTooltip(frame, title, description, anchorFrame, anchor, isFocused)
 	if not title or not description then return; end
 	anchor = anchor or "ANCHOR_TOP";
 	local target = anchorFrame or frame;
@@ -99,6 +100,8 @@ local function AttachTooltip(frame, title, description, anchorFrame, anchor, isF
 		GameTooltip:Hide();
 	end);
 end
+
+local AttachTooltip = SettingsElements.AttachTooltip;
 
 local function AttachSliderTooltip(sliderWidget, title, description)
 	if not sliderWidget or not title or not description then return; end
@@ -150,8 +153,9 @@ end
 -- ============================================================
 
 ---Creates a left-label / right-control pair anchored inside parent
-local function CreateLabeledFrame(parent, data)
-	local labelText = data.label or "";
+---data.hideLabel leaves the label column empty (but is still used for tooltip title / header in dropdowns, etc.)
+function SettingsElements.CreateLabeledFrame(parent, data)
+	local labelText = not data.hideLabel and data.label or "";
 
 	local left = CreateFrame("Frame", nil, parent);
 	left:SetWidth(Constants.SETTINGS.LABEL_WIDTH);
@@ -176,6 +180,8 @@ local function CreateLabeledFrame(parent, data)
 
 	return left, right, label;
 end
+
+local CreateLabeledFrame = SettingsElements.CreateLabeledFrame;
 
 -- ============================================================
 -- Widget constructors
@@ -375,7 +381,7 @@ local function CreateSlider(parent, data)
 
 	---@param val number
 	local function RoundToStep(val)
-		return math.floor(val / stepVal + 0.5) * stepVal;
+		return Round(val / stepVal) * stepVal;
 	end
 
 	---@param val number
@@ -462,6 +468,7 @@ local function CreateDropDown(parent, data)
 			end
 
 			local entries = {};
+			local defaultEntry = data.defaultEntry;
 
 			if #sorting > 0 then
 				for _, key in ipairs(sorting) do
@@ -475,6 +482,13 @@ local function CreateDropDown(parent, data)
 					table.insert(temp, { key = key, label = text });
 				end
 				table.sort(temp, function(a, b)
+					-- Pin the default entry above the alphabetical run.
+					local aIsDefault = a.label == defaultEntry;
+					local bIsDefault = b.label == defaultEntry;
+					if aIsDefault ~= bIsDefault then
+						return aIsDefault;
+					end
+
 					return a.label:lower() < b.label:lower();
 				end);
 				for _, item in ipairs(temp) do
@@ -493,38 +507,112 @@ local function CreateDropDown(parent, data)
 				end
 			end
 
+			-- Leading action rows, drawn with an inline icon like Blizzard's new layout entry:
+			-- https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_EditMode/Shared/EditModeLayoutManagerUtil.lua
+			if data.actionEntries then
+				for _, action in ipairs(data.actionEntries) do
+					local iconSize = action.iconSize;
+					local icon;
+
+					if action.texture then
+						icon = CreateTextureMarkup(action.texture, 1, 1, iconSize or 0, iconSize or 0, 0, 1, 0, 1);
+					else
+						icon = CreateAtlasMarkup(disabled and action.disabledAtlas or action.atlas, iconSize, iconSize);
+					end
+
+					local actionEntry = root:CreateButton(action.label:format(icon), action.func);
+					actionEntry:SetEnabled(not disabled);
+
+					if action.tooltip then
+						-- Strip the icon and colour so the title reads like every other settings tooltip.
+						local title = string.trim(ED.Utils.StripColorCodes(action.label:format("")));
+						ED.Utils.SetMenuTooltip(actionEntry, action.tooltip, title);
+					end
+				end
+
+				root:CreateDivider();
+			end
+
 			local disabledValues = type(data.disabledValues) == "function" and data.disabledValues() or data.disabledValues or {};
 			for _, entry in ipairs(entries) do
 				local text, value = entry[1], entry[2];
 				local dropdownOption;
 
+				-- Only the label is blue (Blizzard uses this to denote 'default' / 'base'/ 'starter')
+				local isDefaultEntry = text == defaultEntry;
+				local displayText = isDefaultEntry and BLUE_FONT_COLOR:WrapTextInColorCode(text) or text;
+
 				local isEntryDisabled = disabled or (disabledValues[value] == true);
 				if data.style == "button" then
-					dropdownOption = root:CreateButton(text, SetSelected, value);
+					dropdownOption = root:CreateButton(displayText, SetSelected, value);
 					dropdownOption:SetEnabled(not isEntryDisabled);
 				else
-					dropdownOption = root:CreateRadio(text, IsSelected, SetSelected, value);
+					dropdownOption = root:CreateRadio(displayText, IsSelected, SetSelected, value);
 					dropdownOption:SetEnabled(not isEntryDisabled);
 				end
 
-				if data.gearButton and text ~= "Default" then
-					dropdownOption:AddInitializer(function(button, description, menu) -- luacheck: no unused (description)
-						local gearButton = MenuTemplates.AttachAutoHideGearButton(button);
-						gearButton:SetPoint("RIGHT");
-						gearButton:SetScript("OnClick", function()
-							menu:Close();
-							StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(text);
-							StaticPopup_Show("EAVESDROPPER_RENAME_PROFILE", nil, nil, { oldName = text });
+				-- Row gear/delete buttons follow Blizzard's Cooldown Manager layout rows:
+				-- https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_CooldownViewer/CooldownViewerSettings.lua#L1092
+				-- The default entry is permanently named and undeletable, so it only gets the gear.
+				local showDelete = data.deleteButton and not isDefaultEntry;
+				if data.gearButton or showDelete then
+					if data.gearButton then
+						-- Submenu entries are children of this row; DeactivateSubmenu stops hover from
+						-- opening them so only the gear button does, through ForceOpenSubmenu below.
+						local copyEntry = dropdownOption:CreateButton(L.PROFILES_COPYPROFILE, function()
+							ED.CopyDialog:Show(text);
 						end);
+						ED.Utils.SetMenuTooltip(copyEntry, L.PROFILES_COPYPROFILE_HELP);
 
-						MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
-							GameTooltip_SetTitle(tooltip, L.PROFILES_RENAMEPROFILE);
-							GameTooltip_AddNormalLine(tooltip, L.PROFILES_RENAMEPROFILE_HELP);
-						end);
+						if not isDefaultEntry then
+							local renameEntry = dropdownOption:CreateButton(L.PROFILES_RENAMEPROFILE, function()
+								ED.RenameDialog:Show(text);
+							end);
+							ED.Utils.SetMenuTooltip(renameEntry, L.PROFILES_RENAMEPROFILE_HELP);
+						end
 
-						-- Perhaps one day, this is the Block/Cancel button
-						-- local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
-						-- cancelButton:SetPoint("RIGHT", gearButton, "LEFT", -3, 0);
+						dropdownOption:DeactivateSubmenu();
+					end
+
+					dropdownOption:AddInitializer(function(button, description, menu)
+						local gearButton;
+
+						if data.gearButton then
+							gearButton = MenuTemplates.AttachAutoHideGearButton(button);
+							MenuTemplates.SetUtilityButtonLockedEnabledState(gearButton, true);
+							MenuTemplates.SetUtilityButtonAnchor(gearButton, MenuVariants.GearButtonAnchor, button);
+							MenuTemplates.SetUtilityButtonClickHandler(gearButton, function()
+								description:ForceOpenSubmenu();
+							end);
+
+							MenuUtil.HookTooltipScripts(gearButton, function(tooltip)
+								GameTooltip_SetTitle(tooltip, L.PROFILES_OPTIONS);
+								GameTooltip_AddNormalLine(tooltip, L.PROFILES_OPTIONS_HELP);
+							end);
+						end
+
+						if showDelete then
+							local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
+
+							cancelButton.Texture:SetAtlas("talents-button-reset");
+
+							MenuTemplates.SetUtilityButtonLockedEnabledState(cancelButton, true);
+							MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton or button);
+							MenuTemplates.SetUtilityButtonClickHandler(cancelButton, function()
+								-- Deleting the active profile also switches characters, so warn separately.
+								local isCurrent = text == ED.Database:GetProfileName();
+								local prompt = isCurrent and L.PROFILES_CONFIRM_DELETE_CURRENT or L.PROFILES_CONFIRM_DELETE;
+								ED.ConfirmDialog:Show(prompt:format(text), function()
+									ED.Database:DeleteProfile(text);
+								end);
+								menu:Close();
+							end);
+
+							MenuUtil.HookTooltipScripts(cancelButton, function(tooltip)
+								GameTooltip_SetTitle(tooltip, L.PROFILES_DELETEPROFILE);
+								GameTooltip_AddNormalLine(tooltip, L.PROFILES_DELETEPROFILE_HELP);
+							end);
+						end
 					end);
 				end
 			end

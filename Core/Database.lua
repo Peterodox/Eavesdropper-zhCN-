@@ -63,8 +63,14 @@ local GLOBAL_DEFAULTS = {
 	WelcomeMessage = true,
 };
 
+---Global keys an import must never touch. ProfileTransfer drops these too; this is the
+---backstop against a hand-edited string.
+local GLOBAL_IMPORT_EXCLUDED = {
+	Flyway = true,
+};
+
 ---@class EavesdropperProfile
----@field AdvNameDisplayMode number?
+---@field AdvNameDisplayMode EavesdropperNameDisplayMode?
 ---@field AdvNameDisplayModeOverride boolean?
 ---@field ApplyOnMainChat boolean?
 ---@field ColorBackground EavesdropperColor?
@@ -88,7 +94,7 @@ local GLOBAL_DEFAULTS = {
 ---@field LockTitleBar boolean?
 ---@field LockWindow boolean?
 ---@field MaxHistory number?
----@field NameDisplayMode number?
+---@field NameDisplayMode EavesdropperNameDisplayMode?
 ---@field NotificationDedicatedSound boolean?
 ---@field NotificationDedicatedSoundFile string?
 ---@field NotificationDedicatedFlashTaskbar boolean?
@@ -105,7 +111,7 @@ local GLOBAL_DEFAULTS = {
 ---@field NotificationTargetSoundFile string?
 ---@field NotificationTargetFlashTaskbar boolean?
 ---@field NotificationThrottle number?
----@field NPCAndQuestNameDisplayMode number?
+---@field NPCAndQuestNameDisplayMode EavesdropperNameDisplayMode?
 ---@field PreferMouseOver boolean?
 ---@field TargetOnly boolean?
 ---@field TargetPriority EavesdropperTargetPriority?
@@ -257,12 +263,14 @@ function Database:Init()
 
 	local db = EavesdropperDB;
 	local playerKey = ED.Utils.GetUnitName();
-	local profileName = db.profileKeys[playerKey] or "Default";
+	local profileName = db.profileKeys[playerKey] or Constants.DEFAULT_PROFILE_NAME;
 
 	ED.Globals.player_character_name = UnitName("player");
 	ED.Globals.player_sender_name = playerKey;
 	ED.Globals.player_guid = UnitGUID("player");
 
+	-- The Default profile is guaranteed to exist so deletions always have somewhere to fall back to.
+	db.profiles[Constants.DEFAULT_PROFILE_NAME] = db.profiles[Constants.DEFAULT_PROFILE_NAME] or {};
 	db.profiles[profileName] = db.profiles[profileName] or {};
 
 	self.currentProfile = db.profiles[profileName];
@@ -318,6 +326,19 @@ function Database:ProfileExists(profileName)
 	return EavesdropperDB.profiles[profileName] ~= nil;
 end
 
+---Checks whether a trimmed name is usable for a brand new profile.
+---Shared by the rename and copy dialogs so both gate their accept button identically.
+---@param profileName string?
+---@return boolean valid
+function Database:IsValidNewProfileName(profileName)
+	if not profileName then return false; end
+
+	local trimmed = string.trim(profileName);
+	if trimmed == "" then return false; end
+
+	return not self:ProfileExists(trimmed);
+end
+
 ---Switches to a different profile.
 ---@param profileName string Name of the profile to switch to.
 ---@return nil
@@ -363,7 +384,7 @@ function Database:GetAllProfiles(excludeCurrent, excludeDefault)
 
 	for name in pairs(EavesdropperDB.profiles) do
 		if not ((excludeCurrent and name == currentName) or
-				(excludeDefault and name == "Default")) then
+				(excludeDefault and name == Constants.DEFAULT_PROFILE_NAME)) then
 			results[name] = name;
 		end
 	end
@@ -371,11 +392,13 @@ function Database:GetAllProfiles(excludeCurrent, excludeDefault)
 	return results;
 end
 
----Creates a new profile and switches to it. If the profile already exists, switches to it.
+---Creates a new profile and switches to it. Refuses an existing name so it never acts as a plain switch.
 ---@param profileName string
 ---@return boolean success
 function Database:CreateProfile(profileName)
 	if not profileName or profileName == "" then return false; end
+	if self:ProfileExists(profileName) then return false; end
+
 	self:SetProfile(profileName);
 	return true;
 end
@@ -387,7 +410,7 @@ end
 function Database:RenameProfile(oldName, newName)
 	if not EavesdropperDB or not EavesdropperDB.profiles then return false; end
 	if not oldName or not EavesdropperDB.profiles[oldName] then return false; end
-	if oldName == "Default" then return false; end
+	if oldName == Constants.DEFAULT_PROFILE_NAME then return false; end
 	if not newName or newName == "" then return false; end
 	if self:ProfileExists(newName) then return false; end
 
@@ -417,12 +440,14 @@ function Database:RenameProfile(oldName, newName)
 end
 
 ---Creates a new profile as a copy of an existing one and switches to it.
+---Refuses an existing target name; SetProfile would otherwise switch to it and CopyProfile would overwrite it.
 ---@param sourceName string
 ---@param newName string
 ---@return boolean success
 function Database:CloneProfile(sourceName, newName)
 	if not newName or newName == "" then return false; end
 	if not EavesdropperDB.profiles[sourceName] then return false; end
+	if self:ProfileExists(newName) then return false; end
 
 	self:SetProfile(newName);
 	return self:CopyProfile(sourceName);
@@ -449,13 +474,59 @@ function Database:CopyProfile(sourceName)
 	return true;
 end
 
----Deletes a profile from saved variables. Prevents deleting the active profile.
+---Replaces a profile's contents with an imported settings table, then switches to it.
+---Written in one go instead of a SetSetting per key, so the widgets refresh once.
+---Imported data arrives fully resolved, so it is pruned back to a sparse diff.
+---@param profileName string
+---@param data table Sanitized settings; see ED.ProfileTransfer.SanitizeProfile.
+---@param overwrite boolean? Needed to write over an existing profile.
+---@return boolean success
+function Database:ImportProfile(profileName, data, overwrite)
+	if not profileName or profileName == "" then return false; end
+	if type(data) ~= "table" then return false; end
+	if not EavesdropperDB or not EavesdropperDB.profiles then return false; end
+
+	local exists = self:ProfileExists(profileName);
+	if exists and not overwrite then return false; end
+
+	local db = EavesdropperDB;
+	db.profiles[profileName] = db.profiles[profileName] or {};
+
+	local target = db.profiles[profileName];
+
+	-- Refill in place; currentProfile holds a reference to this table.
+	for k in pairs(target) do
+		target[k] = nil;
+	end
+
+	local copy = ED.Utils.DeepCopy(data);
+	for k, v in pairs(copy) do
+		target[k] = v;
+	end
+
+	pruneProfile(target);
+	self:SetProfile(profileName);
+
+	if ED.SettingsFrame then
+		ED.SettingsFrame:RefreshWidgets();
+	end
+
+	return true;
+end
+
+---Deletes a profile from saved variables. Deleting the active profile falls back to the Default one.
+---The Default profile itself can never be deleted.
 ---@param profileName string
 ---@return boolean success
 function Database:DeleteProfile(profileName)
 	if not profileName or profileName == "" then return false; end
-	if profileName == self:GetProfileName() then return false; end
+	if profileName == Constants.DEFAULT_PROFILE_NAME then return false; end
 	if not EavesdropperDB.profiles[profileName] then return true; end
+
+	-- Switch away first so the live reference never points at a removed table.
+	if profileName == self:GetProfileName() then
+		self:SetProfile(Constants.DEFAULT_PROFILE_NAME);
+	end
 
 	EavesdropperDB.profiles[profileName] = nil;
 
@@ -463,6 +534,10 @@ function Database:DeleteProfile(profileName)
 		if name == profileName then
 			EavesdropperDB.profileKeys[key] = nil;
 		end
+	end
+
+	if ED.SettingsFrame then
+		ED.SettingsFrame:RefreshWidgets();
 	end
 
 	return true;
@@ -705,6 +780,27 @@ function Database:SetGlobalSetting(key, value)
 	if ED.SettingsFrame then
 		ED.SettingsFrame:RefreshWidgets();
 	end
+end
+
+---Applies an imported table of account-wide settings.
+---Written per key through SetGlobalSetting, whose in-place table merge is what keeps
+---LibDBIcon's reference alive.
+---@param data table Sanitized settings; see ED.ProfileTransfer.SanitizeGlobals.
+---@return boolean success
+function Database:ImportGlobals(data)
+	if type(data) ~= "table" then return false; end
+
+	for key, value in pairs(data) do
+		if not GLOBAL_IMPORT_EXCLUDED[key] then
+			self:SetGlobalSetting(key, value);
+		end
+	end
+
+	if ED.Minimap then
+		ED.Minimap:UpdateMinimapButtons();
+	end
+
+	return true;
 end
 
 ED.Database = Database;

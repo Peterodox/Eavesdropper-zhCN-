@@ -84,6 +84,13 @@ Enums.MAGNIFIER_REASON = {
 	FOCUS     = 4,
 };
 
+---@enum EavesdropperNameDisplayMode
+Enums.NAME_DISPLAY_MODE = {
+	FULL_NAME     = 1,
+	FIRST_NAME    = 2,
+	ORIGINAL_NAME = 3,
+};
+
 ---@enum EavesdropperNotificationsType
 Enums.NOTIFICATIONS_TYPE = {
 	EMOTES = 1,

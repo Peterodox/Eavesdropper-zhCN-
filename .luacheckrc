@@ -204,6 +204,17 @@ stds.wow = {
 			},
 		},
 
+		C_EncodingUtil = {
+			fields = {
+				"CompressString",
+				"DecodeBase64",
+				"DecompressString",
+				"DeserializeCBOR",
+				"EncodeBase64",
+				"SerializeCBOR",
+			},
+		},
+
 		C_EquipmentSet = {
 			fields = {
 				"GetEquipmentSetID",
@@ -369,6 +380,21 @@ stds.wow = {
 
 		Enum = {
 			fields = {
+				Base64Variant = {
+					fields = {
+						"Standard",
+						"StandardUrlSafe",
+					},
+				},
+
+				CompressionMethod = {
+					fields = {
+						"Deflate",
+						"Zlib",
+						"Gzip",
+					},
+				},
+
 				TooltipDataLineType = {
 					fields = {
 						"UnitOwner",
@@ -421,6 +447,9 @@ stds.wow = {
 			fields = {
 				"AttachAutoHideCancelButton",
 				"AttachAutoHideGearButton",
+				"SetUtilityButtonAnchor",
+				"SetUtilityButtonClickHandler",
+				"SetUtilityButtonLockedEnabledState",
 			},
 		},
 
@@ -437,6 +466,13 @@ stds.wow = {
 				"HookTooltipScripts",
 				"SetElementText",
 				"ShowTooltip",
+			},
+		},
+
+		MenuVariants = {
+			fields = {
+				"CancelButtonAnchor",
+				"GearButtonAnchor",
 			},
 		},
 
@@ -619,6 +655,7 @@ stds.wow = {
 		"ReloadUI",
 		"RemoveChatWindowChannel",
 		"ResetCursor",
+		"Round",
 		"RoundToSignificantDigits",
 		"RunNextFrame",
 		"SafePack",
@@ -777,6 +814,7 @@ stds.wow = {
 		"BAG_FILTER_CONSUMABLES",
 		"BATTLENET_FONT_COLOR",
 		"BINDING_NAME_TOGGLESOUND",
+		"BLUE_FONT_COLOR",
 		"BNET_CLIENT_WOW",
 		"CANCEL",
 		"CHI",

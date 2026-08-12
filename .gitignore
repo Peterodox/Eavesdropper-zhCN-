@@ -23,6 +23,19 @@ Libs/**
 # But allow only Libs.xml at the top level
 !Libs/Libs.xml
 
+# AI assistant / coding agents
+*[Cc][Ll][Aa][Uu][Dd][Ee]*
+*[Cc][Oo][Pp][Ii][Ll][Oo][Tt]*
+*[Gg][Ee][Mm][Ii][Nn][Ii]*
+*[Cc][Uu][Rr][Ss][Oo][Rr]*
+*[Ww][Ii][Nn][Dd][Ss][Uu][Rr][Ff]*
+
+# Common AI config directories
+.claude/
+.copilot/
+.cursor/
+.windsurf/
+
 # Mac and Windows junk
 .DS_Store
 Thumbs.db

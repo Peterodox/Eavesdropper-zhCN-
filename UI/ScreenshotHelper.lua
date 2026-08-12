@@ -12,6 +12,25 @@ local externalFrames = {
 ---Frames hidden on entering a mode, restored when it is exited
 local hiddenFrames = {};
 
+---Store FontStyle/FontObject original color
+local FontStyles = {
+	"UserScaledFontGameNormal",
+	"UserScaledFontGameDisable",
+	"UserScaledFontGameHighlight",
+	"GameFontNormal",
+	"GameFontDisable",
+	"GameFontHighlight",
+};
+
+local FontStyleColorBackup = {};
+
+for _, fontStyleName in ipairs(FontStyles) do
+	local object = _G[fontStyleName];
+	if object then
+		FontStyleColorBackup[object] = {object:GetTextColor()};
+	end
+end
+
 ---Colorize an object and all their children
 ---@param object any
 ---@param colorize boolean
@@ -77,6 +96,17 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 				object.originalColor = nil;
 			end
 			object:SetFixedColor(false);
+
+			-- Restore fontObject color. Fix things like StaticPopupButton.
+			-- Only button labels take their color from the font object; any other
+			-- FontString keeps the color it was given, so it must not be overwritten.
+			local parent = object:GetParent();
+			if parent and parent.GetFontString and parent:GetFontString() == object then
+				local fontObject = object:GetFontObject();
+				if FontStyleColorBackup[fontObject] then
+					object:SetTextColor(unpack(FontStyleColorBackup[fontObject]));
+				end
+			end
 		end
 	elseif object:IsObjectType("Texture") then
 		if colorize then
@@ -103,6 +133,14 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 	if object.GetChildren then
 		for _, child in ipairs({object:GetChildren()}) do
 			ScreenshotHelper.SetupObjectColor(child, colorize, colorValue);
+		end
+	end
+
+	if object:IsObjectType("EditBox") then
+		if colorize then
+			object:SetHighlightColor(0, 0, 0, 1);
+		else
+			object:SetHighlightColor(0.3764, 0.3764, 0.3764, 1);
 		end
 	end
 end
@@ -175,8 +213,30 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 		end
 	end);
 
+	local importExportDialog = ED.ImportExportDialog and ED.ImportExportDialog.frame;
+	if importExportDialog then
+		if importExportDialog:IsVisible() then
+			importExportDialog:SetAlphaChannelMode(alphaChannelMode);
+		else
+			importExportDialog:SetAlphaChannelMode(nil);
+		end
+	end
+
 	if GameTooltip:IsVisible() then
 		ED.ScreenshotHelper.SetupObjectColorByMode(GameTooltip, alphaChannelMode);
+	end
+
+	-- StaticPopup frames are shared with Blizzard and other addons, so only the ones
+	-- currently showing one of our own dialogs are touched
+	local index = 1;
+	local dialog = _G["StaticPopup" .. index];
+	while dialog do
+		if dialog:IsVisible() and dialog.which and string.find(dialog.which, "EAVESDROPPER", 1, true) == 1 then
+			ED.ScreenshotHelper.SetupObjectColorByMode(dialog, alphaChannelMode);
+		end
+
+		index = index + 1;
+		dialog = _G["StaticPopup" .. index];
 	end
 
 	if Menu.GetManager():IsAnyMenuOpen() then

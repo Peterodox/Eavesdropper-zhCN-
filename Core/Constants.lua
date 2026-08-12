@@ -6,6 +6,20 @@ local L = ED.Localization;
 ---@class EavesdropperConstants
 local Constants = {};
 
+---Anchor points accepted by SetPoint.
+---@type table<string, boolean>
+Constants.ANCHOR_POINTS = {
+	TOPLEFT     = true,
+	TOP         = true,
+	TOPRIGHT    = true,
+	LEFT        = true,
+	CENTER      = true,
+	RIGHT       = true,
+	BOTTOMLEFT  = true,
+	BOTTOM      = true,
+	BOTTOMRIGHT = true,
+};
+
 ---Events for which target/emote notifications should never fire.
 ---@type table<string, boolean>
 Constants.CHANNELS_TO_SKIP_NOTIFICATIONS = {
@@ -18,11 +32,17 @@ Constants.CHANNELS_TO_SKIP_NOTIFICATIONS = {
 	CHAT_MSG_WHISPER_INFORM    = true,
 };
 
----Font size bounds for the chat box.
----@type table<string, number>
+---Value bounds for the chat box.
+---@class EavesdropperChatBoxConstants
+---@field MIN_FONT_SIZE number
+---@field MAX_FONT_SIZE number
+---@field MIN_HISTORY number
+---@field MAX_HISTORY number
 Constants.CHAT_BOX = {
 	MIN_FONT_SIZE = 6,
 	MAX_FONT_SIZE = 24,
+	MIN_HISTORY   = 10,
+	MAX_HISTORY   = 300,
 };
 
 ---All chat events the addon registers filters for.
@@ -195,6 +215,10 @@ Constants.DEFAULT_HIGHLIGHT_COLOR = {
 	b = 0,
 };
 
+---Name of the profile that always exists; it can never be renamed or deleted.
+---@type string
+Constants.DEFAULT_PROFILE_NAME = "Default";
+
 ---Sound entries registered with LibSharedMedia on startup.
 ---@type table<number, table<string, number>>
 Constants.DEFAULT_SOUND_LIST = {
@@ -348,6 +372,10 @@ Constants.MAGNIFIER_CHANGE_THROTTLE = 0.15;
 ---Throttle for magnifier updates when the target is nil.
 ---@type number
 Constants.MAGNIFIER_NIL_THROTTLE = 0.5;
+
+---Maximum number of characters a profile name may contain.
+---@type number
+Constants.MAX_PROFILE_NAME_LENGTH = 32;
 
 ---Short prefix strings prepended to messages by channel type.
 ---@type table<string, string>
