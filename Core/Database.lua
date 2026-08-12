@@ -482,9 +482,13 @@ end
 ---@param overwrite boolean? Needed to write over an existing profile.
 ---@return boolean success
 function Database:ImportProfile(profileName, data, overwrite)
-	if not profileName or profileName == "" then return false; end
+	if not profileName then return false; end
 	if type(data) ~= "table" then return false; end
 	if not EavesdropperDB or not EavesdropperDB.profiles then return false; end
+
+	-- Trim profile names like our dialog popups do.
+	profileName = string.trim(profileName);
+	if profileName == "" then return false; end
 
 	local exists = self:ProfileExists(profileName);
 	if exists and not overwrite then return false; end
