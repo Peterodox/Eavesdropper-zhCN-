@@ -20,7 +20,7 @@ L = {
 
 	BINDING_NAME_ED_TOGGLE = "Toggle Eavesdropper",
 	BINDING_NAME_ED_SETTINGS = "Toggle Settings",
-	BINDING_NAME_ED_EAVESDROP_ON = "Eavesdrop On (Dedicated)";
+	BINDING_NAME_ED_EAVESDROP_ON = "Eavesdrop On (Dedicated)",
 
 	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:Left-Click: Open settings|nRight-Click: Open profiles|nShift-Left-Click: Toggle Eavesdropper|nShift-Right-Click: Toggle Mentions|r",
 	POPUP_LINK = "|n|nPress |cnGREEN_FONT_COLOR:CTRL-C|r to copy the highlighted, then paste it in your web browser with |cnGREEN_FONT_COLOR:CTRL-V|r.",
@@ -365,7 +365,7 @@ L = {
 	ADDONINFO_VERSION = "|cnNORMAL_FONT_COLOR:Version:|r %s",
 	CLICK_TO_COPY = "|cnGREEN_FONT_COLOR:Click: Open link to copy|r",
 	AUTHOR_COLON = "Author: ",
-	VISIT_ADDON_PAGE_TOOLTIP = "Visit the addon page on %s.";
+	VISIT_ADDON_PAGE_TOOLTIP = "Visit the addon page on %s.",
 	RUN_CLICKABLE_COMMAND = "|cnGREEN_FONT_COLOR:Click: Run clickable command|r",
 
 	UNIT_POPUPS_EAVESDROPPER_OPTIONS_HEADER = "Eavesdropper Options",
