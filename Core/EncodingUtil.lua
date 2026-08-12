@@ -1,6 +1,8 @@
 -- Copyright The Eavesdropper Authors
--- Inspired by Total RP 3
 -- SPDX-License-Identifier: GPL-3.0-or-later
+--
+-- The PEM encoder and decoder are adapted from Total RP 3, used under Apache-2.0:
+-- https://github.com/Total-RP/Total-RP-3/blob/eac17a37d623faf73c5ea10108f096eb8645f477/totalRP3/Core/EncodingUtil.lua
 
 ---@class EavesdropperEncodingUtil
 local EncodingUtil = {};
