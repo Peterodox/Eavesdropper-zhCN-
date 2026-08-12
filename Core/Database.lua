@@ -794,8 +794,9 @@ end
 function Database:ImportGlobals(data)
 	if type(data) ~= "table" then return false; end
 
+	-- Unknown keys are skipped to prevent them persisting in SavedVariables.
 	for key, value in pairs(data) do
-		if not GLOBAL_IMPORT_EXCLUDED[key] then
+		if self.globalDefaults[key] ~= nil and not GLOBAL_IMPORT_EXCLUDED[key] then
 			self:SetGlobalSetting(key, value);
 		end
 	end
