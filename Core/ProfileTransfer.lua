@@ -381,7 +381,12 @@ function ProfileTransfer.DecodeString(text)
 
 	local schemaVersion, addonVersion, decodedType, name, settings = unpack(packed, 1, 5);
 
-	if type(schemaVersion) ~= "number" or schemaVersion > SCHEMA_VERSION then
+	-- A non-numeric version means the payload is (probably) malformed.
+	if type(schemaVersion) ~= "number" then
+		return nil, L.IMPORTEXPORT_ERROR_PACKED_DATA_INVALID;
+	end
+
+	if schemaVersion > SCHEMA_VERSION then
 		return nil, L.IMPORTEXPORT_ERROR_SCHEMA_TOO_NEW;
 	end
 
