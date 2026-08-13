@@ -59,10 +59,7 @@ end
 function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
 	if not UIParent:IsShown() or self.isCombatHidden then return; end
 
-	if self.chatTicker then
-		self.chatTicker:Cancel();
-		self.chatTicker = nil;
-	end
+	self:StopChatTicker();
 
 	self:ResetNewIndicator();
 
@@ -90,6 +87,55 @@ end
 
 ---Override in concrete mixins to remove self from the owning frame-manager table.
 function Eavesdropper_SharedFrameMixin:OnUnregisterFrame()
+end
+
+-- ============================================================
+-- Chat refresh ticker
+-- ============================================================
+
+---Returns true when no line in this window can still change with age.
+---An empty window counts as frozen.
+---@return boolean
+function Eavesdropper_SharedFrameMixin:IsTimestampFrozen()
+	if not self.newestEntryTime then return true; end
+	return (time() - self.newestEntryTime) >= Constants.TIMESTAMP_FREEZE_AGE;
+end
+
+---Start the periodic refresh that ages the timestamps on this window.
+---The first tick is offset randomly, so windows shown together do not refresh in the same frame.
+---Stops itself once every line is frozen; TryAddMessage starts it again.
+function Eavesdropper_SharedFrameMixin:StartChatTicker()
+	self.usesChatTicker = true;
+
+	if self.chatTicker or self.chatTickerDelay then return; end
+
+	local interval = Constants.WINDOW_REFRESH_INTERVAL;
+
+	self.chatTickerDelay = C_Timer.NewTimer(math.random() * interval, function()
+		self.chatTickerDelay = nil;
+		self.chatTicker = C_Timer.NewTicker(interval, function()
+			-- Refresh before testing; the tick that freezes a window still has a label to draw.
+			self:RefreshChat(true);
+
+			if self:IsTimestampFrozen() then
+				self:StopChatTicker();
+			end
+		end);
+	end);
+end
+
+---Cancel the periodic refresh and any pending staggered start.
+---The stagger uses NewTimer rather than After so it can be cancelled here.
+function Eavesdropper_SharedFrameMixin:StopChatTicker()
+	if self.chatTickerDelay then
+		self.chatTickerDelay:Cancel();
+		self.chatTickerDelay = nil;
+	end
+
+	if self.chatTicker then
+		self.chatTicker:Cancel();
+		self.chatTicker = nil;
+	end
 end
 
 -- ============================================================
@@ -480,6 +526,17 @@ function Eavesdropper_SharedFrameMixin:PopulateHistoryMessages(player, maxMessag
 	end
 end
 
+---Record the newest displayed entry's timestamp, read by IsTimestampFrozen.
+---Takes the maximum, as group windows merge several histories out of order.
+---@param entry EavesdropperChatEntry
+function Eavesdropper_SharedFrameMixin:TrackNewestEntry(entry)
+	if not entry.t then return; end
+
+	if not self.newestEntryTime or entry.t > self.newestEntryTime then
+		self.newestEntryTime = entry.t;
+	end
+end
+
 ---Record the clickblock timestamp then delegate to AddMessage.
 ---Dedicated and Group frames override this to also handle the new-message indicator.
 ---@param entry EavesdropperChatEntry
@@ -489,6 +546,11 @@ function Eavesdropper_SharedFrameMixin:TryAddMessage(entry)
 	end
 
 	self:AddMessage(entry);
+
+	-- A new message un-freezes the window; the flag skips the Magnifier-driven main frame.
+	if self.usesChatTicker then
+		self:StartChatTicker();
+	end
 end
 
 -- ============================================================

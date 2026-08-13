@@ -1,9 +1,6 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
----@type EavesdropperConstants
-local Constants = ED.Constants;
-
 ---@class EavesdropperDedicatedFrame
 local DedicatedFrame = {};
 
@@ -89,11 +86,7 @@ end
 
 function Eavesdropper_Dedicated_FrameMixin:OnShow()
 	self:RefreshChat();
-	if not self.chatTicker then
-		self.chatTicker = C_Timer.NewTicker(Constants.CHAT_UPDATE_THROTTLE_DEFAULT, function()
-			self:RefreshChat(true);
-		end);
-	end
+	self:StartChatTicker();
 end
 
 function Eavesdropper_Dedicated_FrameMixin:OnHide()
@@ -163,6 +156,7 @@ function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 
 	local scrollOffset = self.ChatBox:GetScrollOffset();
 	self.ChatBox:Clear();
+	self.newestEntryTime = nil;
 
 	local maxMessages = ED.Database:GetSetting("MaxHistory");
 	local player = self.eavesdropped_player;
@@ -202,6 +196,9 @@ function Eavesdropper_Dedicated_FrameMixin:AddMessage(entry, fromHistory)
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local formatted = ED.ChatFormatter:FormatMessage(entry);
 	self.ChatBox:AddMessage(formatted, r, g, b);
+
+	-- Only track lines (to keep frame awake) when they are actually inserted.
+	self:TrackNewestEntry(entry);
 end
 
 ---Override of the base TryAddMessage to handle the new-message indicator

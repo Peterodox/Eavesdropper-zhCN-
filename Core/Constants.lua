@@ -142,9 +142,19 @@ Constants.CHAT_HISTORY = {
 ---@type number
 Constants.CHAT_NEW_INDICATOR_FADE_OUT = 10;
 
----Default chat refresh throttle interval in milliseconds.
+---Seconds between the periodic redraws that age message timestamps.
 ---@type number
-Constants.CHAT_UPDATE_THROTTLE_DEFAULT = 10;
+Constants.WINDOW_REFRESH_INTERVAL = 60;
+
+---Age in seconds at which a message stops changing appearance entirely.
+---Shared by ChatFormatter:FormatMessage and the refresh ticker; they must not drift apart.
+---@type number
+Constants.TIMESTAMP_FREEZE_AGE = 30 * 60;
+
+---Seconds UpdateTarget skips a repeat refresh of the same target.
+---A debounce, not a refresh timer; keep below WINDOW_REFRESH_INTERVAL or it swallows ticker refreshes.
+---@type number
+Constants.TARGET_UPDATE_THROTTLE = 1;
 
 -- Credits: Listener by tmgpub.
 ---@type table<string, boolean>

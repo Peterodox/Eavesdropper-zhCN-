@@ -219,10 +219,9 @@ function Eavesdropper_FrameMixin:UpdateTarget()
 	-- Nothing to track and nothing previously tracked
 	if not target and not EAVESDROP_TARGET then return; end
 
-	-- Skip if same target and recently updated (throttle 10 sec by default)
-	-- Logically we never hit this, as UpdateTarget is typically already on a 10s timer, so this is a safety net)
+	-- Safety net for UpdateTarget arriving from several sources at once, not a refresh timer.
 	local now = GetTime();
-	if EAVESDROP_TARGET == target and now - (self.lastUpdate or 0) < Constants.CHAT_UPDATE_THROTTLE_DEFAULT then
+	if EAVESDROP_TARGET == target and now - (self.lastUpdate or 0) < Constants.TARGET_UPDATE_THROTTLE then
 		return;
 	end
 
@@ -263,6 +262,7 @@ function Eavesdropper_FrameMixin:RefreshChat()
 
 	self.refreshing = true;
 	self.ChatBox:Clear();
+	self.newestEntryTime = nil;
 
 	local maxMessages = ED.Database:GetSetting("MaxHistory");
 	local player = self.eavesdropped_player;
@@ -298,6 +298,9 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local formatted = ED.ChatFormatter:FormatMessage(entry);
 	self.ChatBox:AddMessage(formatted, r, g, b);
+
+	-- Only track lines (to keep frame awake) when they are actually inserted.
+	self:TrackNewestEntry(entry);
 end
 
 ---Apply all profile settings and refresh the settings UI.

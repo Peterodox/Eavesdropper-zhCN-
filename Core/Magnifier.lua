@@ -174,7 +174,7 @@ function Magnifier:HandleUpdate(reason)
 
 	-- Keep the chat timestamp ticker alive while a unit is magnified.
 	if unitGUID then
-		createTicker(self, "EavesdropperUpdate", Constants.CHAT_UPDATE_THROTTLE_DEFAULT, tickerCallback);
+		createTicker(self, "EavesdropperUpdate", Constants.WINDOW_REFRESH_INTERVAL, tickerCallback);
 	else
 		stopTicker(self, "EavesdropperUpdate");
 	end
