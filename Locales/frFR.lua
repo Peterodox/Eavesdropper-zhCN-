@@ -186,13 +186,13 @@ L = {
 	NEW_WINDOWS_NEW_INDICATOR_HELP = "Affiche une alerte visuelle dans la fenêtre qui reçoit un nouveau message.|n|n- L'alerte disparaît automatiquement après 10 secondes ou immédiatement au survol de la fenêtre.",
 
 	DEDICATED_WINDOWS_PERSIST = "Sauvegarde des fenêtres de suivi individuel",
-	DEDICATED_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de suivi individuel après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Liste des fenêtres ouvertes|n|n|cnWARNING_FONT_COLOR:Note : les options visuelles telles que la taille de la police et la position des fenêtres ne sont pas sauvegardées et seront réinitialisées.|r",
+	DEDICATED_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de suivi individuel après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Liste des fenêtres ouvertes|n- Position et taille de la fenêtre|n|n|cnWARNING_FONT_COLOR:Note : les filtres et la taille de la police ne sont pas sauvegardés et seront réinitialisés.|r",
 
 	GROUP_WINDOWS = "Fenêtres de groupe",
 	GROUP_WINDOWS_HELP = "Autorise la création de fenêtres séparées et indépendantes dédiées au suivi simultané de plusieurs utilisateurs (ex. : MP ou Amis).|n|n|cnWARNING_FONT_COLOR:Note : désactiver cette option fermera toutes les fenêtres de groupes.|r",
 
 	GROUP_WINDOWS_PERSIST = "Sauvegarde des groupes",
-	GROUP_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de groupes et de leurs configurations après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Nom de la fenêtre de groupe|n- Liste des joueurs inclus|n- Options du mode d'affichage des noms|n|n|cnWARNING_FONT_COLOR:Note : les options visuelles telles que la taille de la police et la position des fenêtres ne sont pas sauvegardées et seront réinitialisées.|r",
+	GROUP_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de groupes et de leurs configurations après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Nom de la fenêtre de groupe|n- Liste des joueurs inclus|n- Options du mode d'affichage des noms|n- Position et taille de la fenêtre|n|n|cnWARNING_FONT_COLOR:Note : les filtres et la taille de la police ne sont pas sauvegardés et seront réinitialisés.|r",
 
 	GROUP_OPTIONS = "Options du groupe",
 	GROUP_RENAME = "Changer le nom du groupe",
