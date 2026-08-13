@@ -189,7 +189,7 @@ end
 -- ============================================================
 
 ---Fade out the new-indicator (if active) then delegate hover state to ShowTitleBar.
----FadeOutNewIndicator is a no-op on frames without a NewIndicator widget (e.g. main frame).
+---FadeOutNewIndicator is a no-op on frames without a NewIndicator widget.
 function Eavesdropper_SharedFrameMixin:OnEnter()
 	if self.isMouseOver then return; end
 	self.isMouseOver = true;
