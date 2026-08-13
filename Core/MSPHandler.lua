@@ -7,11 +7,21 @@ local Constants = ED.Constants;
 ---@class EavesdropperMSP
 local MSP = {};
 
-MSP.cache = {
-	guid = nil,
-	data = nil,
-	time = 0,
-};
+---Cache resolved player results for this generation cycle by GUID
+---The values are the array TryGetMSPData returns.
+---@type table<string, table>
+MSP.cache = {};
+
+---A generation cycle is set by GetTime() and dropped when it goes past CACHE_RESET_TIME.
+---@type number
+local cacheGeneration = 0;
+
+local invalidateCache = false;
+
+---Invalidates the MSP cache; the next TryGetMSPData call drops every cached player.
+function MSP.InvalidateCache()
+	invalidateCache = true;
+end
 
 ---True once TRP3 has fired WORKFLOW_ON_LOADED. TRP3_API existing does not mean it is ready
 local trp3Ready = false;
@@ -228,13 +238,6 @@ function MSP.IsTRPReady()
 	return trp3Ready;
 end
 
-local invalidateCache = false;
-
----Invalidates the MSP cache, forcing the next TryGetMSPData call to fetch fresh data.
-function MSP.InvalidateCache()
-	invalidateCache = true;
-end
-
 ---Called from the TRP3 module once WORKFLOW_ON_LOADED fires. Any result cached before this
 ---point was resolved without TRP3 data, so the cache is dropped as well.
 function MSP.SetTRPReady()
@@ -266,13 +269,16 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 
 	local now = GetTime();
 
-	-- Return cached result if same GUID, still valid, and has meaningful data.
-	if not invalidateCache and MSP.cache.guid == playerGUID
-		and MSP.cache.data
-		and (now - MSP.cache.time) <= Constants.MSP.CACHE_RESET_TIME
-		and HasValidMSPData(MSP.cache.data)
-	then
-		local cached = MSP.cache.data;
+	-- Drop the whole generation cycle after it expires, or when an invalidation is pending.
+	if invalidateCache or (now - cacheGeneration) > Constants.MSP.CACHE_RESET_TIME then
+		wipe(MSP.cache);
+		cacheGeneration = now;
+		invalidateCache = false;
+	end
+
+	-- Return the cached result if this player was already resolved this generation cycle.
+	local cached = MSP.cache[playerGUID];
+	if cached and HasValidMSPData(cached) then
 		return
 			NormalizeString(cached[1]),
 			NormalizeString(cached[2]),
@@ -321,11 +327,8 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 	-- Normalise to ColorMixin, falling back to class colour.
 	nameColor = ED.Utils.NormalizeColor(nameColor) or ED.Utils.NormalizeColor(GetClassColor(playerGUID));
 
-	-- Store result in cache.
-	MSP.cache.guid = playerGUID;
-	MSP.cache.time = now;
-	MSP.cache.data = { fullName, firstName, nameColor, lastName, className, raceName };
-	invalidateCache = false;
+	-- Store the result in the current generation cycle.
+	MSP.cache[playerGUID] = { fullName, firstName, nameColor, lastName, className, raceName };
 
 	return fullName, firstName, nameColor, lastName, className, raceName;
 end
