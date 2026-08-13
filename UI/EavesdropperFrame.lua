@@ -243,11 +243,14 @@ function Eavesdropper_FrameMixin:UpdateTarget()
 		self.eavesdropped_player_guid = nil;
 	end
 
-	-- Refresh when target changed or chat is scrolled to the bottom
-	if hardUpdate or (self.ChatBox and self.ChatBox:AtBottom()) then
+	-- A new target starts at the bottom; otherwise hold the scroll and skip windows that cannot change.
+	if hardUpdate then
 		self:RefreshChat();
-		self.lastUpdate = now;
+	elseif not self:IsTimestampFrozen() then
+		self:RefreshChat(true);
 	end
+
+	self.lastUpdate = now;
 
 	self:HandleVisibility();
 end
@@ -257,10 +260,13 @@ end
 -- ============================================================
 
 ---Repopulate the chat box from stored history
-function Eavesdropper_FrameMixin:RefreshChat()
+---@param retainScroll boolean? If true, retain the previous scroll position.
+function Eavesdropper_FrameMixin:RefreshChat(retainScroll)
 	if not self.ChatBox then return; end
 
 	self.refreshing = true;
+
+	local scrollOffset = self.ChatBox:GetScrollOffset();
 	self.ChatBox:Clear();
 	self.newestEntryTime = nil;
 
@@ -269,6 +275,10 @@ function Eavesdropper_FrameMixin:RefreshChat()
 
 	if player then
 		self:PopulateHistoryMessages(player, maxMessages);
+	end
+
+	if retainScroll then
+		self.ChatBox:SetScrollOffset(scrollOffset or 0);
 	end
 
 	self:UpdateTitleBar();
