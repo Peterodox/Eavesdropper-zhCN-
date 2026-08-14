@@ -18,9 +18,31 @@ local cacheGeneration = 0;
 
 local invalidateCache = false;
 
+---Maps Name-Realm to GUID for everything in MSP.cache.
+---MSP and TRP3 identify players by name; the cache itself is keyed by GUID.
+---@type table<string, string>
+local cacheNames = {};
+
+---Drops every cached player and the name index with it.
+local function WipeCache()
+	wipe(MSP.cache);
+	wipe(cacheNames);
+end
+
 ---Invalidates the MSP cache; the next TryGetMSPData call drops every cached player.
 function MSP.InvalidateCache()
 	invalidateCache = true;
+end
+
+---Drops a single player, leaving every other cached player intact.
+---@param playerName string
+function MSP.InvalidatePlayer(playerName)
+	local key = ED.Utils.AddRealmSuffix(playerName);
+	local guid = cacheNames[key];
+	if not guid then return; end
+
+	MSP.cache[guid] = nil;
+	cacheNames[key] = nil;
 end
 
 ---True once TRP3 has fired WORKFLOW_ON_LOADED. TRP3_API existing does not mean it is ready
@@ -269,9 +291,11 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 
 	local now = GetTime();
 
-	-- Drop the whole generation cycle after it expires, or when an invalidation is pending.
-	if invalidateCache or (now - cacheGeneration) > Constants.MSP.CACHE_RESET_TIME then
-		wipe(MSP.cache);
+	-- Drop the whole generation cycle when an invalidation is pending, or when the max time
+	-- expires it. Invalidation is event-driven now, so the max time only catches missed events.
+	local cacheMaxTime = Constants.MSP.CACHE_RESET_TIME;
+	if invalidateCache or (cacheMaxTime > 0 and (now - cacheGeneration) > cacheMaxTime) then
+		WipeCache();
 		cacheGeneration = now;
 		invalidateCache = false;
 	end
@@ -328,7 +352,12 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 	nameColor = ED.Utils.NormalizeColor(nameColor) or ED.Utils.NormalizeColor(GetClassColor(playerGUID));
 
 	-- Store the result in the current generation cycle.
-	MSP.cache[playerGUID] = { fullName, firstName, nameColor, lastName, className, raceName };
+	-- A nil colour means MSP had nothing and GetPlayerInfoByGUID could not resolve the GUID.
+	-- Nothing will tell us when that changes, so leave it uncached and resolve again next draw.
+	if nameColor then
+		MSP.cache[playerGUID] = { fullName, firstName, nameColor, lastName, className, raceName };
+		cacheNames[ED.Utils.AddRealmSuffix(playerName)] = playerGUID;
+	end
 
 	return fullName, firstName, nameColor, lastName, className, raceName;
 end
@@ -342,8 +371,13 @@ function MSP.Init()
 	if not MSP.IsEnabled() then return; end
 
 	table.insert(msp.callback["updated"], function(senderID, field)
-		if ED.Globals.player_sender_name ~= senderID then return; end
 		if not Constants.MSP_RELEVANT_FIELDS[field] then return; end
+
+		-- Other players: drop their entry only; a refresh here would fire on every event.
+		if ED.Globals.player_sender_name ~= senderID then
+			MSP.InvalidatePlayer(senderID);
+			return;
+		end
 
 		-- Cancel any pending refresh before scheduling a new one.
 		if pendingRefresh then

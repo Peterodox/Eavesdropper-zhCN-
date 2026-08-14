@@ -255,14 +255,21 @@ function Utils.StripRealmSuffix(name)
 	return name:match("^(.-)%-.+$") or name;
 end
 
+---Appends the home realm to a name with none, normalized to match Chomp.NameMergedRealm.
+---@param name string?
+---@return string
+function Utils.AddRealmSuffix(name)
+	if type(name) ~= "string" or name == "" then return ""; end
+	if name:find("-", 1, true) then return name; end
+	return name .. "-" .. GetRealmName():gsub("[%s%-%.]*", "");
+end
+
 ---IsOwnPlayer Checks if the sender is the current player
 ---@param sender string
 ---@param event string
 ---@return boolean
 function Utils.IsOwnPlayer(sender, event)
-	if not sender:find('-') then
-		sender = sender .. "-" .. GetRealmName():gsub("[%s%-%.]*", "");
-	end
+	sender = Utils.AddRealmSuffix(sender);
 	return sender == Utils.GetUnitName()
 		or event == "CHAT_MSG_WHISPER_INFORM"
 		or (type(sender) == "string" and sender:match("^@.+%-self$"));

@@ -408,8 +408,9 @@ Constants.MESSAGE_PREFIXES = {
 ---@class EavesdropperMSPConstants
 ---@field CACHE_RESET_TIME number
 Constants.MSP = {
-	---Seconds before a cached MSP result is considered stale.
-	CACHE_RESET_TIME = 5,
+	---Max time for the MSP cache, in seconds. Invalidation is event-driven; this only catches an
+	---update we were never told about. Set to 0 to disable.
+	CACHE_RESET_TIME = 300,
 };
 
 ---MSP fields that are relevant to name/colour resolution.
