@@ -355,6 +355,7 @@ local function CreateSlider(parent, data)
 	local _, right, label = CreateLabeledFrame(parent, data);
 
 	local widget = CreateFrame("Slider", nil, right, "MinimalSliderWithSteppersTemplate");
+	widget:SetHeight(Constants.SETTINGS.WIDGET_HEIGHT);
 	widget:SetPoint("LEFT", right, "LEFT", 0, 0);
 	widget:SetPoint("RIGHT", right, "RIGHT", -25, 0); -- leave space for RightText
 	widget:SetPoint("CENTER", right, "CENTER");
