@@ -194,6 +194,9 @@ L = {
 	GROUP_WINDOWS_PERSIST = "Save Groups",
 	GROUP_WINDOWS_PERSIST_HELP = "Toggles whether Group Window configurations are saved across game restarts or UI reloads.|n|nThe following data is preserved:|n- Group Window name|n- List of included players|n- Name Display Mode settings|n|n|cnWARNING_FONT_COLOR:Note: Visual settings such as font size and window positions are not saved and will reset.|r",
 
+	GROUP_HISTORY_SIZE = "History Size",
+	GROUP_HISTORY_SIZE_HELP = "Set the maximum number of history messages Eavesdropper displays for each Group Window, merged across every tracked player.|n|n|cnWARNING_FONT_COLOR:Note: High values on a Group Window tracking many players may cause temporary frame drops when refreshing the history window.|r",
+
 	GROUP_OPTIONS = "Group Options",
 	GROUP_RENAME = "Change Group Name",
 

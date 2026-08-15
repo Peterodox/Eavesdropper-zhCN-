@@ -55,6 +55,12 @@ local NUMERIC_BOUNDS = {
 	NotificationThrottle = { min = 0 },
 };
 
+---Global keys clamped to a numeric range. Same shape as NUMERIC_BOUNDS, kept separate since
+---global and profile settings are sanitized through different functions.
+local GLOBAL_NUMERIC_BOUNDS = {
+	GroupHistorySize = { min = Constants.CHAT_BOX.MIN_GROUP_HISTORY, max = Constants.CHAT_BOX.MAX_GROUP_HISTORY },
+};
+
 ---Profile keys holding an r/g/b(/a) colour.
 local COLOR_KEYS = {
 	ColorBackground = true,
@@ -247,6 +253,9 @@ function ProfileTransfer.SanitizeGlobals(data)
 			dropped = dropped + 1;
 		elseif type(value) == "table" then
 			clean[key] = sanitizeShape(value, default, EXTRA_SHAPE_FIELDS[key]);
+		elseif GLOBAL_NUMERIC_BOUNDS[key] then
+			local bounds = GLOBAL_NUMERIC_BOUNDS[key];
+			clean[key] = bounds.max and Clamp(value, bounds.min, bounds.max) or math.max(value, bounds.min);
 		else
 			clean[key] = value;
 		end

@@ -30,6 +30,7 @@ local Database = {};
 ---@field DedicatedWindowsUnitPopups boolean?
 ---@field DedicatedWindowsPersist boolean?
 ---@field Flyway EavesdropperFlyway? Database patch versioning and migration tracking.
+---@field GroupHistorySize number?
 ---@field GroupWindows boolean?
 ---@field GroupWindowsNewIndicator boolean?
 ---@field GroupWindowsUnitPopups boolean?
@@ -51,6 +52,7 @@ local GLOBAL_DEFAULTS = {
 		CurrentBuild = 0,
 		Log = "",
 	},
+	GroupHistorySize = 100,
 	GroupWindows = true,
 	GroupWindowsNewIndicator = true,
 	GroupWindowsNPCSpeechDetectionNameShown = false,
@@ -725,6 +727,7 @@ end
 ---| "DedicatedWindowsUnitPopups"
 ---| "DedicatedWindowsPersist"
 ---| "Flyway"
+---| "GroupHistorySize"
 ---| "GroupWindows"
 ---| "GroupWindowsNewIndicator"
 ---| "GroupWindowsNPCSpeechDetectionNameShown"

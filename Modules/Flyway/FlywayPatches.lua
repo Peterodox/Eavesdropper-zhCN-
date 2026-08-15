@@ -2,6 +2,9 @@
 -- Inspired by Total RP 3, Sippy Cup
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
+---@type EavesdropperConstants
+local Constants = ED.Constants;
+
 ED.Flyway.Patches = {};
 
 ED.Flyway.Patches["1"] = {
@@ -26,4 +29,25 @@ ED.Flyway.Patches["1"] = {
 	end,
 
 	description = "Migrate profile-specific ElvUITheme to global, if disabled (default was enabled), we disable it globally.",
+};
+
+ED.Flyway.Patches["2"] = {
+	run = function()
+		if not EavesdropperDB or not EavesdropperDB.profiles then return; end
+
+		local highestMaxHistory = 0;
+
+		for _, profileData in pairs(EavesdropperDB.profiles) do
+			local maxHistory = profileData["MaxHistory"];
+			if type(maxHistory) == "number" and maxHistory > highestMaxHistory then
+				highestMaxHistory = maxHistory;
+			end
+		end
+
+		if highestMaxHistory > ED.Database.globalDefaults.GroupHistorySize then
+			EavesdropperDB.global.GroupHistorySize = Clamp(highestMaxHistory, Constants.CHAT_BOX.MIN_GROUP_HISTORY, Constants.CHAT_BOX.MAX_GROUP_HISTORY);
+		end
+	end,
+
+	description = "Raise the new global GroupHistorySize to match the highest per-profile MaxHistory, so existing large history setups aren't shrunk for Group Windows.",
 };
