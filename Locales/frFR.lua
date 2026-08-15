@@ -194,6 +194,9 @@ L = {
 	GROUP_WINDOWS_PERSIST = "Sauvegarde des groupes",
 	GROUP_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de groupes et de leurs configurations après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Nom de la fenêtre de groupe|n- Liste des joueurs inclus|n- Options du mode d'affichage des noms|n- Position et taille de la fenêtre|n|n|cnWARNING_FONT_COLOR:Note : les filtres et la taille de la police ne sont pas sauvegardés et seront réinitialisés.|r",
 
+	GROUP_HISTORY_SIZE = "Taille de l'historique",
+	GROUP_HISTORY_SIZE_HELP = "Définit le nombre maximum de messages affichés dans l'historique pour chaque fenêtre de groupe, tous joueurs suivis confondus.|n|n|cnWARNING_FONT_COLOR:Note : une valeur élevée sur une fenêtre regroupant de nombreux joueurs peut engendrer une baisse temporaire des images par seconde lors de l'actualisation de l'historique.|r",
+
 	GROUP_OPTIONS = "Options du groupe",
 	GROUP_RENAME = "Changer le nom du groupe",
 
