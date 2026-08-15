@@ -62,6 +62,38 @@ function Keywords:ParseList()
 	table.sort(self.SortedList, function(a, b) return #a > #b; end);
 end
 
+---Match-only scan for a keyword hit, working exactly as the one HandleChecks but skipping:
+---Colour wrapping, link placeholders and overlap tracking.
+---@param text string
+---@return boolean
+function Keywords:HasMatch(text)
+	if not self.SortedList or #self.SortedList == 0 then return false; end
+
+	local enablePartial = ED.Database:GetSetting("EnablePartialKeywords");
+	local lower = text:lower();
+
+	for _, kw in ipairs(self.SortedList) do
+		local searchPos = 1;
+		while searchPos <= #lower do
+			local startPos, endPos = lower:find(kw, searchPos, true);
+			if not startPos then break; end
+
+			if enablePartial then return true; end
+
+			local beforeOk = startPos == 1
+				or not lower:sub(startPos - 1, startPos - 1):match("[%w]");
+			local afterOk = endPos == #lower
+				or not lower:sub(endPos + 1, endPos + 1):match("[%w]");
+
+			if beforeOk and afterOk then return true; end
+
+			searchPos = endPos + 1;
+		end
+	end
+
+	return false;
+end
+
 ---Scans a chat message for keyword matches, wraps them in the highlight colour, and fires notifications.
 ---@param chatFrame table
 ---@param event string

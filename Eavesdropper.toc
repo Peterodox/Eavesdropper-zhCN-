@@ -68,6 +68,7 @@ Core\Notifications.lua
 Core\MainChat.lua
 Core\AdvancedFormatter.lua
 Core\Keywords.lua
+Core\Mentions.lua
 Core\ChatFormatter.lua
 Core\ChatHandler.lua
 

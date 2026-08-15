@@ -84,6 +84,12 @@ Enums.MAGNIFIER_REASON = {
 	FOCUS     = 4,
 };
 
+---@enum EavesdropperMentionReason
+Enums.MENTION_REASON = {
+	KEYWORD = 1,
+	EMOTE   = 2,
+};
+
 ---@enum EavesdropperNameDisplayMode
 Enums.NAME_DISPLAY_MODE = {
 	FULL_NAME     = 1,

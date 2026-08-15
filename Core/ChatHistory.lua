@@ -11,6 +11,7 @@
 ---@field p boolean? True if own player wrote the message
 ---@field g string? Player GUID, generally always set but nil for test messages.
 ---@field sm string? Split Marker (so old messages don't break on changing them).
+---@field mn EavesdropperMentionReason? Mention reason (stored as a bitmask); nil when the message was not aimed at the player.
 ---@field test boolean? For debug messages, true for test and generally nil otherwise.
 
 ---@class EavesdropperChatHistory
@@ -22,6 +23,7 @@
 ---@field deduperPrevious table<string, number> Deduplication timestamps, previous generation
 ---@field deduperRotatedAt number GetTime() the current generation began
 ---@field byTime table<number, EavesdropperChatEntry> Legacy migration index keyed by timestamp
+---@field mentions number[] Ascending entry ids flagged as mentions, derived (not saved in SVs)
 local ChatHistory = {};
 
 ChatHistory.byTime = {};
@@ -31,6 +33,7 @@ ChatHistory.deduperRotatedAt = 0;
 ChatHistory.minEntryId = 0;
 ChatHistory.history = {};
 ChatHistory.list = {};
+ChatHistory.mentions = {};
 ChatHistory.nextEntryId = 1;
 
 ---@type EavesdropperConstants
@@ -46,6 +49,7 @@ function ChatHistory:pruneAndRebuild(now)
 
 	local minLineId;
 	local maxLineId = 0;
+	local mentionIds = {};
 
 	for sender, chatData in pairs(self.history) do
 		local nextIndex = 1;
@@ -72,6 +76,10 @@ function ChatHistory:pruneAndRebuild(now)
 
 					self.list[entry.id] = entry;
 
+					if entry.mn then
+						mentionIds[#mentionIds + 1] = entry.id;
+					end
+
 					if entry.s then
 						entry.s, entry.g = ED.PlayerCache:InsertAndRetrieve(entry.s, entry.g);
 					end
@@ -87,6 +95,12 @@ function ChatHistory:pruneAndRebuild(now)
 		if #chatData == 0 then
 			self.history[sender] = nil;
 		end
+	end
+
+	-- Entries are grouped by sender, so ids come out unsorted; sort before appending.
+	table.sort(mentionIds);
+	for _, id in ipairs(mentionIds) do
+		self.mentions[#self.mentions + 1] = id;
 	end
 
 	return minLineId, maxLineId;
@@ -137,6 +151,7 @@ end
 function ChatHistory:LoadFromSaved(savedHistory)
 	self.history = savedHistory or {};
 	self.list = {};
+	self.mentions = {};
 	self.deduper = {};
 	self.deduperPrevious = {};
 	self.deduperRotatedAt = 0;
@@ -171,6 +186,28 @@ function ChatHistory:GetPlayerHistory(player, maxEntries, frame)
 	for i = #chat, 1, -1 do
 		if ED.ChatFilters:HasEvent(chat[i].e, targetFrame) then
 			tinsert(entries, 1, chat[i]);
+			if #entries >= limit then
+				break;
+			end
+		end
+	end
+
+	return entries;
+end
+
+---Returns the most recent mention entries, oldest-first, filtered for the given frame.
+---@param maxEntries number? Maximum number of entries to return
+---@param frame table? Frame whose filters to apply; defaults to ED.Frame
+---@return EavesdropperChatEntry[] entries Array of chat entries flagged as mentions
+function ChatHistory:GetMentions(maxEntries, frame)
+	local targetFrame = frame or ED.Frame;
+	local entries = {};
+	local limit = maxEntries or 50;
+
+	for i = #self.mentions, 1, -1 do
+		local entry = self.list[self.mentions[i]];
+		if entry and ED.ChatFilters:HasEvent(entry.e, targetFrame) then
+			tinsert(entries, 1, entry);
 			if #entries >= limit then
 				break;
 			end
@@ -229,20 +266,11 @@ function ChatHistory:HandleTextEmote(sender, message, advancedFormatting)
 	end
 	if advancedFormatting then return sender; end
 
-	local playSound = ED.Database:GetSetting("NotificationEmotesSound");
-	local flashTaskbar = ED.Database:GetSetting("NotificationEmotesFlashTaskbar");
-
-	if (playSound or flashTaskbar) and GetLocale() == "enUS" and message:find(" you[^a-z]") then
-		for _, phrase in ipairs(Constants.CHAT_HISTORY.IGNORE_EMOTES) do
-			if message:find(phrase, 1, true) then
-				return sender; -- Skip notifications for ignored phrases.
-			end
-		end
-
-		if playSound then
+	if ED.Mentions:IsEmoteAtPlayer(message) then
+		if ED.Database:GetSetting("NotificationEmotesSound") then
 			ED.Notifications:PlayAlertSound(ED.Enums.NOTIFICATIONS_TYPE.EMOTES);
 		end
-		if flashTaskbar then
+		if ED.Database:GetSetting("NotificationEmotesFlashTaskbar") then
 			ED.Notifications:FlashTaskbar();
 		end
 	end
@@ -333,6 +361,10 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 
 	self.history[sender] = self.history[sender] or {};
 
+	-- Kept pre-transform for Mentions:Evaluate below, so a substituted raid-target icon or
+	-- rewritten link cannot break up a keyword.
+	local rawMessage = message;
+
 	message = AddLanguageTag(language, message);
 	message = ED.Utils.HandleLinks(message);
 	message = SubRaidTargets(message);
@@ -354,6 +386,12 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 
 	if isOwn then
 		entry.p = true;
+	end
+
+	local mentionReason = ED.Mentions:Evaluate(entry, rawMessage);
+	if mentionReason then
+		entry.mn = mentionReason;
+		self.mentions[#self.mentions + 1] = entry.id;
 	end
 
 	self.list[entry.id] = entry;
