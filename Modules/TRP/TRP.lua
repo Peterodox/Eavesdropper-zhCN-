@@ -14,6 +14,18 @@ TRP3_API.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.WORKFLOW_ON_LOADED, func
 	ED.MSP.SetTRPReady();
 end);
 
+-- Drops cached MSP data when TRP3's register changes. Not in onStart, for the same reason.
+TRP3_API.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.REGISTER_DATA_UPDATED, function(_, unitID)
+	-- A nil unitID means some profile changed without telling us which character, so the only
+	-- safe answer is to drop everything. This is probably very rare, but let's still handle it.
+	if not unitID then
+		ED.MSP.InvalidateCache();
+		return;
+	end
+
+	ED.MSP.InvalidatePlayer(unitID);
+end);
+
 ---Registers the Eavesdropper toolbar button once TRP3's workflow is fully loaded.
 local function onStart()
 	TRP3_API.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.WORKFLOW_ON_LOADED, function()
