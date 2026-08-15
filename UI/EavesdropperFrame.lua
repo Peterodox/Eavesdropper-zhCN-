@@ -49,7 +49,7 @@ function Eavesdropper_FrameMixin:OnLoad()
 	self.isMouseOver = false;
 	self.titlebar_name = nil;
 
-	Eavesdropper_SharedFrameMixin.InitChatBox(self);
+	Eavesdropper_SharedFrameMixin.InitChatBox(self, Constants.CHAT_BOX.MAX_HISTORY);
 
 	if ED.Database and not ED.Database:GetSetting("LockWindow") then
 		self.ResizeHandle:Show();

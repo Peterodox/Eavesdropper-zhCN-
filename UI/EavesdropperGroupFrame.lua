@@ -1,6 +1,9 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
+---@type EavesdropperConstants
+local Constants = ED.Constants;
+
 local L = ED.Localization;
 
 ---@class EavesdropperGroupFrame
@@ -68,7 +71,7 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	self:EnableMouseWheel(true);
 	self:UpdateMouseLock();
 
-	Eavesdropper_SharedFrameMixin.InitChatBox(self);
+	Eavesdropper_SharedFrameMixin.InitChatBox(self, ED.Database:GetGlobalSetting("GroupHistorySize"));
 	self.EmptyLabel.Text:SetText(L.EMPTYLABEL_TEXT);
 
 	-- Inherit font size from the main frame settings
@@ -162,39 +165,52 @@ end
 -- Chat
 -- ============================================================
 
----Repopulate the chat box by merging history from all tracked players
+---Refreshes the chat box. `retainScroll` (used by the timestamp ticker and the MSP-driven
+---refresh) redraws the already-built merged cache; anything else triggers a full rebuild.
 ---@param retainScroll boolean? If true, retain the previous scroll position.
 function Eavesdropper_Group_FrameMixin:RefreshChat(retainScroll)
 	if not self.ChatBox then return; end
 
-	self.refreshing = true;
-
-	local scrollOffset = self.ChatBox:GetScrollOffset();
-	self.ChatBox:Clear();
-	self.newestEntryTime = nil;
-
-	local maxMessages = ED.Database:GetSetting("MaxHistory");
-
-	if self.players and #self.players > 0 then
-		self:PopulateGroupHistoryMessages(maxMessages);
+	if retainScroll and self.mergedHistory then
+		self:RedrawChat(retainScroll);
+		return;
 	end
 
-	if retainScroll then
-		self.ChatBox:SetScrollOffset(scrollOffset or 0);
+	if not self.players or #self.players == 0 then
+		self.mergedHistory = {};
+		self:RedrawChat(retainScroll);
+		return;
 	end
 
-	self.refreshing = false;
+	local maxMessages = ED.Database:GetGlobalSetting("GroupHistorySize");
+	self:RebuildMergedHistory(maxMessages, retainScroll);
 end
 
----Collect and deduplicate history across all tracked players, sort chronologically,
----trim to maxMessages, then feed entries into the ChatBox oldest-first.
+---Collects & deduplicates history across all tracker players, sorts and trims it to chosen
+---maxMessages, and then stores it in self.mergedHistory. As soon as we enter chunking
+---territory (above Constants.CHAT_BOX.GROUP_CHUNK_THRESHOLD) which is tracked
+---players x maxMessages, we make gathering spread out one player per RunNextFrame.
+---Not running sync prevents e.g. adding players to huge groups from causing fps issues.
 ---@param maxMessages number
-function Eavesdropper_Group_FrameMixin:PopulateGroupHistoryMessages(maxMessages)
-	-- Collect entries keyed by entry.id to deduplicate across players
+---@param retainScroll boolean?
+---@param forceSync boolean? Bypasses the chunk threshold to gather synchronously; used by the
+---debug measurement harness.
+function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainScroll, forceSync)
+	self.mergeGeneration = (self.mergeGeneration or 0) + 1;
+	local generation = self.mergeGeneration;
+
+	-- Chunking gathering takes time and might span multiple frames, so we keep the current id and table here.
+	-- We can then use this in finish() to still fold new live messages into self.mergedHistory (through AppendToMergedHistory).
+	local rebuildStartId = ED.ChatHistory.nextEntryId;
+	local previousMerged = self.mergedHistory;
+
+	local players = self.players;
 	local seen = {};
 	local entries = {};
 
-	for _, player in ipairs(self.players) do
+	---Gathers one player's history into entries/seen, deduplicating by entry id, as we did in the past.
+	---@param player string
+	local function gatherPlayer(player)
 		local history = ED.ChatHistory:GetPlayerHistory(player, maxMessages, self);
 
 		if not history or #history == 0 then
@@ -205,27 +221,121 @@ function Eavesdropper_Group_FrameMixin:PopulateGroupHistoryMessages(maxMessages)
 			for _, entry in ipairs(history) do
 				if not seen[entry.id] then
 					seen[entry.id] = true;
-					table.insert(entries, entry);
+					entries[#entries + 1] = entry;
 				end
 			end
 		end
 	end
 
-	if #entries == 0 then return; end
+	---Sorts entries ascending by id and trims to maxMessages.
+	local function sortAndTrim()
+		if #entries == 0 then return; end
 
-	-- Sort ascending by ID: lowest ID (oldest) first, highest ID (newest) last
-	table.sort(entries, function(a, b) return a.id < b.id; end);
+		table.sort(entries, function(a, b) return a.id < b.id; end);
 
-	-- Trim to maxMessages total after merging
-	local start = math.max(1, #entries - maxMessages + 1);
-	for i = start, #entries do
-		self:AddMessage(entries[i], true);
+		local start = math.max(1, #entries - maxMessages + 1);
+		local trimmed = {};
+		for i = start, #entries do
+			trimmed[#trimmed + 1] = entries[i];
+		end
+		entries = trimmed;
+	end
+
+	---Sorts and trims the gather, folds in anything appended live since the rebuild started,
+	---stores the result, and redraws. See comment @ rebuildStartId for further info.
+	local function finish()
+		sortAndTrim();
+
+		if previousMerged then
+			local foldedInLive = false;
+
+			for _, entry in ipairs(previousMerged) do
+				if entry.id >= rebuildStartId and not seen[entry.id] then
+					seen[entry.id] = true;
+					entries[#entries + 1] = entry;
+					foldedInLive = true;
+				end
+			end
+
+			if foldedInLive then
+				sortAndTrim();
+			end
+		end
+
+		self.mergedHistory = entries;
+		self:RedrawChat(retainScroll);
+	end
+
+	if forceSync or (#players * maxMessages <= Constants.CHAT_BOX.GROUP_CHUNK_THRESHOLD) then
+		for _, player in ipairs(players) do
+			gatherPlayer(player);
+		end
+		finish();
+		return;
+	end
+
+	-- We use a counter for generation so that an invalidated rebuild is stopped early in favor of the newer one.
+	local index = 0;
+	local function step()
+		if generation ~= self.mergeGeneration then return; end
+
+		index = index + 1;
+		local player = players[index];
+
+		if not player then
+			finish();
+			return;
+		end
+
+		gatherPlayer(player);
+		RunNextFrame(step);
+	end
+
+	step();
+end
+
+---Clears the ChatBox and replays the cached merged history into it. Does not re-gather,
+---dedupe, or sort; callers needing that go through RebuildMergedHistory.
+---@param retainScroll boolean? If true, retain the previous scroll position.
+function Eavesdropper_Group_FrameMixin:RedrawChat(retainScroll)
+	if not self.ChatBox then return; end
+
+	self.refreshing = true;
+
+	local scrollOffset = self.ChatBox:GetScrollOffset();
+	self.ChatBox:Clear();
+	self.newestEntryTime = nil;
+
+	if self.mergedHistory then
+		for _, entry in ipairs(self.mergedHistory) do
+			self:AddMessage(entry, true);
+		end
+	end
+
+	if retainScroll then
+		self.ChatBox:SetScrollOffset(scrollOffset or 0);
+	end
+
+	self.refreshing = false;
+end
+
+---Appends a live entry to the cached merged history, if over cap we trim from the front.
+---Safe as it does not require re-sorting and they have higher IDs so live after the cache.
+---@param entry EavesdropperChatEntry
+function Eavesdropper_Group_FrameMixin:AppendToMergedHistory(entry)
+	if not self.mergedHistory then return; end
+
+	self.mergedHistory[#self.mergedHistory + 1] = entry;
+
+	local maxMessages = ED.Database:GetGlobalSetting("GroupHistorySize");
+	while #self.mergedHistory > maxMessages do
+		table.remove(self.mergedHistory, 1);
 	end
 end
 
 ---Add a chat entry to the frame
 ---@param entry EavesdropperChatEntry
----@param fromHistory boolean
+---@param fromHistory boolean? True when replayed from the merged history cache; false/nil for a live message.
 function Eavesdropper_Group_FrameMixin:AddMessage(entry, fromHistory)
 	if not entry then return; end
 
@@ -239,8 +349,12 @@ function Eavesdropper_Group_FrameMixin:AddMessage(entry, fromHistory)
 
 	if not self.ChatBox then return; end
 
-	if not fromHistory and (ED.Database:GetSetting("HideWhenEmpty") or ED.Frame.settingsOpened) then
-		self:Show();
+	if not fromHistory then
+		if ED.Database:GetSetting("HideWhenEmpty") or ED.Frame.settingsOpened then
+			self:Show();
+		end
+
+		self:AppendToMergedHistory(entry);
 	end
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);

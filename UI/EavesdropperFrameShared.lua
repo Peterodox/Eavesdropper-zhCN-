@@ -22,12 +22,13 @@ Eavesdropper_SharedFrameMixin = {};
 
 ---Configure ChatBox properties
 ---@param frame table
-function Eavesdropper_SharedFrameMixin.InitChatBox(frame)
+---@param maxLines number Lines beyond this are silently dropped, oldest first.
+function Eavesdropper_SharedFrameMixin.InitChatBox(frame, maxLines)
 	frame.ChatBox:SetJustifyH("LEFT");
 	frame.ChatBox:SetIndentedWordWrap(true);
 	frame.ChatBox:SetHyperlinksEnabled(true);
 	frame.ChatBox:SetFading(false);
-	frame.ChatBox:SetMaxLines(300);
+	frame.ChatBox:SetMaxLines(maxLines);
 	frame.ChatBox.ScrollMarker.Text:SetText(L.SCROLLMARKER_TEXT);
 end
 

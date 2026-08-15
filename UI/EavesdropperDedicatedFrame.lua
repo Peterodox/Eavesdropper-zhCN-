@@ -1,6 +1,9 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
+---@type EavesdropperConstants
+local Constants = ED.Constants;
+
 ---@class EavesdropperDedicatedFrame
 local DedicatedFrame = {};
 
@@ -50,7 +53,7 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	self:EnableMouseWheel(true);
 	self:UpdateMouseLock();
 
-	Eavesdropper_SharedFrameMixin.InitChatBox(self);
+	Eavesdropper_SharedFrameMixin.InitChatBox(self, Constants.CHAT_BOX.MAX_HISTORY);
 
 	-- Inherit font size from the main frame settings
 	self.FontSize = ED.Database:GetSetting("FontSize");

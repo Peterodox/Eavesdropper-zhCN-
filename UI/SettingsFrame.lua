@@ -1041,6 +1041,24 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			end,
 		},
 		{
+			type = "slider",
+			global = true,
+			label = L.GROUP_HISTORY_SIZE,
+			tooltip = L.GROUP_HISTORY_SIZE_HELP,
+			buildAdded = "0.6.0|120100",
+			min = Constants.CHAT_BOX.MIN_GROUP_HISTORY,
+			max = Constants.CHAT_BOX.MAX_GROUP_HISTORY,
+			step = 1,
+			get = function() return ED.Database:GetGlobalSetting("GroupHistorySize"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("GroupHistorySize", val);
+				ED.GroupFrame:ForEachFrame(function(frame)
+					frame.ChatBox:SetMaxLines(val);
+					frame:RefreshChat();
+				end);
+			end,
+		},
+		{
 			type = "subtitle",
 			label = L.NOTIFICATIONS_TITLE,
 			subLabel = L.GROUP_NOTIFICATIONS_HELP,
@@ -1263,7 +1281,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 	self:CreateCategory(L.ADV_FORMATTING, true, advancedFormattingOptions);
 	self:CreateCategory(L.KEYWORDS_TITLE, true, keywordsOptions);
 	self:CreateCategory(L.DEDICATED, false, dedicatedOptions);
-	self:CreateCategory(L.GROUPS, false, groupOptions);
+	self:CreateCategory(L.GROUPS, true, groupOptions);
 	self:CreateCategory(L.NOTIFICATIONS_TITLE, false, notificationsOptions);
 	self:CreateCategory(L.PROFILES_TITLE, false, profilesOptions);
 
