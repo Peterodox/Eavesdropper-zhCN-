@@ -388,7 +388,7 @@ function MSP.Init()
 		-- Debounce: wait 0.5 s in case multiple fields update in the same frame.
 		pendingRefresh = C_Timer.NewTicker(0.5, function()
 			pendingRefresh = nil;
-			MSP.InvalidateCache();
+			MSP.InvalidatePlayer(senderID);
 			ED.Keywords:ParseList();
 			ED.QuestText:RefreshPlayerPreferredName();
 		end, 1);
