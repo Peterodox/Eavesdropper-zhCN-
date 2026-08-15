@@ -7,11 +7,47 @@ local Constants = ED.Constants;
 ---@class EavesdropperMSP
 local MSP = {};
 
-MSP.cache = {
-	guid = nil,
-	data = nil,
-	time = 0,
-};
+---Cache resolved player results for this generation cycle by GUID
+---The values are the array TryGetMSPData returns.
+---@type table<string, table>
+MSP.cache = {};
+
+---A generation cycle is set by GetTime() and dropped when it goes past CACHE_RESET_TIME.
+---@type number
+local cacheGeneration = 0;
+
+local invalidateCache = false;
+
+---Maps Name-Realm to GUID for everything in MSP.cache.
+---MSP and TRP3 identify players by name; the cache itself is keyed by GUID.
+---@type table<string, string>
+local cacheNames = {};
+
+---Drops every cached player and the name index with it.
+local function WipeCache()
+	wipe(MSP.cache);
+	wipe(cacheNames);
+end
+
+---Invalidates the MSP cache; the next TryGetMSPData call drops every cached player.
+---Also schedules a redraw through the burst window, so the updated data is drawn.
+function MSP.InvalidateCache()
+	invalidateCache = true;
+	Eavesdropper_SharedFrameMixin.ScheduleDataRefresh();
+end
+
+---Drops a single player, leaving every other cached player intact.
+---Also schedules a redraw through the burst window, so the updated data is drawn.
+---@param playerName string
+function MSP.InvalidatePlayer(playerName)
+	local key = ED.Utils.AddRealmSuffix(playerName);
+	local guid = cacheNames[key];
+	if not guid then return; end
+
+	MSP.cache[guid] = nil;
+	cacheNames[key] = nil;
+	Eavesdropper_SharedFrameMixin.ScheduleDataRefresh();
+end
 
 ---True once TRP3 has fired WORKFLOW_ON_LOADED. TRP3_API existing does not mean it is ready
 local trp3Ready = false;
@@ -228,13 +264,6 @@ function MSP.IsTRPReady()
 	return trp3Ready;
 end
 
-local invalidateCache = false;
-
----Invalidates the MSP cache, forcing the next TryGetMSPData call to fetch fresh data.
-function MSP.InvalidateCache()
-	invalidateCache = true;
-end
-
 ---Called from the TRP3 module once WORKFLOW_ON_LOADED fires. Any result cached before this
 ---point was resolved without TRP3 data, so the cache is dropped as well.
 function MSP.SetTRPReady()
@@ -266,13 +295,18 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 
 	local now = GetTime();
 
-	-- Return cached result if same GUID, still valid, and has meaningful data.
-	if not invalidateCache and MSP.cache.guid == playerGUID
-		and MSP.cache.data
-		and (now - MSP.cache.time) <= Constants.MSP.CACHE_RESET_TIME
-		and HasValidMSPData(MSP.cache.data)
-	then
-		local cached = MSP.cache.data;
+	-- Drop the whole generation cycle when an invalidation is pending, or when the max time
+	-- expires it. Invalidation is event-driven now, so the max time only catches missed events.
+	local cacheMaxTime = Constants.MSP.CACHE_RESET_TIME;
+	if invalidateCache or (cacheMaxTime > 0 and (now - cacheGeneration) > cacheMaxTime) then
+		WipeCache();
+		cacheGeneration = now;
+		invalidateCache = false;
+	end
+
+	-- Return the cached result if this player was already resolved this generation cycle.
+	local cached = MSP.cache[playerGUID];
+	if cached and HasValidMSPData(cached) then
 		return
 			NormalizeString(cached[1]),
 			NormalizeString(cached[2]),
@@ -321,11 +355,13 @@ function MSP.TryGetMSPData(playerName, playerGUID, forceInvalidate)
 	-- Normalise to ColorMixin, falling back to class colour.
 	nameColor = ED.Utils.NormalizeColor(nameColor) or ED.Utils.NormalizeColor(GetClassColor(playerGUID));
 
-	-- Store result in cache.
-	MSP.cache.guid = playerGUID;
-	MSP.cache.time = now;
-	MSP.cache.data = { fullName, firstName, nameColor, lastName, className, raceName };
-	invalidateCache = false;
+	-- Store the result in the current generation cycle.
+	-- A nil colour means MSP had nothing and GetPlayerInfoByGUID could not resolve the GUID.
+	-- Nothing will tell us when that changes, so leave it uncached and resolve again next draw.
+	if nameColor then
+		MSP.cache[playerGUID] = { fullName, firstName, nameColor, lastName, className, raceName };
+		cacheNames[ED.Utils.AddRealmSuffix(playerName)] = playerGUID;
+	end
 
 	return fullName, firstName, nameColor, lastName, className, raceName;
 end
@@ -339,8 +375,13 @@ function MSP.Init()
 	if not MSP.IsEnabled() then return; end
 
 	table.insert(msp.callback["updated"], function(senderID, field)
-		if ED.Globals.player_sender_name ~= senderID then return; end
 		if not Constants.MSP_RELEVANT_FIELDS[field] then return; end
+
+		-- Other players: drop their entry only; a refresh here would fire on every event.
+		if ED.Globals.player_sender_name ~= senderID then
+			MSP.InvalidatePlayer(senderID);
+			return;
+		end
 
 		-- Cancel any pending refresh before scheduling a new one.
 		if pendingRefresh then
@@ -351,7 +392,7 @@ function MSP.Init()
 		-- Debounce: wait 0.5 s in case multiple fields update in the same frame.
 		pendingRefresh = C_Timer.NewTicker(0.5, function()
 			pendingRefresh = nil;
-			MSP.InvalidateCache();
+			MSP.InvalidatePlayer(senderID);
 			ED.Keywords:ParseList();
 			ED.QuestText:RefreshPlayerPreferredName();
 		end, 1);

@@ -59,10 +59,7 @@ end
 function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
 	if not UIParent:IsShown() or self.isCombatHidden then return; end
 
-	if self.chatTicker then
-		self.chatTicker:Cancel();
-		self.chatTicker = nil;
-	end
+	self:StopChatTicker();
 
 	self:ResetNewIndicator();
 
@@ -90,6 +87,113 @@ end
 
 ---Override in concrete mixins to remove self from the owning frame-manager table.
 function Eavesdropper_SharedFrameMixin:OnUnregisterFrame()
+end
+
+-- ============================================================
+-- Chat refresh ticker
+-- ============================================================
+
+---Returns true when no line in this window can still change with age.
+---An empty window counts as frozen.
+---@return boolean
+function Eavesdropper_SharedFrameMixin:IsTimestampFrozen()
+	if not self.newestEntryTime then return true; end
+	return (time() - self.newestEntryTime) >= Constants.TIMESTAMP_FREEZE_AGE;
+end
+
+---Start the periodic refresh that ages the timestamps on this window.
+---The first tick is offset randomly, so windows shown together do not refresh in the same frame.
+---Stops itself once every line is frozen; TryAddMessage starts it again.
+function Eavesdropper_SharedFrameMixin:StartChatTicker()
+	self.usesChatTicker = true;
+
+	if self.chatTicker or self.chatTickerDelay then return; end
+
+	local interval = Constants.WINDOW_REFRESH_INTERVAL;
+
+	self.chatTickerDelay = C_Timer.NewTimer(math.random() * interval, function()
+		self.chatTickerDelay = nil;
+		self.chatTicker = C_Timer.NewTicker(interval, function()
+			-- Refresh before testing; the tick that freezes a window still has a label to draw.
+			self:RefreshChat(true);
+
+			if self:IsTimestampFrozen() then
+				self:StopChatTicker();
+			end
+		end);
+	end);
+end
+
+---Cancel the periodic refresh and any pending staggered start.
+---The stagger uses NewTimer rather than After so it can be cancelled here.
+function Eavesdropper_SharedFrameMixin:StopChatTicker()
+	if self.chatTickerDelay then
+		self.chatTickerDelay:Cancel();
+		self.chatTickerDelay = nil;
+	end
+
+	if self.chatTicker then
+		self.chatTicker:Cancel();
+		self.chatTicker = nil;
+	end
+end
+
+-- ============================================================
+-- Data-driven refresh (MSP invalidation)
+-- ============================================================
+
+---True while the burst window's cooldown is running.
+local dataRefreshOnCooldown = false;
+
+---True if an invalidation arrived during the cooldown and still needs a redraw.
+local dataRefreshPending = false;
+
+---Redraw every open dedicated and group window, and the main window if it's shown.
+local function RefreshAllWindows()
+	ED.DedicatedFrame:ForEachFrame(function(frame)
+		frame:RefreshChat(true);
+	end);
+
+	ED.GroupFrame:ForEachFrame(function(frame)
+		frame:RefreshChat(true);
+	end);
+
+	if ED.Frame:IsShown() then
+		ED.Frame:RefreshChat(true);
+	end
+end
+
+---Rearms itself if something is pending when the cooldown expires, rather than always going
+---idle. Keeps a sustained burst on a steady interval instead of having it basically spam.
+local function ArmDataRefreshCooldown()
+	C_Timer.NewTimer(Constants.DATA_REFRESH_THROTTLE, function()
+		if not dataRefreshPending then
+			dataRefreshOnCooldown = false;
+			ED.Debug:Print("ScheduleDataRefresh: cooldown expired, idle");
+			return;
+		end
+
+		dataRefreshPending = false;
+		ED.Debug:Print("ScheduleDataRefresh: cooldown expired, trailing redraw");
+		RefreshAllWindows();
+		ArmDataRefreshCooldown();
+	end);
+end
+
+---Entry point for MSP invalidation to request a redraw. Invalidation sources must always
+---come through here, never call RefreshChat directly.
+function Eavesdropper_SharedFrameMixin.ScheduleDataRefresh()
+	if dataRefreshOnCooldown then
+		dataRefreshPending = true;
+		ED.Debug:Print("ScheduleDataRefresh: on cooldown, queued");
+		return;
+	end
+
+	ED.Debug:Print("ScheduleDataRefresh: leading edge, redrawing now");
+	RefreshAllWindows();
+
+	dataRefreshOnCooldown = true;
+	ArmDataRefreshCooldown();
 end
 
 -- ============================================================
@@ -143,7 +247,7 @@ end
 -- ============================================================
 
 ---Fade out the new-indicator (if active) then delegate hover state to ShowTitleBar.
----FadeOutNewIndicator is a no-op on frames without a NewIndicator widget (e.g. main frame).
+---FadeOutNewIndicator is a no-op on frames without a NewIndicator widget.
 function Eavesdropper_SharedFrameMixin:OnEnter()
 	if self.isMouseOver then return; end
 	self.isMouseOver = true;
@@ -480,6 +584,17 @@ function Eavesdropper_SharedFrameMixin:PopulateHistoryMessages(player, maxMessag
 	end
 end
 
+---Record the newest displayed entry's timestamp, read by IsTimestampFrozen.
+---Takes the maximum, as group windows merge several histories out of order.
+---@param entry EavesdropperChatEntry
+function Eavesdropper_SharedFrameMixin:TrackNewestEntry(entry)
+	if not entry.t then return; end
+
+	if not self.newestEntryTime or entry.t > self.newestEntryTime then
+		self.newestEntryTime = entry.t;
+	end
+end
+
 ---Record the clickblock timestamp then delegate to AddMessage.
 ---Dedicated and Group frames override this to also handle the new-message indicator.
 ---@param entry EavesdropperChatEntry
@@ -489,6 +604,11 @@ function Eavesdropper_SharedFrameMixin:TryAddMessage(entry)
 	end
 
 	self:AddMessage(entry);
+
+	-- A new message un-freezes the window; the flag skips the Magnifier-driven main frame.
+	if self.usesChatTicker then
+		self:StartChatTicker();
+	end
 end
 
 -- ============================================================

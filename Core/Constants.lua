@@ -98,11 +98,16 @@ Constants.CHAT_EVENTS_ADVANCED_FORMATTING = {
 
 ---Configuration constants for the chat history system.
 ---@class EavesdropperChatHistoryConstants
+---@field DUPLICATE_WINDOW number
 ---@field EXPIRE_AFTER number
 ---@field IGNORE_EMOTES string[]
 Constants.CHAT_HISTORY = {
 	---Entries older than this many seconds are pruned on load (30 minutes).
 	EXPIRE_AFTER = 60 * 30,
+
+	---Seconds within which an identical message counts as a duplicate.
+	---Doubles as the rotation period of the dedupe generations in ChatHistory.IsDuplicate.
+	DUPLICATE_WINDOW = 0.5,
 
 	---Emote substrings that mention "you" but should not trigger notifications.
 	---@type string[]
@@ -142,9 +147,23 @@ Constants.CHAT_HISTORY = {
 ---@type number
 Constants.CHAT_NEW_INDICATOR_FADE_OUT = 10;
 
----Default chat refresh throttle interval in milliseconds.
+---Seconds between the periodic redraws that age message timestamps.
 ---@type number
-Constants.CHAT_UPDATE_THROTTLE_DEFAULT = 10;
+Constants.WINDOW_REFRESH_INTERVAL = 60;
+
+---Age in seconds at which a message stops changing appearance entirely.
+---Shared by ChatFormatter:FormatMessage and the refresh ticker; they must not drift apart.
+---@type number
+Constants.TIMESTAMP_FREEZE_AGE = 30 * 60;
+
+---Seconds UpdateTarget skips a repeat refresh of the same target.
+---A debounce, not a refresh timer; keep below WINDOW_REFRESH_INTERVAL or it swallows ticker refreshes.
+---@type number
+Constants.TARGET_UPDATE_THROTTLE = 1;
+
+---Seconds a burst of MSP invalidations collapses into a single redraw.
+---@type number
+Constants.DATA_REFRESH_THROTTLE = 5;
 
 -- Credits: Listener by tmgpub.
 ---@type table<string, boolean>
@@ -398,8 +417,9 @@ Constants.MESSAGE_PREFIXES = {
 ---@class EavesdropperMSPConstants
 ---@field CACHE_RESET_TIME number
 Constants.MSP = {
-	---Seconds before a cached MSP result is considered stale.
-	CACHE_RESET_TIME = 5,
+	---Max time for the MSP cache, in seconds. Invalidation is event-driven; this only catches an
+	---update we were never told about. Set to 0 to disable.
+	CACHE_RESET_TIME = 300,
 };
 
 ---MSP fields that are relevant to name/colour resolution.

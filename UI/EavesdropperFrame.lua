@@ -81,6 +81,14 @@ function Eavesdropper_FrameMixin:OnHide()
 	if self.alphaChannelMode and self.SetAlphaChannelMode then
 		self:SetAlphaChannelMode(nil);
 	end
+
+	-- Instance frames get this from OnHideInstanceFrame; the main frame has to do it itself.
+	self:ResetNewIndicator();
+
+	if self.newIndicatorTimer then
+		self.newIndicatorTimer:Cancel();
+		self.newIndicatorTimer = nil;
+	end
 end
 
 -- ============================================================
@@ -219,10 +227,9 @@ function Eavesdropper_FrameMixin:UpdateTarget()
 	-- Nothing to track and nothing previously tracked
 	if not target and not EAVESDROP_TARGET then return; end
 
-	-- Skip if same target and recently updated (throttle 10 sec by default)
-	-- Logically we never hit this, as UpdateTarget is typically already on a 10s timer, so this is a safety net)
+	-- Safety net for UpdateTarget arriving from several sources at once, not a refresh timer.
 	local now = GetTime();
-	if EAVESDROP_TARGET == target and now - (self.lastUpdate or 0) < Constants.CHAT_UPDATE_THROTTLE_DEFAULT then
+	if EAVESDROP_TARGET == target and now - (self.lastUpdate or 0) < Constants.TARGET_UPDATE_THROTTLE then
 		return;
 	end
 
@@ -244,11 +251,14 @@ function Eavesdropper_FrameMixin:UpdateTarget()
 		self.eavesdropped_player_guid = nil;
 	end
 
-	-- Refresh when target changed or chat is scrolled to the bottom
-	if hardUpdate or (self.ChatBox and self.ChatBox:AtBottom()) then
+	-- A new target starts at the bottom; otherwise hold the scroll and skip windows that cannot change.
+	if hardUpdate then
 		self:RefreshChat();
-		self.lastUpdate = now;
+	elseif not self:IsTimestampFrozen() then
+		self:RefreshChat(true);
 	end
+
+	self.lastUpdate = now;
 
 	self:HandleVisibility();
 end
@@ -258,17 +268,25 @@ end
 -- ============================================================
 
 ---Repopulate the chat box from stored history
-function Eavesdropper_FrameMixin:RefreshChat()
+---@param retainScroll boolean? If true, retain the previous scroll position.
+function Eavesdropper_FrameMixin:RefreshChat(retainScroll)
 	if not self.ChatBox then return; end
 
 	self.refreshing = true;
+
+	local scrollOffset = self.ChatBox:GetScrollOffset();
 	self.ChatBox:Clear();
+	self.newestEntryTime = nil;
 
 	local maxMessages = ED.Database:GetSetting("MaxHistory");
 	local player = self.eavesdropped_player;
 
 	if player then
 		self:PopulateHistoryMessages(player, maxMessages);
+	end
+
+	if retainScroll then
+		self.ChatBox:SetScrollOffset(scrollOffset or 0);
 	end
 
 	self:UpdateTitleBar();
@@ -298,6 +316,26 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local formatted = ED.ChatFormatter:FormatMessage(entry);
 	self.ChatBox:AddMessage(formatted, r, g, b);
+
+	-- Only track lines (to keep frame awake) when they are actually inserted.
+	self:TrackNewestEntry(entry);
+end
+
+---Override of the base TryAddMessage to handle the new-message indicator.
+---Only live messages reach TryAddMessage, so a target change never flashes the indicator.
+---@param entry EavesdropperChatEntry
+function Eavesdropper_FrameMixin:TryAddMessage(entry)
+	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
+
+	if not entry.p
+		and ED.ChatFilters:HasEvent(entry.e, self)
+		and ED.Database:GetGlobalSetting("WindowNewIndicator")
+		and self.NewIndicator
+		and not self.isMouseOver
+	then
+		self:FadeInNewIndicator();
+		self:ScheduleNewIndicatorFadeOut();
+	end
 end
 
 ---Apply all profile settings and refresh the settings UI.

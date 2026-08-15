@@ -18,12 +18,16 @@
 ---@field list table<number, EavesdropperChatEntry> Global index of entries by ID
 ---@field minEntryId number
 ---@field nextEntryId number
----@field deduper table<string, number> Deduplication timestamps
+---@field deduper table<string, number> Deduplication timestamps, current generation
+---@field deduperPrevious table<string, number> Deduplication timestamps, previous generation
+---@field deduperRotatedAt number GetTime() the current generation began
 ---@field byTime table<number, EavesdropperChatEntry> Legacy migration index keyed by timestamp
 local ChatHistory = {};
 
 ChatHistory.byTime = {};
 ChatHistory.deduper = {};
+ChatHistory.deduperPrevious = {};
+ChatHistory.deduperRotatedAt = 0;
 ChatHistory.minEntryId = 0;
 ChatHistory.history = {};
 ChatHistory.list = {};
@@ -134,6 +138,8 @@ function ChatHistory:LoadFromSaved(savedHistory)
 	self.history = savedHistory or {};
 	self.list = {};
 	self.deduper = {};
+	self.deduperPrevious = {};
+	self.deduperRotatedAt = 0;
 	self.byTime = self.byTime or {};
 
 	local now = time();
@@ -174,7 +180,9 @@ function ChatHistory:GetPlayerHistory(player, maxEntries, frame)
 	return entries;
 end
 
----Checks if a chat message is a duplicate
+---Checks if a chat message is a duplicate.
+---Keeps two generations instead of one, so a key survives a full window even if it was
+---written right before a rotation.
 ---@param event string Event name
 ---@param sender string Sender name
 ---@param message string Message content
@@ -184,6 +192,14 @@ end
 ---@return boolean True if duplicate, false otherwise
 function ChatHistory:IsDuplicate(event, sender, message, channel, language, guid)
 	local now = GetTime();
+	local window = Constants.CHAT_HISTORY.DUPLICATE_WINDOW;
+
+	if now - self.deduperRotatedAt >= window then
+		self.deduperPrevious = self.deduper;
+		self.deduper = {};
+		self.deduperRotatedAt = now;
+	end
+
 	local key =
 		(event or "") .. "|" ..
 		(sender or "") .. "|" ..
@@ -192,8 +208,8 @@ function ChatHistory:IsDuplicate(event, sender, message, channel, language, guid
 		(language or "") .. "|" ..
 		(guid or "");
 
-	local last = self.deduper[key];
-	if last and now - last < 0.5 then
+	local last = self.deduper[key] or self.deduperPrevious[key];
+	if last and now - last < window then
 		return true;
 	end
 

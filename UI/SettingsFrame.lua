@@ -568,6 +568,17 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		{
 			type = "checkbox",
 			global = true,
+			label = L.NEW_WINDOWS_NEW_INDICATOR,
+			tooltip = L.NEW_WINDOWS_NEW_INDICATOR_HELP,
+			buildAdded = "0.6.0|120100",
+			get = function() return ED.Database:GetGlobalSetting("WindowNewIndicator"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("WindowNewIndicator", val);
+			end,
+		},
+		{
+			type = "checkbox",
+			global = true,
 			label = L.WELCOME_MSG,
 			tooltip = L.WELCOME_MSG_HELP,
 			get = function() return ED.Database:GetGlobalSetting("WelcomeMessage"); end,

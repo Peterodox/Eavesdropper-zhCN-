@@ -407,7 +407,7 @@ function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode)
 	local age = now - (entry.t or now);
 	local timestamp;
 
-	if age < 30 * 60 then
+	if age < ED.Constants.TIMESTAMP_FREEZE_AGE then
 		timestamp = age < 60 and "<1m" or string.format("%sm", math.floor(age / 60));
 	else
 		timestamp = date("%H:%M", entry.t);

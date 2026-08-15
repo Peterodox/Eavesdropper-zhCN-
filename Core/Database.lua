@@ -37,6 +37,7 @@ local Database = {};
 ---@field MinimapButton EavesdropperGlobalMinimapButton?
 ---@field SettingsWindowPosition EavesdropperWindowPosition?
 ---@field GroupWindowsNPCSpeechDetectionNameShown boolean?
+---@field WindowNewIndicator boolean?
 ---@field WelcomeMessage boolean?
 
 ---@type EavesdropperGlobal
@@ -60,6 +61,7 @@ local GLOBAL_DEFAULTS = {
 		ShowAddonCompartmentButton = true,
 	},
 	SettingsWindowPosition = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_POSITION),
+	WindowNewIndicator = true,
 	WelcomeMessage = true,
 };
 
@@ -730,6 +732,7 @@ end
 ---| "GroupWindowsPersist"
 ---| "MinimapButton"
 ---| "SettingsWindowPosition"
+---| "WindowNewIndicator"
 ---| "WelcomeMessage"
 
 ---Returns the effective value of a global setting.

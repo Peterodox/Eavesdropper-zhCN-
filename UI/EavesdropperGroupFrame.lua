@@ -1,9 +1,6 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
----@type EavesdropperConstants
-local Constants = ED.Constants;
-
 local L = ED.Localization;
 
 ---@class EavesdropperGroupFrame
@@ -107,11 +104,7 @@ end
 
 function Eavesdropper_Group_FrameMixin:OnShow()
 	self:RefreshChat();
-	if not self.chatTicker then
-		self.chatTicker = C_Timer.NewTicker(Constants.CHAT_UPDATE_THROTTLE_DEFAULT, function()
-			self:RefreshChat(true);
-		end);
-	end
+	self:StartChatTicker();
 end
 
 function Eavesdropper_Group_FrameMixin:OnHide()
@@ -178,6 +171,7 @@ function Eavesdropper_Group_FrameMixin:RefreshChat(retainScroll)
 
 	local scrollOffset = self.ChatBox:GetScrollOffset();
 	self.ChatBox:Clear();
+	self.newestEntryTime = nil;
 
 	local maxMessages = ED.Database:GetSetting("MaxHistory");
 
@@ -252,6 +246,9 @@ function Eavesdropper_Group_FrameMixin:AddMessage(entry, fromHistory)
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self.nameDisplayMode);
 	self.ChatBox:AddMessage(formatted, r, g, b);
+
+	-- Only track lines (to keep frame awake) when they are actually inserted.
+	self:TrackNewestEntry(entry);
 end
 
 ---Override of the base TryAddMessage to handle the new-message indicator.
@@ -260,7 +257,7 @@ function Eavesdropper_Group_FrameMixin:TryAddMessage(entry)
 	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
 
 	if not entry.p
-		-- TODO: and ED.Database:GetGlobalSetting("GroupWindowsNewIndicator")
+		and ED.Database:GetGlobalSetting("GroupWindowsNewIndicator")
 		and ED.ChatFilters:HasEvent(entry.e, self)
 		and self.NewIndicator
 		and not self.isMouseOver
