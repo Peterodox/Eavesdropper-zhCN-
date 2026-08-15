@@ -17,6 +17,9 @@ pkg/
 # Ignore Assets (WIPs, PSDs)
 Assets/**
 
+# Ignore Docs (scribbles/future ideas/measurements)
+Docs/**
+
 # Ignore everything under Libs/
 Libs/**
 
