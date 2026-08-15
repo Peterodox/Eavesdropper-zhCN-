@@ -98,11 +98,16 @@ Constants.CHAT_EVENTS_ADVANCED_FORMATTING = {
 
 ---Configuration constants for the chat history system.
 ---@class EavesdropperChatHistoryConstants
+---@field DUPLICATE_WINDOW number
 ---@field EXPIRE_AFTER number
 ---@field IGNORE_EMOTES string[]
 Constants.CHAT_HISTORY = {
 	---Entries older than this many seconds are pruned on load (30 minutes).
 	EXPIRE_AFTER = 60 * 30,
+
+	---Seconds within which an identical message counts as a duplicate.
+	---Doubles as the rotation period of the dedupe generations in ChatHistory.IsDuplicate.
+	DUPLICATE_WINDOW = 0.5,
 
 	---Emote substrings that mention "you" but should not trigger notifications.
 	---@type string[]
