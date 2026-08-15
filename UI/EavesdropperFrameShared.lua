@@ -159,7 +159,7 @@ local function RefreshAllWindows()
 		frame:RefreshChat(true);
 	end);
 
-	if ED.Frame:IsShown() then
+	if ED.Frame and ED.Frame:IsShown() then
 		ED.Frame:RefreshChat(true);
 	end
 end
