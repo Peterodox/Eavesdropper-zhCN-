@@ -139,6 +139,64 @@ function Eavesdropper_SharedFrameMixin:StopChatTicker()
 end
 
 -- ============================================================
+-- Data-driven refresh (MSP invalidation)
+-- ============================================================
+
+---True while the burst window's cooldown is running.
+local dataRefreshOnCooldown = false;
+
+---True if an invalidation arrived during the cooldown and still needs a redraw.
+local dataRefreshPending = false;
+
+---Redraw every open dedicated and group window, and the main window if it's shown.
+local function RefreshAllWindows()
+	ED.DedicatedFrame:ForEachFrame(function(frame)
+		frame:RefreshChat(true);
+	end);
+
+	ED.GroupFrame:ForEachFrame(function(frame)
+		frame:RefreshChat(true);
+	end);
+
+	if ED.Frame:IsShown() then
+		ED.Frame:RefreshChat(true);
+	end
+end
+
+---Rearms itself if something is pending when the cooldown expires, rather than always going
+---idle. Keeps a sustained burst on a steady interval instead of having it basically spam.
+local function ArmDataRefreshCooldown()
+	C_Timer.NewTimer(Constants.DATA_REFRESH_THROTTLE, function()
+		if not dataRefreshPending then
+			dataRefreshOnCooldown = false;
+			ED.Debug:Print("ScheduleDataRefresh: cooldown expired, idle");
+			return;
+		end
+
+		dataRefreshPending = false;
+		ED.Debug:Print("ScheduleDataRefresh: cooldown expired, trailing redraw");
+		RefreshAllWindows();
+		ArmDataRefreshCooldown();
+	end);
+end
+
+---Entry point for MSP invalidation to request a redraw. Invalidation sources must always
+---come through here, never call RefreshChat directly.
+function Eavesdropper_SharedFrameMixin.ScheduleDataRefresh()
+	if dataRefreshOnCooldown then
+		dataRefreshPending = true;
+		ED.Debug:Print("ScheduleDataRefresh: on cooldown, queued");
+		return;
+	end
+
+	ED.Debug:Print("ScheduleDataRefresh: leading edge, redrawing now");
+	RefreshAllWindows();
+
+	dataRefreshOnCooldown = true;
+	ArmDataRefreshCooldown();
+end
+
+-- ============================================================
 -- Scroll Marker
 -- ============================================================
 

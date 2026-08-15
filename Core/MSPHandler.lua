@@ -30,11 +30,14 @@ local function WipeCache()
 end
 
 ---Invalidates the MSP cache; the next TryGetMSPData call drops every cached player.
+---Also schedules a redraw through the burst window, so the updated data is drawn.
 function MSP.InvalidateCache()
 	invalidateCache = true;
+	Eavesdropper_SharedFrameMixin.ScheduleDataRefresh();
 end
 
 ---Drops a single player, leaving every other cached player intact.
+---Also schedules a redraw through the burst window, so the updated data is drawn.
 ---@param playerName string
 function MSP.InvalidatePlayer(playerName)
 	local key = ED.Utils.AddRealmSuffix(playerName);
@@ -43,6 +46,7 @@ function MSP.InvalidatePlayer(playerName)
 
 	MSP.cache[guid] = nil;
 	cacheNames[key] = nil;
+	Eavesdropper_SharedFrameMixin.ScheduleDataRefresh();
 end
 
 ---True once TRP3 has fired WORKFLOW_ON_LOADED. TRP3_API existing does not mean it is ready

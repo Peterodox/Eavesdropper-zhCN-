@@ -156,6 +156,10 @@ Constants.TIMESTAMP_FREEZE_AGE = 30 * 60;
 ---@type number
 Constants.TARGET_UPDATE_THROTTLE = 1;
 
+---Seconds a burst of MSP invalidations collapses into a single redraw.
+---@type number
+Constants.DATA_REFRESH_THROTTLE = 5;
+
 -- Credits: Listener by tmgpub.
 ---@type table<string, boolean>
 local commonTitles = {
