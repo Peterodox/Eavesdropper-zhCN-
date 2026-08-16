@@ -820,6 +820,7 @@ stds.wow = {
 		"CHI",
 		"CLOSE",
 		"COMBO_POINTS",
+		"COPY_CHARACTER_NAME",
 		"DEFAULT",
 		"DEFAULT_CHAT_FRAME",
 		"DELETE",

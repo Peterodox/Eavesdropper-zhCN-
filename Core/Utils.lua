@@ -92,6 +92,14 @@ function Utils.CommandHyperlink(command, displayText)
 	return string.format("|cnLINK_FONT_COLOR:|Haddon:Eavesdropper:cmd:%s|h[%s]|h|r", command, displayText);
 end
 
+---Wraps text in a native Blizzard player hyperlink so it can have unitmenu options.
+---@param sender string Full Name-Realm; the click target.
+---@param displayText string The formatted name with (RP) color already applied.
+---@return string
+function Utils.PlayerHyperlink(sender, displayText)
+	return string.format("|Hplayer:%s|h%s|h", sender, displayText);
+end
+
 ---HandleLinks Converts URLs to clickable WoW hyperlinks
 ---@param message string
 ---@return string

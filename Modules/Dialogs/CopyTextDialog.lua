@@ -4,8 +4,8 @@
 
 local L = ED.Localization;
 
----@class EavesdropperLinkDialog
-local LinkDialog = {};
+---@class EavesdropperCopyTextDialog
+local CopyTextDialog = {};
 
 ---Returns the editBox child of a StaticPopup dialog, handling both API styles.
 ---Borrowed from Total RP 3.
@@ -51,8 +51,7 @@ local function SetupEditBox(editBox, url)
 	end);
 end
 
-StaticPopupDialogs["EAVESDROPPER_LINK_DIALOG"] = {
-	text = ED.Globals.addon_title .. L.POPUP_LINK,
+StaticPopupDialogs["EAVESDROPPER_COPY_TEXT_DIALOG"] = {
 	button1 = CANCEL,
 	hasEditBox = true,
 	maxLetters = 0,
@@ -60,7 +59,7 @@ StaticPopupDialogs["EAVESDROPPER_LINK_DIALOG"] = {
 	OnShow = function(self)
 		local editBox = GetDialogEditBox(self);
 		SkinEditBox(editBox);
-		SetupEditBox(editBox, StaticPopupDialogs["EAVESDROPPER_LINK_DIALOG"].url or "");
+		SetupEditBox(editBox, StaticPopupDialogs["EAVESDROPPER_COPY_TEXT_DIALOG"].url or "");
 	end,
 	timeout = false,
 	whileDead = true,
@@ -68,15 +67,29 @@ StaticPopupDialogs["EAVESDROPPER_LINK_DIALOG"] = {
 	preferredIndex = 3,
 };
 
----Displays a static popup dialog containing the given URL in a copyable editBox.
----@param url string
-function LinkDialog.CreateExternalLinkDialog(url)
-	StaticPopupDialogs["EAVESDROPPER_LINK_DIALOG"].url = url;
-	local dialog = StaticPopup_Show("EAVESDROPPER_LINK_DIALOG");
+---Displays a static popup dialog containing the given text in a copyable editBox.
+---@param text string
+---@param value string
+local function ShowCopyDialog(text, value)
+	StaticPopupDialogs["EAVESDROPPER_COPY_TEXT_DIALOG"].text = text;
+	StaticPopupDialogs["EAVESDROPPER_COPY_TEXT_DIALOG"].url = value;
+	local dialog = StaticPopup_Show("EAVESDROPPER_COPY_TEXT_DIALOG");
 	if dialog then
 		dialog:ClearAllPoints();
 		dialog:SetPoint("CENTER", UIParent, "CENTER");
 	end
 end
 
-ED.LinkDialog = LinkDialog;
+---Displays a static popup dialog containing the given URL in a copyable editBox.
+---@param url string
+function CopyTextDialog.CreateExternalLinkDialog(url)
+	ShowCopyDialog(ED.Globals.addon_title .. L.POPUP_LINK, url);
+end
+
+---Displays a static popup dialog containing the given character name in a copyable editBox.
+---@param name string
+function CopyTextDialog.ShowCopyName(name)
+	ShowCopyDialog(ED.Globals.addon_title .. L.POPUP_COPY_NAME, name);
+end
+
+ED.CopyTextDialog = CopyTextDialog;

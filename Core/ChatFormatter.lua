@@ -435,6 +435,11 @@ function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode)
 	-- Name handling
 	local name, applyRPName, firstName = ChatFormatter:GetFormattedName(entry, forceDisplayMode);
 
+	-- Only group-style windows (Group, Mentions) get a clickable name.
+	if forGroup then
+		name = ED.Utils.PlayerHyperlink(entry.s, name);
+	end
+
 	-- Format message
 	local eventType = NormalizeEventType(entry.e);
 	local formatTable = forGroup and GROUP_MESSAGE_FORMATS or MESSAGE_FORMATS;

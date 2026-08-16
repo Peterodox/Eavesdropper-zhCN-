@@ -249,6 +249,55 @@ local function CreateEavesdropGroupMenu(menuDescription, contextData)
 	return BuildGroupMenu(menuDescription, contextData, resolveCharacterData(contextData), OnClick);
 end
 
+local function CreateCopyNameButton(menuDescription, contextData)
+	local sender = resolveCharacterData(contextData);
+	if not sender then return; end
+
+	local function OnClick(contextData) -- luacheck: no redefined
+		local clickedSender = resolveCharacterData(contextData);
+		if clickedSender then
+			ED.CopyTextDialog.ShowCopyName(clickedSender);
+		end
+	end
+
+	-- Reuse Blizzard's globalstring so translation is already in place.
+	local elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
+	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_COPY_NAME_HELP);
+	elementDescription:SetResponder(OnClick);
+	elementDescription:SetData(contextData);
+	return elementDescription;
+end
+
+local function CreateBattleNetCopyNameButton(menuDescription, contextData)
+	local function OnClick(contextData) -- luacheck: no redefined
+		local accountInfo = contextData.accountInfo;
+		local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo or nil;
+
+		-- Only a basic sanity test is required here.
+		if not gameAccountInfo then
+			return;
+		end
+
+		local clickedSender, _ = GetBattleNetCharacterFullName(gameAccountInfo);
+		if clickedSender then
+			ED.CopyTextDialog.ShowCopyName(clickedSender);
+		end
+	end
+
+	local accountInfo = contextData.accountInfo;
+	local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo;
+	if gameAccountInfo.clientProgram ~= "WoW" then
+		return;
+	end
+
+	-- Reuse Blizzard's globalstring so translation is already in place.
+	local elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
+	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_BNET_COPY_NAME_HELP);
+	elementDescription:SetResponder(OnClick);
+	elementDescription:SetData(contextData);
+	return elementDescription;
+end
+
 -- ============================================================
 -- Registry
 -- ============================================================
@@ -258,21 +307,23 @@ UnitPopups.MenuElementFactories = {
 	OpenEavesdropperOn = CreateOpenCharacterEavesdropButton,
 	BattleNetEavesdropGroup = CreateBattleNetEavesdropGroupMenu,
 	EavesdropGroup = CreateEavesdropGroupMenu,
+	CopyName = CreateCopyNameButton,
+	BattleNetCopyName = CreateBattleNetCopyNameButton,
 };
 
 UnitPopups.MenuEntries = {
-	BN_FRIEND = { "OpenBattleNetProfile", "BattleNetEavesdropGroup" },
-	CHAT_ROSTER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	COMMUNITIES_GUILD_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	COMMUNITIES_MEMBER = { "OpenBattleNetProfile", "BattleNetEavesdropGroup" },
-	COMMUNITIES_WOW_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	FRIEND = { "OpenEavesdropperOn", "EavesdropGroup" },
-	FRIEND_OFFLINE = { "OpenEavesdropperOn", "EavesdropGroup" },
-	PARTY = { "OpenEavesdropperOn", "EavesdropGroup" },
-	PLAYER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	RAID = { "OpenEavesdropperOn", "EavesdropGroup" },
-	RAID_PLAYER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	SELF = { "OpenEavesdropperOn", "EavesdropGroup" },
+	BN_FRIEND = { "OpenBattleNetProfile", "BattleNetEavesdropGroup", "BattleNetCopyName" },
+	CHAT_ROSTER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	COMMUNITIES_GUILD_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	COMMUNITIES_MEMBER = { "OpenBattleNetProfile", "BattleNetEavesdropGroup", "BattleNetCopyName" },
+	COMMUNITIES_WOW_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	FRIEND = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	FRIEND_OFFLINE = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	PARTY = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	PLAYER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	RAID = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	RAID_PLAYER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	SELF = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
 };
 
 ED.UnitPopups = UnitPopups;
