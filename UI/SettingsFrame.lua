@@ -71,7 +71,21 @@ function Eavesdropper_SettingsMixin:CreateCategoryListButton(addToBottom)
 	return button;
 end
 
-function Eavesdropper_SettingsMixin:SetTab(index)
+---@param view number|string|nil A category's display name (preferred) or a tab
+---index. nil deselects every tab
+function Eavesdropper_SettingsMixin:SetTab(view)
+	local index = view;
+
+	if type(view) == "string" then
+		index = nil;
+		for i, panel in ipairs(self.Views) do
+			if panel.categoryName == view then
+				index = i;
+				break;
+			end
+		end
+	end
+
 	for i, panel in ipairs(self.Views) do
 		local isSelected = (i == index);
 		panel:SetShown(isSelected);
@@ -86,7 +100,7 @@ function Eavesdropper_SettingsMixin:SetTab(index)
 		end
 	end
 
-	lastSelectedTab = index;
+	lastSelectedTab = view;
 end
 
 -- ============================================================
@@ -210,6 +224,7 @@ function Eavesdropper_SettingsMixin:CreateCategory(categoryName, isScrollable, o
 	end
 
 	frame.categoryListBtton = categoryListBtton;
+	frame.categoryName = categoryName;
 
 	-- Store the following two values because we need to re-index categories due to adding categories to the bottom
 	frame.categoryIndex = self.categoryIndex;
@@ -1573,7 +1588,8 @@ end
 -- Settings module
 -- ============================================================
 
----@param view number? Optional tab index, defaults to 1.
+---@param view number|string|nil A category's display name (preferred), a tab index,
+---or nil to reopen whichever tab was last selected (defaults to the first).
 function Settings:ShowSettings(view)
 	if not ED.SettingsFrame then
 		Settings:Init();

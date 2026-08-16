@@ -41,7 +41,7 @@ local function onStart()
 				if button == "LeftButton" then
 					ED.Settings:ShowSettings();
 				elseif button == "RightButton" then
-					ED.Settings:ShowSettings(8);
+					ED.Settings:ShowSettings(L.PROFILES_TITLE);
 				end
 			end,
 		};
