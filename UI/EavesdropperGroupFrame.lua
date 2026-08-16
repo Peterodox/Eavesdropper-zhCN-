@@ -46,7 +46,7 @@ function Eavesdropper_Group_FrameMixin:IsTitleBarLocked()
 	return self.lockTitleBar;
 end
 
----@param mode number
+---@param mode number? nil clears the override, reverting this window to follow the profile setting.
 function Eavesdropper_Group_FrameMixin:SetNameDisplayMode(mode)
 	if self.nameDisplayMode == mode then return; end
 	self.nameDisplayMode = mode;
@@ -64,7 +64,9 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	local player = name:match("^Eavesdropper_Group_Frame_(.+)$");
 	self.eavesdropped_player = player;
 	self.titlebar_name = nil;
-	self.nameDisplayMode = ED.Database and ED.Database:GetSetting("NameDisplayMode") or 3;
+
+	-- When nil, follows the profile's NameDisplayMode until overridden in SetNameDisplayMode.
+	self.nameDisplayMode = nil;
 
 	self:InitInstanceFrameState();
 

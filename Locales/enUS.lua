@@ -94,6 +94,7 @@ L = {
 	NAME_DISPLAY_MODE_FULL_NAME = "Full Name",
 	NAME_DISPLAY_MODE_FIRST_NAME = "First Name",
 	NAME_DISPLAY_MODE_ORIGINAL_NAME = "Original (OOC) Name",
+	NAME_DISPLAY_MODE_FOLLOW_PROFILE = "Follow Profile Setting",
 
 	USE_RP_NAME_COLOR = "Name Colors",
 	USE_RP_NAME_COLOR_HELP = "Color names based on their custom RP settings (e.g., from TRP3).|n|n- If no RP color is detected, Eavesdropper falls back to the default Blizzard class color.",
