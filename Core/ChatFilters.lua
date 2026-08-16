@@ -56,12 +56,19 @@ local function ResolveFilterKey(frame)
 	return "Filters";
 end
 
+---True only for Dedicated and Group windows, whose filters are session-based per-instance state.
+---@param frame table
+---@return boolean
+local function UsesInstanceFilterState(frame)
+	return frame ~= ED.Frame and frame ~= ED.MentionsFrame;
+end
+
 ---Generates the chat filter menu for UI
 ---@param frame table
 ---@param menu table
----@param useFrameState boolean?
-function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
+function ChatFilters:GenerateFilterListMenu(frame, menu)
 	local settingKey = ResolveFilterKey(frame);
+	local useFrameState = UsesInstanceFilterState(frame);
 
 	for i = 1, #ED.Constants.FILTER_ORDER do
 		local groupName = ED.Constants.FILTER_ORDER[i];
@@ -224,7 +231,7 @@ function ChatFilters:Init(frame)
 	local filters = ED.Database:GetSetting(settingKey);
 	if not filters then return; end
 
-	if frame ~= ED.Frame and frame ~= ED.MentionsFrame then
+	if UsesInstanceFilterState(frame) then
 		frame.filters = ED.Utils.ShallowCopy(filters);
 	end
 

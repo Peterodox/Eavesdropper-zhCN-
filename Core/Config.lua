@@ -99,7 +99,7 @@ function Config:ShowConfigMenu(frame, mode)
 		local filter = rootDescription:CreateButton(L.FILTER);
 		ED.Utils.SetMenuTooltip(filter, L.FILTER_HELP);
 		filter:CreateTitle(L.FILTER .. " " .. MAIN_MENU);
-		ED.ChatFilters:GenerateFilterListMenu(frame, filter, useFrameState);
+		ED.ChatFilters:GenerateFilterListMenu(frame, filter);
 
 		-- No other frame ever displays entry.mn, so this is Mentions-only.
 		if mode == "mentions" then
