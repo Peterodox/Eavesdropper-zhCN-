@@ -84,7 +84,7 @@ L = {
 	INCLUDE_COMPANIONS_HELP = "Show the owner's history when targeting or hovering over their pets and companions.|n|n- When enabled, Eavesdropper treats pets as a bridge to their owner's data.|n- When disabled, Eavesdropper will ignore pets and companions entirely.",
 
 	MESSAGES = "Messages",
-	MESSAGES_HELP = "These options only apply to the Eavesdropper history.",
+	MESSAGES_HELP = "These options only apply to the Eavesdropper windows.",
 
 	HISTORY_SIZE = "History Size",
 	HISTORY_SIZE_HELP = "Set the maximum number of history messages Eavesdropper displays for each unit.|n|n|cnWARNING_FONT_COLOR:Note: High values may cause temporary frame drops when refreshing the history window.|r",
