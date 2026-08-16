@@ -42,6 +42,7 @@ local ENUM_KEYS = {
 	AdvNameDisplayMode         = Enums.NAME_DISPLAY_MODE,
 	FocusTarget                = Enums.FOCUS_TARGET,
 	FontOutline                = Enums.CHAT_BOX.FONT_OUTLINE,
+	MentionsNameDisplayMode    = Enums.NAME_DISPLAY_MODE,
 	NameDisplayMode            = Enums.NAME_DISPLAY_MODE,
 	NPCAndQuestNameDisplayMode = Enums.NAME_DISPLAY_MODE,
 	TargetPriority             = Enums.TARGET_PRIORITY,
@@ -52,7 +53,7 @@ local ENUM_KEYS = {
 local NUMERIC_BOUNDS = {
 	FontSize             = { min = Constants.CHAT_BOX.MIN_FONT_SIZE, max = Constants.CHAT_BOX.MAX_FONT_SIZE },
 	MaxHistory           = { min = Constants.CHAT_BOX.MIN_HISTORY,   max = Constants.CHAT_BOX.MAX_HISTORY },
-	MentionsHistorySize  = { min = Constants.CHAT_BOX.MIN_HISTORY,   max = Constants.CHAT_BOX.MAX_HISTORY },
+	MentionsHistorySize  = { min = Constants.CHAT_BOX.MIN_MENTIONS_HISTORY, max = Constants.CHAT_BOX.MAX_MENTIONS_HISTORY },
 	NotificationThrottle = { min = 0 },
 };
 

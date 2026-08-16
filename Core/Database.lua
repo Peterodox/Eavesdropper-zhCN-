@@ -106,6 +106,8 @@ local GLOBAL_IMPORT_EXCLUDED = {
 ---@field MaxHistory number?
 ---@field MentionsFilters table<string, boolean>?
 ---@field MentionsHistorySize number?
+---@field MentionsNameDisplayMode EavesdropperNameDisplayMode?
+---@field MentionsNameDisplayModeOverride boolean?
 ---@field MentionsWindowPosition EavesdropperWindowPosition?
 ---@field MentionsWindowSize EavesdropperWindowSize?
 ---@field NameDisplayMode EavesdropperNameDisplayMode?
@@ -170,6 +172,8 @@ local DEFAULT_PROFILE = {
 	MaxHistory = 50,
 	MentionsFilters = ED.Utils.ShallowCopy(Constants.DEFAULT_FILTERS),
 	MentionsHistorySize = 300,
+	MentionsNameDisplayMode = 1,
+	MentionsNameDisplayModeOverride = false,
 	MentionsWindowPosition = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_POSITION),
 	MentionsWindowSize = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_SIZE),
 	NameDisplayMode = 1,
@@ -606,6 +610,8 @@ end
 ---| "MaxHistory"
 ---| "MentionsFilters"
 ---| "MentionsHistorySize"
+---| "MentionsNameDisplayMode"
+---| "MentionsNameDisplayModeOverride"
 ---| "MentionsWindowPosition"
 ---| "MentionsWindowSize"
 ---| "NameDisplayMode"

@@ -41,6 +41,8 @@ Constants.CHANNELS_TO_SKIP_NOTIFICATIONS = {
 ---@field MIN_GROUP_HISTORY number
 ---@field MAX_GROUP_HISTORY number
 ---@field GROUP_CHUNK_THRESHOLD number Gathered entries (tracked players x GroupHistorySize) above which a Group Window's rebuild spreads across frames instead of running synchronously.
+---@field MIN_MENTIONS_HISTORY number
+---@field MAX_MENTIONS_HISTORY number
 Constants.CHAT_BOX = {
 	MIN_FONT_SIZE = 6,
 	MAX_FONT_SIZE = 24,
@@ -49,6 +51,8 @@ Constants.CHAT_BOX = {
 	MIN_GROUP_HISTORY = 10,
 	MAX_GROUP_HISTORY = 1000,
 	GROUP_CHUNK_THRESHOLD = 2000,
+	MIN_MENTIONS_HISTORY = 10,
+	MAX_MENTIONS_HISTORY = 1000,
 };
 
 ---All chat events the addon registers filters for.

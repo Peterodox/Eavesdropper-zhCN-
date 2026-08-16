@@ -46,6 +46,12 @@ function Eavesdropper_Group_FrameMixin:IsTitleBarLocked()
 	return self.lockTitleBar;
 end
 
+---Returns the current name-display override, or nil to follow the profile setting.
+---@return number?
+function Eavesdropper_Group_FrameMixin:GetNameDisplayMode()
+	return self.nameDisplayMode;
+end
+
 ---@param mode number? nil clears the override, reverting this window to follow the profile setting.
 function Eavesdropper_Group_FrameMixin:SetNameDisplayMode(mode)
 	if self.nameDisplayMode == mode then return; end
@@ -99,7 +105,7 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	-- Configure title button; triggers the group config menu
 	local titleBtn = self.TitleBar.TitleButton;
 	titleBtn:SetScript("OnClick", function()
-		ED.Config:ShowConfigMenu(self, false, true);
+		ED.Config:ShowConfigMenu(self, "group");
 	end);
 
 	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()

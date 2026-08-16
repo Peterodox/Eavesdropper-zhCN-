@@ -1,9 +1,6 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
----@type EavesdropperConstants
-local Constants = ED.Constants;
-
 local L = ED.Localization;
 
 ---@class EavesdropperMentionsFrameModule
@@ -36,6 +33,23 @@ function Eavesdropper_Mentions_FrameMixin:IsTitleBarLocked()
 	return self.lockTitleBar;
 end
 
+---Returns the current name-display override, or nil to follow the profile setting.
+---Profile-scoped, unlike Group's per-instance CharDB field.
+---@return number?
+function Eavesdropper_Mentions_FrameMixin:GetNameDisplayMode()
+	if not ED.Database:GetSetting("MentionsNameDisplayModeOverride") then return nil; end
+	return ED.Database:GetSetting("MentionsNameDisplayMode");
+end
+
+---@param mode number? nil clears the override, reverting this window to follow the profile setting.
+function Eavesdropper_Mentions_FrameMixin:SetNameDisplayMode(mode)
+	ED.Database:SetSetting("MentionsNameDisplayModeOverride", mode ~= nil);
+	if mode ~= nil then
+		ED.Database:SetSetting("MentionsNameDisplayMode", mode);
+	end
+	self:RefreshChat();
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================
@@ -50,7 +64,7 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	self:EnableMouseWheel(true);
 	self:UpdateMouseLock();
 
-	Eavesdropper_SharedFrameMixin.InitChatBox(self, Constants.CHAT_BOX.MAX_HISTORY);
+	Eavesdropper_SharedFrameMixin.InitChatBox(self, ED.Database:GetSetting("MentionsHistorySize"));
 	self.EmptyLabel.Text:SetText(L.MENTIONS_EMPTYLABEL_TEXT);
 
 	-- Inherit font size from the main frame settings
@@ -73,9 +87,11 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 		self.TitleBar.CloseButton:Hide();
 	end
 
-	-- Fixed title; no config menu wired yet (Phase 6 gives Config:ShowConfigMenu a Mentions mode).
 	local titleBtn = self.TitleBar.TitleButton;
 	titleBtn.Text:SetText(L.MENTIONS_WINDOW_TITLE);
+	titleBtn:SetScript("OnClick", function()
+		ED.Config:ShowConfigMenu(self, "mentions");
+	end);
 	self:ResizeTitleButton();
 
 	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
@@ -238,7 +254,7 @@ function Eavesdropper_Mentions_FrameMixin:AddMessage(entry, fromHistory)
 	if not self.ChatBox then return; end
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
-	local formatted = ED.ChatFormatter:FormatMessage(entry, true);
+	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self:GetNameDisplayMode());
 	self.ChatBox:AddMessage(formatted, r, g, b);
 
 	if not fromHistory then

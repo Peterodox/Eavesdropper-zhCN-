@@ -79,7 +79,7 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	local titleBtn = self.TitleBar.TitleButton;
 	self:UpdateTitleBar();
 	titleBtn:SetScript("OnClick", function()
-		ED.Config:ShowConfigMenu(self, true);
+		ED.Config:ShowConfigMenu(self, "dedicated");
 	end);
 
 	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()

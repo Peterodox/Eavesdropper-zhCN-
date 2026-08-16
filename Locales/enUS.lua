@@ -34,6 +34,10 @@ L = {
 	EMPTYLABEL_TEXT = "Empty Group",
 	MENTIONS_EMPTYLABEL_TEXT = "No Mentions Yet",
 	MENTIONS_WINDOW_TITLE = "Mentions",
+	MENTIONS_HELP = "A single window listing every message aimed at you, gathered from keyword hits and Blizzard emotes.",
+	MENTIONS_ENABLE_HELP = "Enables the Mentions window and the detection that feeds it.|n|n|cnWARNING_FONT_COLOR:Note: Disabling this setting stops new mentions from being recorded and hides the window if it is open.|r",
+	MENTIONS_HISTORY_SIZE = "History Size",
+	MENTIONS_HISTORY_SIZE_HELP = "Set the maximum number of mentions Eavesdropper keeps in this window.|n|n|cnWARNING_FONT_COLOR:Note: Mentions are usually sparse, so this limit rarely matters unless you're in an unusually busy or broadly-keyworded session.|r",
 	SCROLLMARKER_TEXT = "Scroll to Bottom",
 
 	FILTER_PUBLIC = "Public",
@@ -57,6 +61,7 @@ L = {
 	LOCK_TITLEBAR_HELP = "Toggles the visibility of the window's title bar.|n|n- Enabled: The title bar remains visible at all times.|n- Disabled: The title bar is hidden and only appears when you hover over the window.|n|nNote: You can enable 'Title Bar Target Name' in the settings to replace the 'Eavesdropper' text with your current target's name.",
 
 	DEDICATED_OPTIONS = "Dedicated Options",
+	MENTIONS_OPTIONS = "Mentions Options",
 
 	-- Category Titles
 	APPEARANCE_TITLE = "Appearance",
