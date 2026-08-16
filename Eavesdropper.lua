@@ -53,6 +53,7 @@ function ED.Init()
 
 		-- Now safe to initialize everything else
 		ED.FrameModule:Init();
+		ED.MentionsFrameModule:Init();
 		ED.DedicatedFrame:RestoreFromCharDB();
 		ED.GroupFrame:RestoreFromCharDB();
 		ED.ChatHandler:Init();

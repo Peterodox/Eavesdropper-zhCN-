@@ -36,6 +36,7 @@ local Database = {};
 ---@field GroupWindowsUnitPopups boolean?
 ---@field GroupWindowsPersist boolean?
 ---@field MentionsHistory boolean?
+---@field MentionsHistoryNewIndicator boolean?
 ---@field MinimapButton EavesdropperGlobalMinimapButton?
 ---@field SettingsWindowPosition EavesdropperWindowPosition?
 ---@field GroupWindowsNPCSpeechDetectionNameShown boolean?
@@ -60,6 +61,7 @@ local GLOBAL_DEFAULTS = {
 	GroupWindowsUnitPopups = true,
 	GroupWindowsPersist = true,
 	MentionsHistory = true,
+	MentionsHistoryNewIndicator = true,
 	MinimapButton = {
 		Hide = false,
 		ShowAddonCompartmentButton = true,
@@ -100,6 +102,10 @@ local GLOBAL_IMPORT_EXCLUDED = {
 ---@field LockTitleBar boolean?
 ---@field LockWindow boolean?
 ---@field MaxHistory number?
+---@field MentionsFilters table<string, boolean>?
+---@field MentionsHistorySize number?
+---@field MentionsWindowPosition EavesdropperWindowPosition?
+---@field MentionsWindowSize EavesdropperWindowSize?
 ---@field NameDisplayMode EavesdropperNameDisplayMode?
 ---@field NotificationDedicatedSound boolean?
 ---@field NotificationDedicatedSoundFile string?
@@ -160,6 +166,10 @@ local DEFAULT_PROFILE = {
 	LockTitleBar = false,
 	LockWindow = false,
 	MaxHistory = 50,
+	MentionsFilters = ED.Utils.ShallowCopy(Constants.DEFAULT_FILTERS),
+	MentionsHistorySize = 300,
+	MentionsWindowPosition = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_POSITION),
+	MentionsWindowSize = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_SIZE),
 	NameDisplayMode = 1,
 	NotificationDedicatedSound = true,
 	NotificationDedicatedSoundFile = "UI_VoiceChat_ChannelInitiated",
@@ -592,6 +602,10 @@ end
 ---| "LockTitleBar"
 ---| "LockWindow"
 ---| "MaxHistory"
+---| "MentionsFilters"
+---| "MentionsHistorySize"
+---| "MentionsWindowPosition"
+---| "MentionsWindowSize"
 ---| "NameDisplayMode"
 ---| "NotificationDedicatedSound"
 ---| "NotificationDedicatedSoundFile"
@@ -736,6 +750,7 @@ end
 ---| "GroupWindowsUnitPopups"
 ---| "GroupWindowsPersist"
 ---| "MentionsHistory"
+---| "MentionsHistoryNewIndicator"
 ---| "MinimapButton"
 ---| "SettingsWindowPosition"
 ---| "WindowNewIndicator"

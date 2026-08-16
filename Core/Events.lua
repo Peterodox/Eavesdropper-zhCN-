@@ -10,7 +10,7 @@ local Events = CreateFrame("Frame");
 ---Set up event handler to call methods on Events by event name.
 ---Guard here covers all handlers: if core modules are not ready, nothing fires.
 Events:SetScript("OnEvent", function(self, event, ...)
-	if not ED or not ED.Database or not ED.Frame then return; end
+	if not ED or not ED.Database or not ED.Frame or not ED.MentionsFrame then return; end
 	if self[event] then
 		self[event](self, event, ...);
 	end
@@ -27,6 +27,9 @@ function Events:PLAYER_REGEN_DISABLED()
 	if not ED.Database:GetSetting("HideInCombat") then return; end
 	ED.Frame:HandleVisibility();
 
+	ED.MentionsFrame.isCombatHidden = true;
+	ED.MentionsFrame:HandleVisibility();
+
 	ED.DedicatedFrame:ForEachFrame(function(frame)
 		frame.isCombatHidden = true;
 		frame:HandleVisibility();
@@ -42,6 +45,9 @@ end
 function Events:PLAYER_REGEN_ENABLED()
 	if not ED.Database:GetSetting("HideInCombat") then return; end
 	ED.Frame:HandleVisibility();
+
+	ED.MentionsFrame.isCombatHidden = false;
+	ED.MentionsFrame:HandleVisibility();
 
 	ED.DedicatedFrame:ForEachFrame(function(frame)
 		frame.isCombatHidden = false;

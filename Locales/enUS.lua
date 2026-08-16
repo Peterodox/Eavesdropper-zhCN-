@@ -30,6 +30,8 @@ L = {
 	FILTER_HELP = "Choose which types of messages are visible in Eavesdropper.|n|n- Toggling a filter only changes what is currently shown.|n- No data is actually deleted; hidden messages will reappear if the filter is turned back on.|n|n|cnWARNING_FONT_COLOR:Note: Filters are applied instantly.|r",
 
 	EMPTYLABEL_TEXT = "Empty Group",
+	MENTIONS_EMPTYLABEL_TEXT = "No Mentions Yet",
+	MENTIONS_WINDOW_TITLE = "Mentions",
 	SCROLLMARKER_TEXT = "Scroll to Bottom",
 
 	FILTER_PUBLIC = "Public",

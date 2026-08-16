@@ -102,6 +102,8 @@ UI\EavesdropperDedicatedFrame.lua
 UI\EavesdropperDedicatedFrame.xml
 UI\EavesdropperGroupFrame.lua
 UI\EavesdropperGroupFrame.xml
+UI\EavesdropperMentionsFrame.lua
+UI\EavesdropperMentionsFrame.xml
 UI\ChangelogFrame.lua
 UI\ChangelogFrame.xml
 UI\ChangelogMarkdown.lua

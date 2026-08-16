@@ -37,11 +37,24 @@ local function ResolveEvent(chatType)
 	return remapped:upper();
 end
 
+---Resolve the proper DB setting for the chosen frame's filters.
+---Only Mentions gets a distinct key back; Main, Dedicated, and Group all resolve to Filters.
+---@param frame table
+---@return string
+local function ResolveFilterKey(frame)
+	if frame == ED.MentionsFrame then
+		return "MentionsFilters";
+	end
+	return "Filters";
+end
+
 ---Generates the chat filter menu for UI
 ---@param frame table
 ---@param menu table
 ---@param useFrameState boolean?
 function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
+	local settingKey = ResolveFilterKey(frame);
+
 	for i = 1, #ED.Constants.FILTER_ORDER do
 		local groupName = ED.Constants.FILTER_ORDER[i];
 
@@ -57,7 +70,7 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 					if not filters then return false; end
 					return filters[groupName] or false;
 				end
-				local current = ED.Database:GetSetting("Filters");
+				local current = ED.Database:GetSetting(settingKey);
 				if not current then return false; end
 				return current[groupName] or false;
 			end,
@@ -70,7 +83,7 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 					end
 					frame.filters[groupName] = not value;
 				else
-					local current = ED.Database:GetSetting("Filters") or {};
+					local current = ED.Database:GetSetting(settingKey) or {};
 					local value = current[groupName];
 					if value == nil then
 						value = ED.Constants.DEFAULT_FILTERS[groupName] or false;
@@ -79,7 +92,7 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 					local newFilters = ED.Utils.ShallowCopy(current);
 					newFilters[groupName] = not value;
 
-					ED.Database:SetSetting("Filters", newFilters);
+					ED.Database:SetSetting(settingKey, newFilters);
 				end
 				ChatFilters:UpdateFilters(frame);
 			end
@@ -96,7 +109,7 @@ end
 ---@param frame table?
 function ChatFilters:UpdateFilters(frame)
 	if not frame then return; end
-	local filters = frame.filters or ED.Database:GetSetting("Filters");
+	local filters = frame.filters or ED.Database:GetSetting(ResolveFilterKey(frame));
 	if not filters then return; end
 
 	frame.active_events = frame.active_events or {};
@@ -133,16 +146,18 @@ function ChatFilters:HasEvent(event, frame)
 end
 
 ---Initialises active events and per-frame filter state from the DB.
----Per-frame filters start from main frame as base (and don't save for now); the main frame always reads from DB.
+---Per-frame filters start from main frame as base (and don't save for now); the main and
+---Mentions frames always read live from their own key instead.
 ---@param frame table?
 function ChatFilters:Init(frame)
 	if not frame then return; end
 	frame.active_events = frame.active_events or {};
 
-	local filters = ED.Database:GetSetting("Filters");
+	local settingKey = ResolveFilterKey(frame);
+	local filters = ED.Database:GetSetting(settingKey);
 	if not filters then return; end
 
-	if frame ~= ED.Frame then
+	if frame ~= ED.Frame and frame ~= ED.MentionsFrame then
 		frame.filters = ED.Utils.ShallowCopy(filters);
 	end
 

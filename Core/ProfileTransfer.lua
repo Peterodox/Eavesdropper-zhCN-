@@ -52,6 +52,7 @@ local ENUM_KEYS = {
 local NUMERIC_BOUNDS = {
 	FontSize             = { min = Constants.CHAT_BOX.MIN_FONT_SIZE, max = Constants.CHAT_BOX.MAX_FONT_SIZE },
 	MaxHistory           = { min = Constants.CHAT_BOX.MIN_HISTORY,   max = Constants.CHAT_BOX.MAX_HISTORY },
+	MentionsHistorySize  = { min = Constants.CHAT_BOX.MIN_HISTORY,   max = Constants.CHAT_BOX.MAX_HISTORY },
 	NotificationThrottle = { min = 0 },
 };
 
@@ -182,7 +183,7 @@ local function sanitizeValue(key, value, default)
 	if type(value) == "table" then
 		if COLOR_KEYS[key] then
 			return sanitizeColor(value, default), 0;
-		elseif key == "Filters" then
+		elseif key == "Filters" or key == "MentionsFilters" then
 			return sanitizeFilters(value);
 		end
 

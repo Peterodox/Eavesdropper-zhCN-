@@ -392,6 +392,10 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 	if mentionReason then
 		entry.mn = mentionReason;
 		self.mentions[#self.mentions + 1] = entry.id;
+
+		if ED.MentionsFrame then
+			ED.MentionsFrame:TryAddMessage(entry);
+		end
 	end
 
 	self.list[entry.id] = entry;
