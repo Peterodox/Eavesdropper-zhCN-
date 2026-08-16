@@ -39,9 +39,9 @@ local function onStart()
 			tooltipSub = L.ADDON_TOOLTIP_HELP,
 			onClick = function(_, _, button)
 				if button == "LeftButton" then
-					ED.Settings:ShowSettings();
+					ED.Settings:ToggleSettings();
 				elseif button == "RightButton" then
-					ED.Settings:ShowSettings(L.PROFILES_TITLE);
+					ED.Settings:OpenSettings(L.PROFILES_TITLE);
 				end
 			end,
 		};

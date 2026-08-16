@@ -71,8 +71,7 @@ function Eavesdropper_SettingsMixin:CreateCategoryListButton(addToBottom)
 	return button;
 end
 
----@param view number|string|nil A category's display name (preferred) or a tab
----index. nil deselects every tab
+---@param view number|string|nil A category's display name (preferred) or a tab index. nil deselects every tab
 function Eavesdropper_SettingsMixin:SetTab(view)
 	local index = view;
 
@@ -1588,14 +1587,24 @@ end
 -- Settings module
 -- ============================================================
 
----@param view number|string|nil A category's display name (preferred), a tab index,
----or nil to reopen whichever tab was last selected (defaults to the first).
-function Settings:ShowSettings(view)
+---Opens the settings window if closed, closes it if open. Never targets a specific tab —
+function Settings:ToggleSettings()
 	if not ED.SettingsFrame then
 		Settings:Init();
 	end
 
 	ED.SettingsFrame:SetShown(not ED.SettingsFrame:IsShown());
+	ED.SettingsFrame:Raise();
+end
+
+---Ensures the settings window is shown and switches to view if given (does not hide).
+---@param view number|string|nil A category's display name (preferred), a tab index, or nil which reopens the last selected tab (or first).
+function Settings:OpenSettings(view)
+	if not ED.SettingsFrame then
+		Settings:Init();
+	end
+
+	ED.SettingsFrame:Show();
 	ED.SettingsFrame:Raise();
 
 	if view then

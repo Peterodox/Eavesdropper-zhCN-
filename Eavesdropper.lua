@@ -42,7 +42,7 @@ function ED.ProcessCommand(msg)
 		return;
 	end
 
-	ED.Settings:ShowSettings();
+	ED.Settings:ToggleSettings();
 	return;
 end
 

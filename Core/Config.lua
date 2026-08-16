@@ -109,12 +109,19 @@ function Config:ShowConfigMenu(frame, mode)
 			ED.ChatFilters:GenerateMentionReasonFilterMenu(mentionTypes);
 		end
 
-		if not useFrameState then
-			-- Notification Settings
-			rootDescription:CreateButton(SETTINGS, function()
-				ED.Settings:ShowSettings();
-			end);
+		-- Settings, scoped to this frame's own category. nil for the main frame.
+		local settingsView;
+		if mode == "dedicated" then
+			settingsView = L.DEDICATED;
+		elseif mode == "group" then
+			settingsView = L.GROUPS;
+		elseif mode == "mentions" then
+			settingsView = L.MENTIONS_WINDOW_TITLE;
 		end
+
+		rootDescription:CreateButton(SETTINGS, function()
+			ED.Settings:OpenSettings(settingsView);
+		end);
 
 		rootDescription:CreateDivider();
 		rootDescription:CreateTitle(L.WINDOW_OPTIONS);

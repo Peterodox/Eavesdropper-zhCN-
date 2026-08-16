@@ -17,9 +17,9 @@ local LibDBIcon = LibStub:GetLibrary("LibDBIcon-1.0");
 local function OnClick(self, button) -- luacheck: no unused (self)
 	if not IsShiftKeyDown() then
 		if button == "LeftButton" then
-			ED.Settings:ShowSettings();
+			ED.Settings:ToggleSettings();
 		elseif button == "RightButton" then
-			ED.Settings:ShowSettings(Localization.PROFILES_TITLE);
+			ED.Settings:OpenSettings(Localization.PROFILES_TITLE);
 		end
 	elseif button == "LeftButton" then
 		ED.Frame:SetShown(not ED.Frame:IsShown());
