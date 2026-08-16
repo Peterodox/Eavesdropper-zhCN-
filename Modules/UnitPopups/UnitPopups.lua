@@ -31,12 +31,13 @@ function UnitPopups:Init()
 end
 
 function UnitPopups:OnMenuOpen(owner, rootDescription, contextData)
-	if not ED.Database:GetGlobalSetting("DedicatedWindows") and not ED.Database:GetGlobalSetting("GroupWindows") then
-		return; -- Don't show when Dedicated and Group Windows are disabled.
+	local dedicatedOrGroup = ED.Database:GetGlobalSetting("DedicatedWindows") or ED.Database:GetGlobalSetting("GroupWindows");
+	local mentions = ED.Database:GetGlobalSetting("MentionsHistory") and ED.Database:GetGlobalSetting("MentionsHistoryUnitPopups");
+
+	if not dedicatedOrGroup and not mentions then
+		return; -- Every feature that could populate this menu is disabled.
 	elseif not owner or owner:IsForbidden() then
 		return; -- Invalid or forbidden owner.
-	elseif not self:ShouldCustomizeMenus() then
-		return; -- Menu customizations are disabled.
 	end
 
 	local menuEntries = self.MenuEntries[contextData.which];
@@ -55,10 +56,6 @@ function UnitPopups:OnMenuOpen(owner, rootDescription, contextData)
 
 		rootDescription:ClearQueuedDescriptions();
 	end
-end
-
-function UnitPopups:ShouldCustomizeMenus()
-	return ED.Database:GetGlobalSetting("DedicatedWindowsUnitPopups") and true or false;
 end
 
 -- ============================================================
@@ -204,7 +201,7 @@ local function BuildGroupMenu(menuDescription, contextData, sender, OnClick)
 end
 
 local function CreateBattleNetEavesdropGroupMenu(menuDescription, contextData)
-	if not ED.Database:GetGlobalSetting("GroupWindows") then return; end
+	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
 	local accountInfo = contextData.accountInfo;
 	local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo;
@@ -230,7 +227,7 @@ local function CreateBattleNetEavesdropGroupMenu(menuDescription, contextData)
 end
 
 local function CreateEavesdropGroupMenu(menuDescription, contextData)
-	if not ED.Database:GetGlobalSetting("GroupWindows") then return; end
+	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
 	local function OnClick(targetFrame, hasSender) -- luacheck: no redefined
 		local sender, guid = resolveCharacterData(contextData);
@@ -298,6 +295,30 @@ local function CreateBattleNetCopyNameButton(menuDescription, contextData)
 	return elementDescription;
 end
 
+local function CreateToggleMentionsButton(menuDescription, contextData)
+	if not ED.Database:GetGlobalSetting("MentionsHistory") or not ED.Database:GetGlobalSetting("MentionsHistoryUnitPopups") then
+		return;
+	end
+
+	-- Player themselves in chat frame is considered FRIEND, so check that we only run on ourselves.
+	local sender = resolveCharacterData(contextData);
+	if not sender or sender ~= ED.Utils.GetUnitName() then
+		return;
+	end
+
+	local elementDescription = menuDescription:CreateButton(L.SLASH_COMMAND_ED_MENTIONS);
+	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_TOGGLE_MENTIONS_HELP);
+	elementDescription:SetResponder(function()
+		if ED.MentionsFrame:IsShown() then
+			ED.MentionsFrame:Hide();
+		else
+			ED.MentionsFrame:Open();
+		end
+	end);
+	elementDescription:SetData(contextData);
+	return elementDescription;
+end
+
 -- ============================================================
 -- Registry
 -- ============================================================
@@ -309,6 +330,7 @@ UnitPopups.MenuElementFactories = {
 	EavesdropGroup = CreateEavesdropGroupMenu,
 	CopyName = CreateCopyNameButton,
 	BattleNetCopyName = CreateBattleNetCopyNameButton,
+	ToggleMentions = CreateToggleMentionsButton,
 };
 
 UnitPopups.MenuEntries = {
@@ -317,13 +339,13 @@ UnitPopups.MenuEntries = {
 	COMMUNITIES_GUILD_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
 	COMMUNITIES_MEMBER = { "OpenBattleNetProfile", "BattleNetEavesdropGroup", "BattleNetCopyName" },
 	COMMUNITIES_WOW_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
-	FRIEND = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	FRIEND = { "OpenEavesdropperOn", "EavesdropGroup", "ToggleMentions", "CopyName" },
 	FRIEND_OFFLINE = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
 	PARTY = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
 	PLAYER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
 	RAID = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
 	RAID_PLAYER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
-	SELF = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	SELF = { "OpenEavesdropperOn", "EavesdropGroup", "ToggleMentions", "CopyName" },
 };
 
 ED.UnitPopups = UnitPopups;

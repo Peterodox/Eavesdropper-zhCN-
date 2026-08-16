@@ -37,6 +37,7 @@ local Database = {};
 ---@field GroupWindowsPersist boolean?
 ---@field MentionsHistory boolean?
 ---@field MentionsHistoryNewIndicator boolean?
+---@field MentionsHistoryUnitPopups boolean?
 ---@field MinimapButton EavesdropperGlobalMinimapButton?
 ---@field SettingsWindowPosition EavesdropperWindowPosition?
 ---@field GroupWindowsNPCSpeechDetectionNameShown boolean?
@@ -62,6 +63,7 @@ local GLOBAL_DEFAULTS = {
 	GroupWindowsPersist = true,
 	MentionsHistory = true,
 	MentionsHistoryNewIndicator = true,
+	MentionsHistoryUnitPopups = true,
 	MinimapButton = {
 		Hide = false,
 		ShowAddonCompartmentButton = true,
@@ -751,6 +753,7 @@ end
 ---| "GroupWindowsPersist"
 ---| "MentionsHistory"
 ---| "MentionsHistoryNewIndicator"
+---| "MentionsHistoryUnitPopups"
 ---| "MinimapButton"
 ---| "SettingsWindowPosition"
 ---| "WindowNewIndicator"

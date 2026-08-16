@@ -21,9 +21,15 @@ local function OnClick(self, button) -- luacheck: no unused (self)
 		elseif button == "RightButton" then
 			ED.Settings:ShowSettings(8);
 		end
-	else
+	elseif button == "LeftButton" then
 		ED.Frame:SetShown(not ED.Frame:IsShown());
 		ED.Database:SetCharSetting("WindowVisible", ED.Frame:IsShown());
+	elseif button == "RightButton" then
+		if ED.MentionsFrame:IsShown() then
+			ED.MentionsFrame:Hide();
+		else
+			ED.MentionsFrame:Open();
+		end
 	end
 end
 

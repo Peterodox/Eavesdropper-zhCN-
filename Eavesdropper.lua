@@ -18,6 +18,7 @@ function ED.ProcessCommand(msg)
 			[ED.Localization.SLASH_COMMAND_ED_SHOW] = "/ed show",
 			[ED.Localization.SLASH_COMMAND_ED_HIDE] = "/ed hide",
 			[ED.Localization.SLASH_COMMAND_ED_TOGGLE] = "/ed toggle",
+			[ED.Localization.SLASH_COMMAND_ED_MENTIONS] = "/ed mentions",
 		});
 		return;
 	elseif subcommand == "show" then
@@ -31,6 +32,13 @@ function ED.ProcessCommand(msg)
 	elseif subcommand == "toggle" then
 		ED.Frame:SetShown(not ED.Frame:IsShown());
 		ED.Database:SetCharSetting("WindowVisible", ED.Frame:IsShown());
+		return;
+	elseif subcommand == "mentions" then
+		if ED.MentionsFrame:IsShown() then
+			ED.MentionsFrame:Hide();
+		else
+			ED.MentionsFrame:Open();
+		end
 		return;
 	end
 
