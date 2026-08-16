@@ -149,8 +149,9 @@ local dataRefreshOnCooldown = false;
 ---True if an invalidation arrived during the cooldown and still needs a redraw.
 local dataRefreshPending = false;
 
----Redraw every open dedicated and group window, and the main window if it's shown.
-local function RefreshAllWindows()
+---Redraw every open dedicated and group window.
+---mentions and the main window are only redrawn if they are shown.
+function Eavesdropper_SharedFrameMixin.RefreshAllWindows()
 	ED.DedicatedFrame:ForEachFrame(function(frame)
 		frame:RefreshChat(true);
 	end);
@@ -161,6 +162,10 @@ local function RefreshAllWindows()
 
 	if ED.Frame and ED.Frame:IsShown() then
 		ED.Frame:RefreshChat(true);
+	end
+
+	if ED.MentionsFrame and ED.MentionsFrame:IsShown() then
+		ED.MentionsFrame:RefreshChat(true);
 	end
 end
 
@@ -176,7 +181,7 @@ local function ArmDataRefreshCooldown()
 
 		dataRefreshPending = false;
 		ED.Debug:Print("ScheduleDataRefresh: cooldown expired, trailing redraw");
-		RefreshAllWindows();
+		Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 		ArmDataRefreshCooldown();
 	end);
 end
@@ -191,7 +196,7 @@ function Eavesdropper_SharedFrameMixin.ScheduleDataRefresh()
 	end
 
 	ED.Debug:Print("ScheduleDataRefresh: leading edge, redrawing now");
-	RefreshAllWindows();
+	Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 
 	dataRefreshOnCooldown = true;
 	ArmDataRefreshCooldown();

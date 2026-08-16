@@ -343,7 +343,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("MaxHistory"); end,
 			set = function(val)
 				ED.Database:SetSetting("MaxHistory", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -366,7 +366,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("NameDisplayMode"); end,
 			set = function(val)
 				ED.Database:SetSetting("NameDisplayMode", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -377,7 +377,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("UseRPNameColor"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameColor", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -387,7 +387,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("TimestampBrackets"); end,
 			set = function(val)
 				ED.Database:SetSetting("TimestampBrackets", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -670,7 +670,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("UseRPNameForTargets"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameForTargets", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -681,7 +681,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("UseRPNameInRolls"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameInRolls", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},--[[ Decide on if we make this a separate category
 		{
