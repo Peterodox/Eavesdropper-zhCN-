@@ -37,6 +37,14 @@ local function ResolveEvent(chatType)
 	return remapped:upper();
 end
 
+---Check bit based on Mentions:Evaluate building its mask with addition.
+---@param mask number
+---@param bit number
+---@return boolean
+local function HasBit(mask, bit)
+	return mask % (bit * 2) >= bit;
+end
+
 ---Resolve the proper DB setting for the chosen frame's filters.
 ---Only Mentions gets a distinct key back; Main, Dedicated, and Group all resolve to Filters.
 ---@param frame table
@@ -102,6 +110,65 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 			menu:CreateDivider();
 		end
 	end
+end
+
+---No per-frame useFrameState split, unlike GenerateFilterListMenu.
+---Mentions only ever display entry.mn, so there's nothing else to branch on.
+---@param menu table
+function ChatFilters:GenerateMentionReasonFilterMenu(menu)
+	for i = 1, #ED.Constants.MENTION_REASON_ORDER do
+		local reasonName = ED.Constants.MENTION_REASON_ORDER[i];
+		local labelText = ED.Constants.MENTION_REASON_LABELS[reasonName] or reasonName;
+
+		local checkbox = menu:CreateCheckbox(
+			labelText,
+			function()
+				local current = ED.Database:GetSetting("MentionsReasonFilters");
+				if not current then return false; end
+				return current[reasonName] or false;
+			end,
+			function()
+				local current = ED.Database:GetSetting("MentionsReasonFilters") or {};
+				local value = current[reasonName];
+				if value == nil then
+					value = ED.Constants.DEFAULT_MENTION_REASON_FILTERS[reasonName] or false;
+				end
+
+				local newFilters = ED.Utils.ShallowCopy(current);
+				newFilters[reasonName] = not value;
+
+				ED.Database:SetSetting("MentionsReasonFilters", newFilters);
+				if ED.MentionsFrame then
+					ED.MentionsFrame:RefreshChat();
+				end
+			end
+		);
+
+		local tooltipText = ED.Constants.MENTION_REASON_HELP[reasonName];
+		if tooltipText then
+			ED.Utils.SetMenuTooltip(checkbox, tooltipText);
+		end
+	end
+end
+
+---@param mn EavesdropperMentionReason? nil when the entry isn't a mention.
+---@return boolean
+function ChatFilters:HasMentionReason(mn)
+	if not mn then return false; end
+
+	local filters = ED.Database:GetSetting("MentionsReasonFilters");
+	if not filters then return false; end
+
+	for reasonName, enabled in pairs(filters) do
+		if enabled then
+			local bit = ED.Enums.MENTION_REASON[reasonName];
+			if bit and HasBit(mn, bit) then
+				return true;
+			end
+		end
+	end
+
+	return false;
 end
 
 ---Updates active chat events on a given frame based on current filter settings.

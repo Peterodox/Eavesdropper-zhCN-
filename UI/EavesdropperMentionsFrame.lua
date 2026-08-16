@@ -246,6 +246,7 @@ function Eavesdropper_Mentions_FrameMixin:AddMessage(entry, fromHistory)
 	if not entry then return; end
 
 	if not ED.ChatFilters:HasEvent(entry.e, self) then return; end
+	if not ED.ChatFilters:HasMentionReason(entry.mn) then return; end
 
 	if not self.refreshing then
 		self.fade_time = GetTime();
@@ -272,6 +273,7 @@ function Eavesdropper_Mentions_FrameMixin:TryAddMessage(entry)
 	if not entry.p
 		and ED.Database:GetGlobalSetting("MentionsHistoryNewIndicator")
 		and ED.ChatFilters:HasEvent(entry.e, self)
+		and ED.ChatFilters:HasMentionReason(entry.mn)
 		and self.NewIndicator
 		and not self.isMouseOver
 	then

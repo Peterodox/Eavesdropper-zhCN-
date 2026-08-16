@@ -206,7 +206,7 @@ function ChatHistory:GetMentions(maxEntries, frame)
 
 	for i = #self.mentions, 1, -1 do
 		local entry = self.list[self.mentions[i]];
-		if entry and ED.ChatFilters:HasEvent(entry.e, targetFrame) then
+		if entry and ED.ChatFilters:HasEvent(entry.e, targetFrame) and ED.ChatFilters:HasMentionReason(entry.mn) then
 			tinsert(entries, 1, entry);
 			if #entries >= limit then
 				break;

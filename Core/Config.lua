@@ -101,6 +101,14 @@ function Config:ShowConfigMenu(frame, mode)
 		filter:CreateTitle(L.FILTER .. " " .. MAIN_MENU);
 		ED.ChatFilters:GenerateFilterListMenu(frame, filter, useFrameState);
 
+		-- No other frame ever displays entry.mn, so this is Mentions-only.
+		if mode == "mentions" then
+			local mentionTypes = rootDescription:CreateButton(L.MENTIONS_REASON_FILTER);
+			ED.Utils.SetMenuTooltip(mentionTypes, L.MENTIONS_REASON_FILTER_HELP);
+			mentionTypes:CreateTitle(L.MENTIONS_REASON_FILTER .. " " .. MAIN_MENU);
+			ED.ChatFilters:GenerateMentionReasonFilterMenu(mentionTypes);
+		end
+
 		if not useFrameState then
 			-- Notification Settings
 			rootDescription:CreateButton(SETTINGS, function()

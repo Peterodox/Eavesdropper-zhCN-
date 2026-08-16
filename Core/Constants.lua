@@ -236,6 +236,14 @@ Constants.DEFAULT_FILTERS = {
 	Rolls = true,
 };
 
+---Unlike DEFAULT_FILTERS, both start on: the point of turning Mentions on is seeing both
+---kinds of hits.
+---@type table<string, boolean>
+Constants.DEFAULT_MENTION_REASON_FILTERS = {
+	KEYWORD = true,
+	EMOTE = true,
+};
+
 ---Default colour used for keyword highlights.
 ---@type EavesdropperColor
 Constants.DEFAULT_HIGHLIGHT_COLOR = {
@@ -349,6 +357,26 @@ Constants.FILTER_ORDER = {
 	"Officer",
 	"Whisper",
 	"Rolls",
+};
+
+---Localised display labels for each mention reason.
+---@type table<string, string>
+Constants.MENTION_REASON_LABELS = {
+	KEYWORD = L.MENTIONS_REASON_KEYWORD,
+	EMOTE = L.MENTIONS_REASON_EMOTE,
+};
+
+---Per-reason checkbox tooltips, helps explain what a "Blizzard Emote" is.
+---@type table<string, string>
+Constants.MENTION_REASON_HELP = {
+	EMOTE = L.EMOTES_HELP,
+};
+
+---Display order of mention reasons in the menu.
+---@type string[]
+Constants.MENTION_REASON_ORDER = {
+	"KEYWORD",
+	"EMOTE",
 };
 
 ---Maps internal event shorthand to the ChatTypeInfo key used for colour lookup.

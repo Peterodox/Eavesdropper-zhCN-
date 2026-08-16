@@ -31,6 +31,11 @@ L = {
 	FILTER = "Filter",
 	FILTER_HELP = "Choose which types of messages are visible in Eavesdropper.|n|n- Toggling a filter only changes what is currently shown.|n- No data is actually deleted; hidden messages will reappear if the filter is turned back on.|n|n|cnWARNING_FONT_COLOR:Note: Filters are applied instantly.|r",
 
+	MENTIONS_REASON_FILTER = "Mention Types",
+	MENTIONS_REASON_FILTER_HELP = "Choose which kinds of mentions are visible in this window.|n|n- Toggling a type only changes what is currently shown.|n- No data is actually deleted; hidden mentions will reappear if the type is turned back on.|n|n|cnWARNING_FONT_COLOR:Note: Mention Types are applied instantly.|r",
+	MENTIONS_REASON_KEYWORD = "Keywords",
+	MENTIONS_REASON_EMOTE = "Blizzard Emotes",
+
 	EMPTYLABEL_TEXT = "Empty Group",
 	MENTIONS_EMPTYLABEL_TEXT = "No Mentions Yet",
 	MENTIONS_WINDOW_TITLE = "Mentions",

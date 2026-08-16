@@ -155,14 +155,17 @@ local function sanitizeShape(value, default, extraFields)
 	return clean;
 end
 
+---Shared by both Filters-shaped tables (channel groups) and MentionsReasonFilters (mention-reason bits).
+---Both are just a set of named booleans validated against a different whitelist.
 ---@param value table
----@return table filters
+---@param whitelist table<string, any>
+---@return table clean
 ---@return number dropped
-local function sanitizeFilters(value)
+local function sanitizeToggleTable(value, whitelist)
 	local clean, dropped = {}, 0;
 
 	for key, enabled in pairs(value) do
-		if Constants.FILTER_OPTIONS[key] and type(enabled) == "boolean" then
+		if whitelist[key] and type(enabled) == "boolean" then
 			clean[key] = enabled;
 		else
 			dropped = dropped + 1;
@@ -185,7 +188,9 @@ local function sanitizeValue(key, value, default)
 		if COLOR_KEYS[key] then
 			return sanitizeColor(value, default), 0;
 		elseif key == "Filters" or key == "MentionsFilters" then
-			return sanitizeFilters(value);
+			return sanitizeToggleTable(value, Constants.FILTER_OPTIONS);
+		elseif key == "MentionsReasonFilters" then
+			return sanitizeToggleTable(value, Enums.MENTION_REASON);
 		end
 
 		return sanitizeShape(value, default), 0;
