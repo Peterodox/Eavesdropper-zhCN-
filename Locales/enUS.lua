@@ -369,9 +369,7 @@ L = {
 	UNIT_POPUPS_EAVESDROP_GROUP = "Eavesdrop Group",
 	UNIT_POPUPS_EAVESDROP_GROUP_HELP = "Assign the current target to a specific Group Window or remove them from one.|n|n|cnWARNING_FONT_COLOR:Note: |cnGREEN_FONT_COLOR:Green group names|r indicate that the target is already a member of that group.|r",
 	UNIT_POPUPS_EAVESDROP_GROUP_NEW = "Create New",
-	UNIT_POPUPS_COPY_NAME_HELP = "Open the character's full Name-Realm in a popup.|n|n|cnWARNING_FONT_COLOR:This is the only way to copy a name clicked from an Eavesdropper window as Blizzard's native '" .. COPY_CHARACTER_NAME .. "' option won't work.|r",
 	UNIT_POPUPS_TOGGLE_MENTIONS_HELP = "Toggle the Mentions window, which lists every message that was aimed at you.|n|n- Catches keyword hits and emotes directed at you, even ones you missed in the moment.",
-	UNIT_POPUPS_BNET_COPY_NAME_HELP = "Open the character's full Name-Realm in a popup.",
 
 	POPUP_EAVESDROP_GROUP = "Eavesdropper Group name.|nEnter to confirm.",
 	POPUP_RENAME_PROFILE = "Rename profile '%s'.|nEnter to confirm.",

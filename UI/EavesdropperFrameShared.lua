@@ -356,7 +356,18 @@ function Eavesdropper_SharedFrameMixin:OnHyperlinkClick(link, text, button)
 		return;
 	end
 
+	-- UnitPopups:OnMenuOpen fires synchronously inside SetItemRef when the link opens
+	-- a menu; this flag tells it the menu was reached through an addon-owned frame so
+	-- the native Copy Character Name button's CopyToClipboard call would be tainted.
+	if ED.UnitPopups then
+		ED.UnitPopups:SetHyperlinkOrigin(true);
+	end
+
 	SetItemRef(link, text, button, DEFAULT_CHAT_FRAME);
+
+	if ED.UnitPopups then
+		ED.UnitPopups:SetHyperlinkOrigin(false);
+	end
 
 	self.fade_time = GetTime();
 end

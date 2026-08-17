@@ -13,6 +13,14 @@ local UnitPopups = {};
 
 UnitPopups.MenuElementFactories = {};
 UnitPopups.MenuEntries = {};
+UnitPopups.isHyperlinkOrigin = false;
+
+---Whether the unit popup menu about to open came from an addon-owned frame's
+---hyperlink click, where the native Copy Character Name button is tainted.
+---@param isFromHyperlink boolean
+function UnitPopups:SetHyperlinkOrigin(isFromHyperlink)
+	self.isHyperlinkOrigin = isFromHyperlink;
+end
 
 function UnitPopups:Init()
 	for menuTagSuffix in pairs(UnitPopups.MenuEntries) do
@@ -246,6 +254,43 @@ local function CreateEavesdropGroupMenu(menuDescription, contextData)
 	return BuildGroupMenu(menuDescription, contextData, resolveCharacterData(contextData), OnClick);
 end
 
+---Find the native Copy Character Name button already inserted into rootDescription
+---by Blizzard's own menu generation, which runs before UnitPopups:OnMenuOpen fires.
+---@param rootDescription table
+---@return table?
+local function FindNativeCopyNameButton(rootDescription)
+	for _, elementDescription in rootDescription:EnumerateElementDescriptions() do
+		if MenuUtil.GetElementText(elementDescription) == COPY_CHARACTER_NAME then
+			return elementDescription;
+		end
+	end
+end
+
+---Insert a button two positions after the "Other Options" subsection title, or
+---append it at the end if that title isn't present. Insert() with an index shifts
+---every following element down a slot; Blizzard wraps that move in securecallfunction.
+---Note: This position was chosen to mimic where Blizzard tends to place it.
+---@param menuDescription table
+---@param text string
+---@return table elementDescription
+local function CreateButtonAfterOtherOptions(menuDescription, text)
+	local titleIndex;
+	for index, elementDescription in menuDescription:EnumerateElementDescriptions() do
+		if MenuUtil.GetElementText(elementDescription) == UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_OTHER then
+			titleIndex = index;
+			break;
+		end
+	end
+
+	local elementDescription = MenuUtil.CreateButton(text);
+	if titleIndex then
+		menuDescription:Insert(elementDescription, titleIndex + 2);
+	else
+		menuDescription:Insert(elementDescription);
+	end
+	return elementDescription;
+end
+
 local function CreateCopyNameButton(menuDescription, contextData)
 	local sender = resolveCharacterData(contextData);
 	if not sender then return; end
@@ -257,9 +302,35 @@ local function CreateCopyNameButton(menuDescription, contextData)
 		end
 	end
 
+	if contextData.which == "FRIEND" then
+		-- Eavesdropper's hyperlink click always opens FRIEND (Blizzard hardcodes this
+		-- for chat player links), the only path where the native button is tainted.
+		-- Leave it untouched when FRIEND opens from the real Blizzard paths instead.
+		if not UnitPopups.isHyperlinkOrigin then
+			return;
+		end
+
+		local nativeButton = FindNativeCopyNameButton(menuDescription);
+		if nativeButton then
+			-- Native creation never calls SetData, so GetData() would otherwise be nil
+			-- when the responder is invoked.
+			-- Native button does not know contextData, so GetData() would end up being nil.
+			-- We inject this ourselves and set its Responder to use it with OnClick.
+			nativeButton:SetData(contextData);
+			nativeButton:SetResponder(OnClick);
+			return nativeButton;
+		end
+	end
+
 	-- Reuse Blizzard's globalstring so translation is already in place.
-	local elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
-	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_COPY_NAME_HELP);
+	local elementDescription;
+	if contextData.which == "SELF" then
+		-- Blizzard does not expose a native Copy Character Name option for the local player.
+		elementDescription = CreateButtonAfterOtherOptions(menuDescription, COPY_CHARACTER_NAME);
+	else
+		elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
+	end
+
 	elementDescription:SetResponder(OnClick);
 	elementDescription:SetData(contextData);
 	return elementDescription;
@@ -288,8 +359,14 @@ local function CreateBattleNetCopyNameButton(menuDescription, contextData)
 	end
 
 	-- Reuse Blizzard's globalstring so translation is already in place.
-	local elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
-	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_BNET_COPY_NAME_HELP);
+	local elementDescription;
+	if contextData.which == "BN_FRIEND" then
+		-- Blizzard does not expose a native Copy Character Name option WoW Bnet friends.
+		elementDescription = CreateButtonAfterOtherOptions(menuDescription, COPY_CHARACTER_NAME);
+	else
+		elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
+	end
+
 	elementDescription:SetResponder(OnClick);
 	elementDescription:SetData(contextData);
 	return elementDescription;
@@ -335,16 +412,16 @@ UnitPopups.MenuElementFactories = {
 
 UnitPopups.MenuEntries = {
 	BN_FRIEND = { "OpenBattleNetProfile", "BattleNetEavesdropGroup", "BattleNetCopyName" },
-	CHAT_ROSTER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
-	COMMUNITIES_GUILD_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	CHAT_ROSTER = { "OpenEavesdropperOn", "EavesdropGroup" },
+	COMMUNITIES_GUILD_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup" },
 	COMMUNITIES_MEMBER = { "OpenBattleNetProfile", "BattleNetEavesdropGroup", "BattleNetCopyName" },
-	COMMUNITIES_WOW_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	COMMUNITIES_WOW_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup" },
 	FRIEND = { "OpenEavesdropperOn", "EavesdropGroup", "ToggleMentions", "CopyName" },
-	FRIEND_OFFLINE = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
-	PARTY = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
-	PLAYER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
-	RAID = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
-	RAID_PLAYER = { "OpenEavesdropperOn", "EavesdropGroup", "CopyName" },
+	FRIEND_OFFLINE = { "OpenEavesdropperOn", "EavesdropGroup" },
+	PARTY = { "OpenEavesdropperOn", "EavesdropGroup" },
+	PLAYER = { "OpenEavesdropperOn", "EavesdropGroup" },
+	RAID = { "OpenEavesdropperOn", "EavesdropGroup" },
+	RAID_PLAYER = { "OpenEavesdropperOn", "EavesdropGroup" },
 	SELF = { "OpenEavesdropperOn", "EavesdropGroup", "ToggleMentions", "CopyName" },
 };
 
