@@ -195,6 +195,47 @@ function ChatHistory:GetPlayerHistory(player, maxEntries, frame)
 	return entries;
 end
 
+---@param entryId number
+---@return EavesdropperChatEntry?
+function ChatHistory:GetEntry(entryId)
+	return self.list[entryId];
+end
+
+---Like GetPlayerHistory, but anchored on entryId instead of "now": returns everything from
+---the newest entry down through entryId, plus up to padding more (older) entries beyond it.
+---@param player string Player name
+---@param entryId number Entry to anchor on
+---@param padding number Older entries to include past entryId
+---@param frame table? Frame whose filters to apply; defaults to ED.Frame
+---@return EavesdropperChatEntry[]? entries Oldest-first, or nil if entryId isn't in this player's history
+function ChatHistory:GetPlayerHistoryAroundEntry(player, entryId, padding, frame)
+	if not player or not self.history[player] then
+		return nil;
+	end
+
+	local targetFrame = frame or ED.Frame;
+	local chat = self.history[player];
+	local entries = {};
+	local found = false;
+	local extra = 0;
+
+	for i = #chat, 1, -1 do
+		if ED.ChatFilters:HasEvent(chat[i].e, targetFrame) then
+			tinsert(entries, 1, chat[i]);
+
+			if chat[i].id == entryId then
+				found = true;
+			elseif found then
+				extra = extra + 1;
+				if extra >= padding then break; end
+			end
+		end
+	end
+
+	if not found then return nil; end
+	return entries;
+end
+
 ---Returns the most recent mention entries, oldest-first, filtered for the given frame.
 ---@param maxEntries number? Maximum number of entries to return
 ---@param frame table? Frame whose filters to apply; defaults to ED.Frame

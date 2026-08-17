@@ -219,6 +219,28 @@ function ChatFilters:HasEvent(event, frame)
 	return frame.active_events[event] == true;
 end
 
+---Enables a filter group is visible to show a specific entry, if it isn't already.
+---Specifically for Jump to Context. Reuses GenerateFilterListMenu where possible.
+---@param frame table
+---@param entry EavesdropperChatEntry
+function ChatFilters:EnsureEntryVisible(frame, entry)
+	if self:HasEvent(entry.e, frame) then return; end
+
+	local groupName = ED.Constants.EVENT_TO_FILTER_GROUP[NormalizeEvent(entry.e)];
+	if not groupName then return; end
+
+	if UsesInstanceFilterState(frame) then
+		frame.filters = frame.filters or {};
+		frame.filters[groupName] = true;
+	else
+		local newFilters = ED.Utils.ShallowCopy(ED.Database:GetSetting(ResolveFilterKey(frame)) or {});
+		newFilters[groupName] = true;
+		ED.Database:SetSetting(ResolveFilterKey(frame), newFilters);
+	end
+
+	self:UpdateFilters(frame);
+end
+
 ---Initialises active events and per-frame filter state from the DB.
 ---Per-frame filters start from main frame as base (and don't save for now); the main and
 ---Mentions frames always read live from their own key instead.

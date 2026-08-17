@@ -43,6 +43,7 @@ Constants.CHANNELS_TO_SKIP_NOTIFICATIONS = {
 ---@field GROUP_CHUNK_THRESHOLD number Gathered entries (tracked players x GroupHistorySize) above which a Group Window's rebuild spreads across frames instead of running synchronously.
 ---@field MIN_MENTIONS_HISTORY number
 ---@field MAX_MENTIONS_HISTORY number
+---@field JUMP_CONTEXT_PADDING number Older messages fetched beyond a Jump to Context target, so there's context above it.
 Constants.CHAT_BOX = {
 	MIN_FONT_SIZE = 6,
 	MAX_FONT_SIZE = 24,
@@ -53,6 +54,7 @@ Constants.CHAT_BOX = {
 	GROUP_CHUNK_THRESHOLD = 2000,
 	MIN_MENTIONS_HISTORY = 10,
 	MAX_MENTIONS_HISTORY = 1000,
+	JUMP_CONTEXT_PADDING = 20,
 };
 
 ---All chat events the addon registers filters for.
@@ -358,6 +360,16 @@ Constants.FILTER_ORDER = {
 	"Whisper",
 	"Rolls",
 };
+
+---Reverse of FILTER_OPTIONS: normalized event token -> filter group name.
+---@type table<string, string>
+local eventToFilterGroup = {};
+for groupName, chatTypes in pairs(Constants.FILTER_OPTIONS) do
+	for _, chatType in ipairs(chatTypes) do
+		eventToFilterGroup[chatType] = groupName;
+	end
+end
+Constants.EVENT_TO_FILTER_GROUP = eventToFilterGroup;
 
 ---Localised display labels for each mention reason.
 ---@type table<string, string>
