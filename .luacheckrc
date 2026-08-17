@@ -515,6 +515,13 @@ stds.wow = {
 			},
 		},
 
+		UIModeUtil = {
+			fields = {
+				"RegisterMode",
+				"SetModeActive",
+			},
+		},
+
 		"AbbreviateLargeNumbers",
 		"Ambiguate",
 		"BNGetGameAccountInfoByGUID",
