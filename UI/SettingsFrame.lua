@@ -828,6 +828,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 						frame:Hide();
 					end);
 				end
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
