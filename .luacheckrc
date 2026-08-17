@@ -801,6 +801,8 @@ stds.wow = {
 		"MenuResponse",
 		"ModelFrameMixin",
 		"NamePlateDriverFrame",
+		"PlayerFrame",
+		"RogueComboPointBarFrame",
 		"SystemFont_LargeNamePlate",
 		"SystemFont_NamePlate",
 		"SystemFont_Shadow_Huge1",
@@ -811,6 +813,7 @@ stds.wow = {
 		"UIErrorsFrame",
 		"UIParent",
 		"UISpecialFrames",
+		"WarlockPowerFrame",
 		"WorldFrame",
 		"WorldMapFrame",
 
