@@ -259,4 +259,41 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 	end
 end
 
+---Hide various of UI element
+function ScreenshotHelper.HideDistractions()
+	local objects = {
+		TargetFrame.TargetFrameContent.TargetFrameContentContextual,  --Target's Auras
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual,  --Animated Zzz, Leader Crown
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture,  --Portrait Flash
+		WarlockPowerFrame,
+		RogueComboPointBarFrame,
+	};
+
+	for _, obj in ipairs(objects) do
+		if obj then
+			obj:Hide();
+		end
+	end
+
+	local modeName = "ED_ScreenshotHelper";
+	if not ScreenshotHelper.roleSetsSet then
+		ScreenshotHelper.roleSetsSet = true;
+		UIModeUtil.RegisterMode(modeName, {
+			rolesetBlocklist = {
+				"arenaFrames",
+				"bags",
+				"buffs",
+				"cooldownViewers",
+				"encounterUI",
+				"extraAbilities",
+				"microMenu",
+				"objectives",
+				"pvp",
+				"statusBars",
+				"widgets",
+			},
+		});
+	end
+	UIModeUtil.SetModeActive(modeName, true);
+end
 ED.ScreenshotHelper = ScreenshotHelper;
