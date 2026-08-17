@@ -296,4 +296,21 @@ function ScreenshotHelper.HideDistractions()
 	end
 	UIModeUtil.SetModeActive(modeName, true);
 end
+
+---Toggle a full-screen background ON/OFF
+function ScreenshotHelper.ToggleFullScreenBackground()
+	local frame = ScreenshotHelper.FullScreenBackground;
+	if not frame then
+		frame = CreateFrame("Frame", nil, UIParent);
+		frame:Hide();
+		frame:SetAllPoints(true);
+		frame:SetFrameStrata("BACKGROUND");
+		frame.Texture = frame:CreateTexture();
+		frame.Texture:SetAllPoints(true);
+		frame.Texture:SetTexture("Interface/AddOns/EDBG.jpg");
+		ScreenshotHelper.FullScreenBackground = frame;
+	end
+	frame:SetShown(not frame:IsShown());
+end
+
 ED.ScreenshotHelper = ScreenshotHelper;
