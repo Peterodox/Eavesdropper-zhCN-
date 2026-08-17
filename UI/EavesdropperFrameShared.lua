@@ -361,31 +361,73 @@ function Eavesdropper_SharedFrameMixin:OnHyperlinkClick(link, text, button)
 	self.fade_time = GetTime();
 end
 
----Shows a tooltip on hover; currently only Jump to Context links have one to show.
+---Single reusable underline texture, reparented/repositioned per hover.
+local NameHoverHighlight;
+
+---@param region table
+---@param left number
+---@param bottom number
+---@param width number
+---@param height number
+local function NameHoverHighlight_Show(region, left, bottom, width, height)
+	if not NameHoverHighlight then
+		NameHoverHighlight = region:GetParent():CreateTexture(nil, "BACKGROUND", nil, 1);
+		NameHoverHighlight:SetColorTexture(0.8, 0.8, 0.8, 0.6); -- Matches Jump.png
+	end
+
+	local thickness = PixelUtil.ConvertPixelsToUIForRegion(1, region);
+
+	NameHoverHighlight:SetParent(region:GetParent());
+	NameHoverHighlight:ClearAllPoints();
+	NameHoverHighlight:SetPoint("TOPLEFT", region, "TOPLEFT", left, bottom - height + thickness);
+	NameHoverHighlight:SetPoint("BOTTOMRIGHT", region, "TOPLEFT", left + width, bottom - height);
+	NameHoverHighlight:Show();
+end
+
+local function NameHoverHighlight_Hide()
+	if NameHoverHighlight then
+		NameHoverHighlight:Hide();
+		NameHoverHighlight:ClearAllPoints();
+	end
+end
+
+---Shows a tooltip on hover for Jump to Context links & underline under
+---clickable sender names (supports Group and Mentions windows).
 ---@param link string
 ---@param text string
 ---@param region table
 ---@param left number
 ---@param bottom number
-function Eavesdropper_SharedFrameMixin:OnHyperlinkEnter(link, text, region, left, bottom) -- luacheck: no unused (text)
+---@param width number?
+---@param height number?
+function Eavesdropper_SharedFrameMixin:OnHyperlinkEnter(link, text, region, left, bottom, width, height) -- luacheck: no unused (text)
 	if not self:IsMouseEnabled() then return; end
 
 	local linkType, value = link:match("^(.-):(.*)$");
-	if linkType ~= "edjump" or not value then return; end
+	if not value then return; end
 
-	local _, sender = value:match("^(%d+):(.+)$");
-	if not sender then return; end
+	if linkType == "edjump" then
+		local _, sender = value:match("^(%d+):(.+)$");
+		if not sender then return; end
 
-	GameTooltip:SetOwner(self, "ANCHOR_NONE");
-	GameTooltip:ClearAllPoints();
-	GameTooltip:SetPoint("BOTTOMLEFT", region, "TOPLEFT", left, bottom);
-	GameTooltip_SetTitle(GameTooltip, L.JUMP_TO_CONTEXT);
-	GameTooltip_AddNormalLine(GameTooltip, L.JUMP_TO_CONTEXT_TOOLTIP:format(ED.Utils.StripRealmSuffix(sender)));
-	GameTooltip:Show();
+		GameTooltip:SetOwner(self, "ANCHOR_NONE");
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("BOTTOMLEFT", region, "TOPLEFT", left, bottom);
+		GameTooltip_SetTitle(GameTooltip, L.JUMP_TO_CONTEXT);
+		GameTooltip_AddNormalLine(GameTooltip, L.JUMP_TO_CONTEXT_TOOLTIP:format(ED.Utils.StripRealmSuffix(sender)));
+		GameTooltip:Show();
+		return;
+	end
+
+	if linkType == "player" then
+		if not width or not height then return; end
+		NameHoverHighlight_Show(region, left, bottom, width, height);
+	end
 end
 
 function Eavesdropper_SharedFrameMixin:OnHyperlinkLeave()
 	GameTooltip:Hide();
+	NameHoverHighlight_Hide();
 end
 
 -- ============================================================
