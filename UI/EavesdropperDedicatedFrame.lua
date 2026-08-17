@@ -176,6 +176,38 @@ function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 	self.refreshing = false;
 end
 
+---Scrolls so entryId lands at the bottom-most visible line. SetScrollOffset fixes to the
+---bottom edge, not the top. Fetches beyond MaxHistory to guarantee entryId is present.
+---@param entryId number
+function Eavesdropper_Dedicated_FrameMixin:ScrollToEntry(entryId)
+	if not self.ChatBox then return; end
+
+	self.refreshing = true;
+	self.ChatBox:Clear();
+	self.newestEntryTime = nil;
+
+	local player = self.eavesdropped_player;
+	local offset = 0;
+
+	if player then
+		local chat = ED.ChatHistory:GetPlayerHistory(player, Constants.CHAT_BOX.MAX_HISTORY, self)
+			or ED.ChatHistory:GetPlayerHistory(ED.Utils.StripRealmSuffix(player), Constants.CHAT_BOX.MAX_HISTORY, self);
+
+		if chat then
+			for i, entry in ipairs(chat) do
+				self:AddMessage(entry, true);
+				if entry.id == entryId then
+					offset = #chat - i;
+				end
+			end
+		end
+	end
+
+	self.ChatBox:SetScrollOffset(offset);
+	self:UpdateTitleBar();
+	self.refreshing = false;
+end
+
 ---Add a chat entry to the frame
 ---@param entry EavesdropperChatEntry
 ---@param fromHistory boolean
@@ -318,6 +350,14 @@ function DedicatedFrame:AddFrame(sender)
 	self:SaveToCharDB();
 
 	return frame;
+end
+
+---Open (or focus) sender's dedicated window and scroll it to entryId.
+---@param sender string
+---@param entryId number
+function DedicatedFrame:JumpToEntry(sender, entryId)
+	local frame = self:AddFrame(sender);
+	frame:ScrollToEntry(entryId);
 end
 
 ED.DedicatedFrame = DedicatedFrame;

@@ -238,6 +238,12 @@ https://raw.githubusercontent.com/Meorawr/wow-ui-schema/main/UI.xsd">
 					<OnHyperlinkClick>
 						self:GetParent():OnHyperlinkClick(link, text, button);
 					</OnHyperlinkClick>
+					<OnHyperlinkEnter>
+						self:GetParent():OnHyperlinkEnter(link, text, region, left, bottom, width, height);
+					</OnHyperlinkEnter>
+					<OnHyperlinkLeave>
+						self:GetParent():OnHyperlinkLeave();
+					</OnHyperlinkLeave>
 				</Scripts>
 			</ScrollingMessageFrame>
 		</Frames>

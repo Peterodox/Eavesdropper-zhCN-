@@ -1055,6 +1055,19 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			end,
 		},
 		{
+			type = "checkbox",
+			global = true,
+			label = L.JUMP_TO_CONTEXT,
+			tooltip = L.JUMP_TO_CONTEXT_HELP,
+			buildAdded = "0.6.0|120100",
+			disabled = function() return not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("DedicatedWindows"); end,
+			get = function() return ED.Database:GetGlobalSetting("GroupWindowsJumpToContext"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("GroupWindowsJumpToContext", val);
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+			end,
+		},
+		{
 			type = "slider",
 			global = true,
 			label = L.GROUP_HISTORY_SIZE,
@@ -1161,6 +1174,19 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetGlobalSetting("MentionsHistoryUnitPopups"); end,
 			set = function(val)
 				ED.Database:SetGlobalSetting("MentionsHistoryUnitPopups", val);
+			end,
+		},
+		{
+			type = "checkbox",
+			global = true,
+			label = L.JUMP_TO_CONTEXT,
+			tooltip = L.JUMP_TO_CONTEXT_HELP,
+			buildAdded = "0.6.0|120100",
+			disabled = function() return not ED.Database:GetGlobalSetting("MentionsHistory") or not ED.Database:GetGlobalSetting("DedicatedWindows"); end,
+			get = function() return ED.Database:GetGlobalSetting("MentionsHistoryJumpToContext"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("MentionsHistoryJumpToContext", val);
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{

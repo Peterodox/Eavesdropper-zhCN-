@@ -125,7 +125,6 @@ function Eavesdropper_Mentions_FrameMixin:OnHide()
 end
 
 ---Marks the window as deliberately opened this session, then shows it (unless combat-hidden).
----This is the entry point Phase 5's slash command, minimap, and unit popup call into.
 function Eavesdropper_Mentions_FrameMixin:Open()
 	self.userOpened = true;
 	self:HandleVisibility();
@@ -255,7 +254,8 @@ function Eavesdropper_Mentions_FrameMixin:AddMessage(entry, fromHistory)
 	if not self.ChatBox then return; end
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
-	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self:GetNameDisplayMode());
+	local showJumpLink = ED.Database:GetGlobalSetting("DedicatedWindows") and ED.Database:GetGlobalSetting("MentionsHistoryJumpToContext");
+	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self:GetNameDisplayMode(), showJumpLink);
 	self.ChatBox:AddMessage(formatted, r, g, b);
 
 	if not fromHistory then

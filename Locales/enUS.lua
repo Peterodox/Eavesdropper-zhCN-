@@ -200,6 +200,10 @@ L = {
 	NEW_WINDOWS_NEW_INDICATOR = "New Message Indicator",
 	NEW_WINDOWS_NEW_INDICATOR_HELP = "Displays a visual alert on a window that receives a new message.|n|n- The indicator clears automatically after 10 seconds or immediately upon hovering over the window.",
 
+	JUMP_TO_CONTEXT = "Jump to Context",
+	JUMP_TO_CONTEXT_HELP = "Adds a small clickable icon |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t at the start of each message, opening (or focusing) that sender's Dedicated Window scrolled to that exact line.|n|n|cnWARNING_FONT_COLOR:Note: Requires Dedicated Windows to be enabled, and Enable Mouse on the window this is used in.|r",
+	JUMP_TO_CONTEXT_TOOLTIP = "|cnGREEN_FONT_COLOR:Click: Jump to this message in %s's Dedicated Window|r",
+
 	DEDICATED_WINDOWS_PERSIST = "Save Windows",
 	DEDICATED_WINDOWS_PERSIST_HELP = "Toggles whether currently open Dedicated Windows are restored after a game restart or UI reload.|n|nThe following data is preserved:|n- List of opened windows|n|n|cnWARNING_FONT_COLOR:Note: Visual settings such as font size and window positions are not saved and will reset.|r",
 

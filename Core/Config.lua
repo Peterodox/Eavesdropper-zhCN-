@@ -162,6 +162,23 @@ function Config:ShowConfigMenu(frame, mode)
 		);
 		ED.Utils.SetMenuTooltip(lockTitleBar, L.LOCK_TITLEBAR_HELP);
 
+		-- Jump to Context: Mentions/Group only. A per-family global (mirroring Settings).
+		if mode == "group" or mode == "mentions" then
+			local jumpToContextKey = (mode == "mentions") and "MentionsHistoryJumpToContext" or "GroupWindowsJumpToContext";
+			local jumpToContext = rootDescription:CreateCheckbox(
+				L.JUMP_TO_CONTEXT,
+				function() return ED.Database:GetGlobalSetting(jumpToContextKey); end,
+				function()
+					ED.Database:SetGlobalSetting(jumpToContextKey, not ED.Database:GetGlobalSetting(jumpToContextKey));
+					Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+				end
+			);
+			ED.Utils.SetMenuTooltip(jumpToContext, L.JUMP_TO_CONTEXT_HELP);
+			if not ED.Database:GetGlobalSetting("DedicatedWindows") then
+				jumpToContext:SetEnabled(false);
+			end
+		end
+
 		if useFrameState then
 			rootDescription:CreateDivider();
 

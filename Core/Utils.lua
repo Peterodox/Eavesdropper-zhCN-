@@ -100,6 +100,15 @@ function Utils.PlayerHyperlink(sender, displayText)
 	return string.format("|Hplayer:%s|h%s|h", sender, displayText);
 end
 
+---Wraps text in a custom addon hyperlink that opens sender's dedicated window scrolled to entryId.
+---@param entryId number Chat entry ID (EavesdropperChatEntry.id) to scroll to once the window opens.
+---@param sender string Full Name-Realm; identifies which dedicated window to open.
+---@param displayText string The visible label, generally Constants.JUMP_TO_CONTEXT_ICON_INLINE.
+---@return string
+function Utils.JumpHyperlink(entryId, sender, displayText)
+	return string.format("|Hedjump:%s:%s|h%s|h", entryId, sender, displayText);
+end
+
 ---HandleLinks Converts URLs to clickable WoW hyperlinks
 ---@param message string
 ---@return string

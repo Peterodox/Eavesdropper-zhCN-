@@ -32,10 +32,12 @@ local Database = {};
 ---@field Flyway EavesdropperFlyway? Database patch versioning and migration tracking.
 ---@field GroupHistorySize number?
 ---@field GroupWindows boolean?
+---@field GroupWindowsJumpToContext boolean?
 ---@field GroupWindowsNewIndicator boolean?
 ---@field GroupWindowsUnitPopups boolean?
 ---@field GroupWindowsPersist boolean?
 ---@field MentionsHistory boolean?
+---@field MentionsHistoryJumpToContext boolean?
 ---@field MentionsHistoryNewIndicator boolean?
 ---@field MentionsHistoryUnitPopups boolean?
 ---@field MinimapButton EavesdropperGlobalMinimapButton?
@@ -57,11 +59,13 @@ local GLOBAL_DEFAULTS = {
 	},
 	GroupHistorySize = 100,
 	GroupWindows = true,
+	GroupWindowsJumpToContext = false,
 	GroupWindowsNewIndicator = true,
 	GroupWindowsNPCSpeechDetectionNameShown = false,
 	GroupWindowsUnitPopups = true,
 	GroupWindowsPersist = true,
 	MentionsHistory = true,
+	MentionsHistoryJumpToContext = true,
 	MentionsHistoryNewIndicator = true,
 	MentionsHistoryUnitPopups = true,
 	MinimapButton = {
@@ -756,11 +760,13 @@ end
 ---| "Flyway"
 ---| "GroupHistorySize"
 ---| "GroupWindows"
+---| "GroupWindowsJumpToContext"
 ---| "GroupWindowsNewIndicator"
 ---| "GroupWindowsNPCSpeechDetectionNameShown"
 ---| "GroupWindowsUnitPopups"
 ---| "GroupWindowsPersist"
 ---| "MentionsHistory"
+---| "MentionsHistoryJumpToContext"
 ---| "MentionsHistoryNewIndicator"
 ---| "MentionsHistoryUnitPopups"
 ---| "MinimapButton"

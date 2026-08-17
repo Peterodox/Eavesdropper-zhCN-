@@ -327,9 +327,45 @@ function Eavesdropper_SharedFrameMixin:OnHyperlinkClick(link, text, button)
 		return;
 	end
 
+	-- Jump to Context: open (or focus) sender's dedicated window, scrolled to entryId.
+	if linkType == "edjump" and value then
+		local entryId, sender = value:match("^(%d+):(.+)$");
+		if entryId and sender then
+			ED.DedicatedFrame:JumpToEntry(sender, tonumber(entryId));
+		end
+		return;
+	end
+
 	SetItemRef(link, text, button, DEFAULT_CHAT_FRAME);
 
 	self.fade_time = GetTime();
+end
+
+---Shows a tooltip on hover; currently only Jump to Context links have one to show.
+---@param link string
+---@param text string
+---@param region table
+---@param left number
+---@param bottom number
+function Eavesdropper_SharedFrameMixin:OnHyperlinkEnter(link, text, region, left, bottom) -- luacheck: no unused (text)
+	if not self:IsMouseEnabled() then return; end
+
+	local linkType, value = link:match("^(.-):(.*)$");
+	if linkType ~= "edjump" or not value then return; end
+
+	local _, sender = value:match("^(%d+):(.+)$");
+	if not sender then return; end
+
+	GameTooltip:SetOwner(self, "ANCHOR_NONE");
+	GameTooltip:ClearAllPoints();
+	GameTooltip:SetPoint("BOTTOMLEFT", region, "TOPLEFT", left, bottom);
+	GameTooltip_SetTitle(GameTooltip, L.JUMP_TO_CONTEXT);
+	GameTooltip_AddNormalLine(GameTooltip, L.JUMP_TO_CONTEXT_TOOLTIP:format(ED.Utils.StripRealmSuffix(sender)));
+	GameTooltip:Show();
+end
+
+function Eavesdropper_SharedFrameMixin:OnHyperlinkLeave()
+	GameTooltip:Hide();
 end
 
 -- ============================================================
