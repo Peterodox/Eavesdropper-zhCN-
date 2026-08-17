@@ -312,8 +312,6 @@ local function CreateCopyNameButton(menuDescription, contextData)
 
 		local nativeButton = FindNativeCopyNameButton(menuDescription);
 		if nativeButton then
-			-- Native creation never calls SetData, so GetData() would otherwise be nil
-			-- when the responder is invoked.
 			-- Native button does not know contextData, so GetData() would end up being nil.
 			-- We inject this ourselves and set its Responder to use it with OnClick.
 			nativeButton:SetData(contextData);
