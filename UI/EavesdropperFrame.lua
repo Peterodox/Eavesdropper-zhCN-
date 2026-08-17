@@ -344,6 +344,10 @@ function Eavesdropper_FrameMixin:ApplyProfileSettings()
 	self:ApplyWindowSettings();
 	ED.Keywords:ParseList();
 
+	if ED.MentionsFrame then
+		ED.MentionsFrame:ApplyWindowSettings();
+	end
+
 	if ED.SettingsFrame then
 		ED.SettingsFrame:RefreshWidgets();
 	end
