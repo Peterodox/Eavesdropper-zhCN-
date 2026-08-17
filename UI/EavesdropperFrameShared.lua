@@ -330,7 +330,7 @@ function Eavesdropper_SharedFrameMixin:OnHyperlinkClick(link, text, button)
 	-- Jump to Context: open (or focus) sender's dedicated window, scrolled to entryId.
 	if linkType == "edjump" and value then
 		local entryId, sender = value:match("^(%d+):(.+)$");
-		if entryId and sender then
+		if entryId and sender and ED.Database:GetGlobalSetting("DedicatedWindows") then
 			ED.DedicatedFrame:JumpToEntry(sender, tonumber(entryId));
 		end
 		return;
