@@ -25,39 +25,13 @@ Events:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 ---Fired when combat begins (regen disabled). Handles frame visibility if HideInCombat is set.
 function Events:PLAYER_REGEN_DISABLED()
 	if not ED.Database:GetSetting("HideInCombat") then return; end
-	ED.Frame:HandleVisibility();
-
-	ED.MentionsFrame.isCombatHidden = true;
-	ED.MentionsFrame:HandleVisibility();
-
-	ED.DedicatedFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = true;
-		frame:HandleVisibility();
-	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = true;
-		frame:HandleVisibility();
-	end);
+	Eavesdropper_SharedFrameMixin.ApplyCombatHidden(true);
 end
 
 ---Fired when combat ends (regen enabled). Handles frame visibility if HideInCombat is set.
 function Events:PLAYER_REGEN_ENABLED()
 	if not ED.Database:GetSetting("HideInCombat") then return; end
-	ED.Frame:HandleVisibility();
-
-	ED.MentionsFrame.isCombatHidden = false;
-	ED.MentionsFrame:HandleVisibility();
-
-	ED.DedicatedFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = false;
-		frame:HandleVisibility();
-	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = false;
-		frame:HandleVisibility();
-	end);
+	Eavesdropper_SharedFrameMixin.ApplyCombatHidden(false);
 end
 
 ---Fired when the player's focus changes.

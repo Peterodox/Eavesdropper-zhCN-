@@ -169,6 +169,26 @@ function Eavesdropper_SharedFrameMixin.RefreshAllWindows()
 	end
 end
 
+---Applies combat-hidden state to all four frame types and re-evaluates their visibility.
+---Main frame's HandleVisibility ignores isCombatHidden, as it handles things differently.
+---@param combatHidden boolean
+function Eavesdropper_SharedFrameMixin.ApplyCombatHidden(combatHidden)
+	ED.Frame:HandleVisibility();
+
+	ED.MentionsFrame.isCombatHidden = combatHidden;
+	ED.MentionsFrame:HandleVisibility();
+
+	ED.DedicatedFrame:ForEachFrame(function(frame)
+		frame.isCombatHidden = combatHidden;
+		frame:HandleVisibility();
+	end);
+
+	ED.GroupFrame:ForEachFrame(function(frame)
+		frame.isCombatHidden = combatHidden;
+		frame:HandleVisibility();
+	end);
+end
+
 ---Rearms itself if something is pending when the cooldown expires, rather than always going
 ---idle. Keeps a sustained burst on a steady interval instead of having it basically spam.
 local function ArmDataRefreshCooldown()
