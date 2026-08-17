@@ -42,14 +42,10 @@ end
 
 ---Display the configuration menu for the addon.
 ---@param frame table
----@param dedicatedFrame boolean?
----@param groupFrame boolean?
+---@param mode "dedicated"|"group"|"mentions"|nil nil means the main Eavesdropper frame.
 ---@return nil
-function Config:ShowConfigMenu(frame, dedicatedFrame, groupFrame)
-	dedicatedFrame = dedicatedFrame or false;
-	groupFrame = groupFrame or false;
-
-	local useFrameState = dedicatedFrame or groupFrame;
+function Config:ShowConfigMenu(frame, mode)
+	local useFrameState = mode ~= nil;
 
 	---Handles extra clicks on the Title Bar Button to not close the menu.
 	function frame.TitleBar.TitleButton.HandlesGlobalMouseEvent()
@@ -88,10 +84,12 @@ function Config:ShowConfigMenu(frame, dedicatedFrame, groupFrame)
 		rootDescription:AddMenuReleasedCallback(function() frame:OnLeave(); end);
 
 		-- Title
-		if groupFrame then
+		if mode == "group" then
 			rootDescription:CreateTitle(L.GROUP_WINDOWS);
-		elseif dedicatedFrame then
+		elseif mode == "dedicated" then
 			rootDescription:CreateTitle(L.DEDICATED_WINDOWS);
+		elseif mode == "mentions" then
+			rootDescription:CreateTitle(L.MENTIONS_WINDOW_TITLE);
 		else
 			local title = rootDescription:CreateTitle(ED.Globals.addon_settings_icon .. " " .. ED.Globals.addon_title);
 			ED.Utils.SetMenuTooltip(title, "Version: " .. ED.Globals.addon_version);
@@ -101,14 +99,29 @@ function Config:ShowConfigMenu(frame, dedicatedFrame, groupFrame)
 		local filter = rootDescription:CreateButton(L.FILTER);
 		ED.Utils.SetMenuTooltip(filter, L.FILTER_HELP);
 		filter:CreateTitle(L.FILTER .. " " .. MAIN_MENU);
-		ED.ChatFilters:GenerateFilterListMenu(frame, filter, useFrameState);
+		ED.ChatFilters:GenerateFilterListMenu(frame, filter);
 
-		if not useFrameState then
-			-- Notification Settings
-			rootDescription:CreateButton(SETTINGS, function()
-				ED.Settings:ShowSettings();
-			end);
+		-- No other frame ever displays entry.mn, so this is Mentions-only.
+		if mode == "mentions" then
+			local mentionTypes = rootDescription:CreateButton(L.MENTIONS_REASON_FILTER);
+			ED.Utils.SetMenuTooltip(mentionTypes, L.MENTIONS_REASON_FILTER_HELP);
+			mentionTypes:CreateTitle(L.MENTIONS_REASON_FILTER .. " " .. MAIN_MENU);
+			ED.ChatFilters:GenerateMentionReasonFilterMenu(mentionTypes);
 		end
+
+		-- Settings, scoped to this frame's own category. nil for the main frame.
+		local settingsView;
+		if mode == "dedicated" then
+			settingsView = L.DEDICATED;
+		elseif mode == "group" then
+			settingsView = L.GROUPS;
+		elseif mode == "mentions" then
+			settingsView = L.MENTIONS_WINDOW_TITLE;
+		end
+
+		rootDescription:CreateButton(SETTINGS, function()
+			ED.Settings:OpenSettings(settingsView);
+		end);
 
 		rootDescription:CreateDivider();
 		rootDescription:CreateTitle(L.WINDOW_OPTIONS);
@@ -149,18 +162,39 @@ function Config:ShowConfigMenu(frame, dedicatedFrame, groupFrame)
 		);
 		ED.Utils.SetMenuTooltip(lockTitleBar, L.LOCK_TITLEBAR_HELP);
 
+		-- Jump to Context: Mentions/Group only. A per-family global (mirroring Settings).
+		if mode == "group" or mode == "mentions" then
+			local jumpToContextKey = (mode == "mentions") and "MentionsHistoryJumpToContext" or "GroupWindowsJumpToContext";
+			local jumpToContext = rootDescription:CreateCheckbox(
+				L.JUMP_TO_CONTEXT,
+				function() return ED.Database:GetGlobalSetting(jumpToContextKey); end,
+				function()
+					ED.Database:SetGlobalSetting(jumpToContextKey, not ED.Database:GetGlobalSetting(jumpToContextKey));
+					Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+				end
+			);
+			ED.Utils.SetMenuTooltip(jumpToContext, L.JUMP_TO_CONTEXT_HELP);
+			if not ED.Database:GetGlobalSetting("DedicatedWindows") then
+				jumpToContext:SetEnabled(false);
+			end
+		end
+
 		if useFrameState then
 			rootDescription:CreateDivider();
 
-			if groupFrame then
+			if mode == "group" then
 				rootDescription:CreateTitle(L.GROUP_OPTIONS);
+			elseif mode == "mentions" then
+				rootDescription:CreateTitle(L.MENTIONS_OPTIONS);
 			else
 				rootDescription:CreateTitle(L.DEDICATED_OPTIONS);
 			end
 
-			rootDescription:CreateButton(L.GROUP_RENAME, function()
-				frame:PromptRenameFrame();
-			end);
+			if mode == "group" then
+				rootDescription:CreateButton(L.GROUP_RENAME, function()
+					frame:PromptRenameFrame();
+				end);
+			end
 
 			local frameFontSize = rootDescription:CreateButton(L.FONT_SIZE);
 			frameFontSize:CreateTitle(L.FONT_SIZE);
@@ -186,12 +220,15 @@ function Config:ShowConfigMenu(frame, dedicatedFrame, groupFrame)
 				end
 			);
 
-			if groupFrame then
+			if mode == "group" or mode == "mentions" then
+				-- frame:GetNameDisplayMode() is nil until explicitly overridden.
+				-- Follow Profile == nil, the others carry an override.
 				local frameNameDisplayMode = rootDescription:CreateButton(L.NAME_DISPLAY_MODE);
 				frameNameDisplayMode:CreateTitle(L.NAME_DISPLAY_MODE .. " " .. MAIN_MENU);
-				frameNameDisplayMode:CreateRadio(L.NAME_DISPLAY_MODE_FULL_NAME, function() return frame.nameDisplayMode == 1 end, function() frame:SetNameDisplayMode(1); end);
-				frameNameDisplayMode:CreateRadio(L.NAME_DISPLAY_MODE_FIRST_NAME, function() return frame.nameDisplayMode == 2 end, function() frame:SetNameDisplayMode(2); end);
-				frameNameDisplayMode:CreateRadio(L.NAME_DISPLAY_MODE_ORIGINAL_NAME, function() return frame.nameDisplayMode == 3 end, function() frame:SetNameDisplayMode(3); end);
+				frameNameDisplayMode:CreateRadio(L.NAME_DISPLAY_MODE_FOLLOW_PROFILE, function() return frame:GetNameDisplayMode() == nil end, function() frame:SetNameDisplayMode(nil); end);
+				frameNameDisplayMode:CreateRadio(L.NAME_DISPLAY_MODE_FULL_NAME, function() return frame:GetNameDisplayMode() == 1 end, function() frame:SetNameDisplayMode(1); end);
+				frameNameDisplayMode:CreateRadio(L.NAME_DISPLAY_MODE_FIRST_NAME, function() return frame:GetNameDisplayMode() == 2 end, function() frame:SetNameDisplayMode(2); end);
+				frameNameDisplayMode:CreateRadio(L.NAME_DISPLAY_MODE_ORIGINAL_NAME, function() return frame:GetNameDisplayMode() == 3 end, function() frame:SetNameDisplayMode(3); end);
 			end
 		end
 	end);

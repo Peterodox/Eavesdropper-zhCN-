@@ -149,8 +149,9 @@ local dataRefreshOnCooldown = false;
 ---True if an invalidation arrived during the cooldown and still needs a redraw.
 local dataRefreshPending = false;
 
----Redraw every open dedicated and group window, and the main window if it's shown.
-local function RefreshAllWindows()
+---Redraw every open dedicated and group window.
+---mentions and the main window are only redrawn if they are shown.
+function Eavesdropper_SharedFrameMixin.RefreshAllWindows()
 	ED.DedicatedFrame:ForEachFrame(function(frame)
 		frame:RefreshChat(true);
 	end);
@@ -162,6 +163,30 @@ local function RefreshAllWindows()
 	if ED.Frame and ED.Frame:IsShown() then
 		ED.Frame:RefreshChat(true);
 	end
+
+	if ED.MentionsFrame and ED.MentionsFrame:IsShown() then
+		ED.MentionsFrame:RefreshChat(true);
+	end
+end
+
+---Applies combat-hidden state to all four frame types and re-evaluates their visibility.
+---Main frame's HandleVisibility ignores isCombatHidden, as it handles things differently.
+---@param combatHidden boolean
+function Eavesdropper_SharedFrameMixin.ApplyCombatHidden(combatHidden)
+	ED.Frame:HandleVisibility();
+
+	ED.MentionsFrame.isCombatHidden = combatHidden;
+	ED.MentionsFrame:HandleVisibility();
+
+	ED.DedicatedFrame:ForEachFrame(function(frame)
+		frame.isCombatHidden = combatHidden;
+		frame:HandleVisibility();
+	end);
+
+	ED.GroupFrame:ForEachFrame(function(frame)
+		frame.isCombatHidden = combatHidden;
+		frame:HandleVisibility();
+	end);
 end
 
 ---Rearms itself if something is pending when the cooldown expires, rather than always going
@@ -176,7 +201,7 @@ local function ArmDataRefreshCooldown()
 
 		dataRefreshPending = false;
 		ED.Debug:Print("ScheduleDataRefresh: cooldown expired, trailing redraw");
-		RefreshAllWindows();
+		Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 		ArmDataRefreshCooldown();
 	end);
 end
@@ -191,7 +216,7 @@ function Eavesdropper_SharedFrameMixin.ScheduleDataRefresh()
 	end
 
 	ED.Debug:Print("ScheduleDataRefresh: leading edge, redrawing now");
-	RefreshAllWindows();
+	Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 
 	dataRefreshOnCooldown = true;
 	ArmDataRefreshCooldown();
@@ -322,9 +347,98 @@ function Eavesdropper_SharedFrameMixin:OnHyperlinkClick(link, text, button)
 		return;
 	end
 
+	-- Jump to Context: open (or focus) sender's dedicated window, scrolled to entryId.
+	if linkType == "edjump" and value then
+		local entryId, sender = value:match("^(%d+):(.+)$");
+		if entryId and sender and ED.Database:GetGlobalSetting("DedicatedWindows") then
+			ED.DedicatedFrame:JumpToEntry(sender, tonumber(entryId));
+		end
+		return;
+	end
+
+	-- UnitPopups:OnMenuOpen fires synchronously inside SetItemRef when the link opens
+	-- a menu; this flag tells it the menu was reached through an addon-owned frame so
+	-- the native Copy Character Name button's CopyToClipboard call would be tainted.
+	if ED.UnitPopups then
+		ED.UnitPopups:SetHyperlinkOrigin(true);
+	end
+
 	SetItemRef(link, text, button, DEFAULT_CHAT_FRAME);
 
+	if ED.UnitPopups then
+		ED.UnitPopups:SetHyperlinkOrigin(false);
+	end
+
 	self.fade_time = GetTime();
+end
+
+---Single reusable underline texture, reparented/repositioned per hover.
+local NameHoverHighlight;
+
+---@param region table
+---@param left number
+---@param bottom number
+---@param width number
+---@param height number
+local function NameHoverHighlight_Show(region, left, bottom, width, height)
+	if not NameHoverHighlight then
+		NameHoverHighlight = region:GetParent():CreateTexture(nil, "BACKGROUND", nil, 1);
+		NameHoverHighlight:SetColorTexture(0.8, 0.8, 0.8, 0.6); -- Matches Jump.png
+	end
+
+	local thickness = PixelUtil.ConvertPixelsToUIForRegion(1, region);
+
+	NameHoverHighlight:SetParent(region:GetParent());
+	NameHoverHighlight:ClearAllPoints();
+	NameHoverHighlight:SetPoint("TOPLEFT", region, "TOPLEFT", left, bottom - height + thickness);
+	NameHoverHighlight:SetPoint("BOTTOMRIGHT", region, "TOPLEFT", left + width, bottom - height);
+	NameHoverHighlight:Show();
+end
+
+local function NameHoverHighlight_Hide()
+	if NameHoverHighlight then
+		NameHoverHighlight:Hide();
+		NameHoverHighlight:ClearAllPoints();
+	end
+end
+
+---Shows a tooltip on hover for Jump to Context links & underline under
+---clickable sender names (supports Group and Mentions windows).
+---@param link string
+---@param text string
+---@param region table
+---@param left number
+---@param bottom number
+---@param width number?
+---@param height number?
+function Eavesdropper_SharedFrameMixin:OnHyperlinkEnter(link, text, region, left, bottom, width, height) -- luacheck: no unused (text)
+	if not self:IsMouseEnabled() then return; end
+
+	local linkType, value = link:match("^(.-):(.*)$");
+	if not value then return; end
+
+	if linkType == "edjump" then
+		local _, sender = value:match("^(%d+):(.+)$");
+		if not sender then return; end
+
+		GameTooltip:SetOwner(self, "ANCHOR_NONE");
+		GameTooltip:ClearAllPoints();
+		GameTooltip:SetPoint("BOTTOMLEFT", region, "TOPLEFT", left, bottom);
+		GameTooltip_SetTitle(GameTooltip, L.JUMP_TO_CONTEXT);
+		GameTooltip_AddNormalLine(GameTooltip, L.JUMP_TO_CONTEXT_TOOLTIP:format(ED.Utils.StripRealmSuffix(sender)));
+		GameTooltip:Show();
+		return;
+	end
+
+	if linkType == "player" then
+		if not width or not height then return; end
+		NameHoverHighlight_Show(region, left, bottom, width, height);
+	end
+end
+
+function Eavesdropper_SharedFrameMixin:OnHyperlinkLeave()
+	GameTooltip:Hide();
+	NameHoverHighlight_Hide();
 end
 
 -- ============================================================

@@ -185,7 +185,7 @@ function Eavesdropper_ChangelogTextContainerMixin:OnHyperlinkClick(link)
 	local url = link:match("url:(.+):0");
 	if url and url ~= "" then
 		url = "https://" .. url;
-		ED.LinkDialog.CreateExternalLinkDialog(url);
+		ED.CopyTextDialog.CreateExternalLinkDialog(url);
 		return;
 	end
 

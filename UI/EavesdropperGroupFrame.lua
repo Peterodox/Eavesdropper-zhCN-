@@ -46,7 +46,13 @@ function Eavesdropper_Group_FrameMixin:IsTitleBarLocked()
 	return self.lockTitleBar;
 end
 
----@param mode number
+---Returns the current name-display override, or nil to follow the profile setting.
+---@return number?
+function Eavesdropper_Group_FrameMixin:GetNameDisplayMode()
+	return self.nameDisplayMode;
+end
+
+---@param mode number? nil clears the override, reverting this window to follow the profile setting.
 function Eavesdropper_Group_FrameMixin:SetNameDisplayMode(mode)
 	if self.nameDisplayMode == mode then return; end
 	self.nameDisplayMode = mode;
@@ -64,7 +70,9 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	local player = name:match("^Eavesdropper_Group_Frame_(.+)$");
 	self.eavesdropped_player = player;
 	self.titlebar_name = nil;
-	self.nameDisplayMode = ED.Database and ED.Database:GetSetting("NameDisplayMode") or 3;
+
+	-- When nil, follows the profile's NameDisplayMode until overridden in SetNameDisplayMode.
+	self.nameDisplayMode = nil;
 
 	self:InitInstanceFrameState();
 
@@ -97,7 +105,7 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	-- Configure title button; triggers the group config menu
 	local titleBtn = self.TitleBar.TitleButton;
 	titleBtn:SetScript("OnClick", function()
-		ED.Config:ShowConfigMenu(self, false, true);
+		ED.Config:ShowConfigMenu(self, "group");
 	end);
 
 	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
@@ -358,7 +366,8 @@ function Eavesdropper_Group_FrameMixin:AddMessage(entry, fromHistory)
 	end
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
-	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self.nameDisplayMode);
+	local showJumpLink = ED.Database:GetGlobalSetting("DedicatedWindows") and ED.Database:GetGlobalSetting("GroupWindowsJumpToContext");
+	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self.nameDisplayMode, showJumpLink);
 	self.ChatBox:AddMessage(formatted, r, g, b);
 
 	-- Only track lines (to keep frame awake) when they are actually inserted.

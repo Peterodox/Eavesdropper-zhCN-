@@ -16,20 +16,33 @@ L = {
 	SLASH_COMMAND_ED_TOGGLE = "Toggle Eavesdropper",
 	SLASH_COMMAND_ED_SETTINGS = "Toggle Settings",
 	SLASH_COMMAND_ED_HELP = "Available Commands",
+	SLASH_COMMAND_ED_MENTIONS = "Toggle Mentions",
 
 	BINDING_NAME_ED_TOGGLE = "Toggle Eavesdropper",
 	BINDING_NAME_ED_SETTINGS = "Toggle Settings",
 	BINDING_NAME_ED_EAVESDROP_ON = "Eavesdrop On (Dedicated)";
 
-	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:Left-Click: Open settings|nRight-Click: Open profiles|nShift-Click: Toggle Eavesdropper|r",
+	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:Left-Click: Open settings|nRight-Click: Open profiles|nShift-Left-Click: Toggle Eavesdropper|nShift-Right-Click: Toggle Mentions|r",
 	POPUP_LINK = "|n|nPress |cnGREEN_FONT_COLOR:CTRL-C|r to copy the highlighted, then paste it in your web browser with |cnGREEN_FONT_COLOR:CTRL-V|r.",
+	POPUP_COPY_NAME = "|n|nPress |cnGREEN_FONT_COLOR:CTRL-C|r to copy the highlighted character name.",
 	COPY_SYSTEM_MESSAGE = "Copied to clipboard.",
 	GLOBAL_SETTING_TOOLTIP = "|cnLIGHTBLUE_FONT_COLOR:|n|n* Global setting - persists across all profiles.|r",
 
 	FILTER = "Filter",
 	FILTER_HELP = "Choose which types of messages are visible in Eavesdropper.|n|n- Toggling a filter only changes what is currently shown.|n- No data is actually deleted; hidden messages will reappear if the filter is turned back on.|n|n|cnWARNING_FONT_COLOR:Note: Filters are applied instantly.|r",
 
+	MENTIONS_REASON_FILTER = "Mention Types",
+	MENTIONS_REASON_FILTER_HELP = "Choose which kinds of mentions are visible in this window.|n|n- Toggling a type only changes what is currently shown.|n- No data is actually deleted; hidden mentions will reappear if the type is turned back on.|n|n|cnWARNING_FONT_COLOR:Note: Mention Types are applied instantly.|r",
+	MENTIONS_REASON_KEYWORD = "Keywords",
+	MENTIONS_REASON_EMOTE = "Blizzard Emotes",
+
 	EMPTYLABEL_TEXT = "Empty Group",
+	MENTIONS_EMPTYLABEL_TEXT = "No Mentions Yet",
+	MENTIONS_WINDOW_TITLE = "Mentions",
+	MENTIONS_HELP = "A single window listing every message aimed at you, gathered from keyword hits and Blizzard emotes.",
+	MENTIONS_ENABLE_HELP = "Enables the Mentions window and the detection that feeds it.|n|n|cnWARNING_FONT_COLOR:Note: Disabling this setting stops new mentions from being recorded and hides the window if it is open.|r",
+	MENTIONS_HISTORY_SIZE = "History Size",
+	MENTIONS_HISTORY_SIZE_HELP = "Set the maximum number of mentions Eavesdropper keeps in this window.|n|n|cnWARNING_FONT_COLOR:Note: Mentions are usually sparse, so this limit rarely matters unless you're in an unusually busy or broadly-keyworded session.|r",
 	SCROLLMARKER_TEXT = "Scroll to Bottom",
 
 	FILTER_PUBLIC = "Public",
@@ -44,7 +57,7 @@ L = {
 
 	WINDOW_OPTIONS = "Window Options",
 	ENABLE_MOUSE = "Enable Mouse",
-	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, and URLs within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.",
+	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, URLs, and player names within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.",
 	LOCK_SCROLL = "Lock Scrolling",
 	LOCK_SCROLL_HELP = "Disables the ability to scroll through the message history.|n|n- Use this to ensure Eavesdropper always remains at the bottom of the list to show the latest messages.",
 	LOCK_WINDOW = "Lock Moving",
@@ -53,6 +66,7 @@ L = {
 	LOCK_TITLEBAR_HELP = "Toggles the visibility of the window's title bar.|n|n- Enabled: The title bar remains visible at all times.|n- Disabled: The title bar is hidden and only appears when you hover over the window.|n|nNote: You can enable 'Title Bar Target Name' in the settings to replace the 'Eavesdropper' text with your current target's name.",
 
 	DEDICATED_OPTIONS = "Dedicated Options",
+	MENTIONS_OPTIONS = "Mentions Options",
 
 	-- Category Titles
 	APPEARANCE_TITLE = "Appearance",
@@ -82,7 +96,7 @@ L = {
 	INCLUDE_COMPANIONS_HELP = "Show the owner's history when targeting or hovering over their pets and companions.|n|n- When enabled, Eavesdropper treats pets as a bridge to their owner's data.|n- When disabled, Eavesdropper will ignore pets and companions entirely.",
 
 	MESSAGES = "Messages",
-	MESSAGES_HELP = "These options only apply to the Eavesdropper history.",
+	MESSAGES_HELP = "These options only apply to the Eavesdropper windows.",
 
 	HISTORY_SIZE = "History Size",
 	HISTORY_SIZE_HELP = "Set the maximum number of history messages Eavesdropper displays for each unit.|n|n|cnWARNING_FONT_COLOR:Note: High values may cause temporary frame drops when refreshing the history window.|r",
@@ -92,6 +106,7 @@ L = {
 	NAME_DISPLAY_MODE_FULL_NAME = "Full Name",
 	NAME_DISPLAY_MODE_FIRST_NAME = "First Name",
 	NAME_DISPLAY_MODE_ORIGINAL_NAME = "Original (OOC) Name",
+	NAME_DISPLAY_MODE_FOLLOW_PROFILE = "Follow Profile Setting",
 
 	USE_RP_NAME_COLOR = "Name Colors",
 	USE_RP_NAME_COLOR_HELP = "Color names based on their custom RP settings (e.g., from TRP3).|n|n- If no RP color is detected, Eavesdropper falls back to the default Blizzard class color.",
@@ -184,6 +199,10 @@ L = {
 
 	NEW_WINDOWS_NEW_INDICATOR = "New Message Indicator",
 	NEW_WINDOWS_NEW_INDICATOR_HELP = "Displays a visual alert on a window that receives a new message.|n|n- The indicator clears automatically after 10 seconds or immediately upon hovering over the window.",
+
+	JUMP_TO_CONTEXT = "Jump to Context",
+	JUMP_TO_CONTEXT_HELP = "Adds a small clickable icon |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t at the start of each message, opening (or focusing) that sender's Dedicated Window scrolled to that exact line.|n|n|cnWARNING_FONT_COLOR:Note: Requires Dedicated Windows to be enabled, and Enable Mouse on the window this is used in.|r",
+	JUMP_TO_CONTEXT_TOOLTIP = "|cnGREEN_FONT_COLOR:Click: Jump to this message in %s's Dedicated Window|r",
 
 	DEDICATED_WINDOWS_PERSIST = "Save Windows",
 	DEDICATED_WINDOWS_PERSIST_HELP = "Toggles whether currently open Dedicated Windows are restored after a game restart or UI reload.|n|nThe following data is preserved:|n- List of opened windows|n|n|cnWARNING_FONT_COLOR:Note: Visual settings such as font size and window positions are not saved and will reset.|r",
@@ -350,6 +369,7 @@ L = {
 	UNIT_POPUPS_EAVESDROP_GROUP = "Eavesdrop Group",
 	UNIT_POPUPS_EAVESDROP_GROUP_HELP = "Assign the current target to a specific Group Window or remove them from one.|n|n|cnWARNING_FONT_COLOR:Note: |cnGREEN_FONT_COLOR:Green group names|r indicate that the target is already a member of that group.|r",
 	UNIT_POPUPS_EAVESDROP_GROUP_NEW = "Create New",
+	UNIT_POPUPS_TOGGLE_MENTIONS_HELP = "Toggle the Mentions window, which lists every message that was aimed at you.|n|n- Catches keyword hits and emotes directed at you, even ones you missed in the moment.",
 
 	POPUP_EAVESDROP_GROUP = "Eavesdropper Group name.|nEnter to confirm.",
 	POPUP_RENAME_PROFILE = "Rename profile '%s'.|nEnter to confirm.",

@@ -13,6 +13,14 @@ local UnitPopups = {};
 
 UnitPopups.MenuElementFactories = {};
 UnitPopups.MenuEntries = {};
+UnitPopups.isHyperlinkOrigin = false;
+
+---Whether the unit popup menu about to open came from an addon-owned frame's
+---hyperlink click, where the native Copy Character Name button is tainted.
+---@param isFromHyperlink boolean
+function UnitPopups:SetHyperlinkOrigin(isFromHyperlink)
+	self.isHyperlinkOrigin = isFromHyperlink;
+end
 
 function UnitPopups:Init()
 	for menuTagSuffix in pairs(UnitPopups.MenuEntries) do
@@ -31,12 +39,13 @@ function UnitPopups:Init()
 end
 
 function UnitPopups:OnMenuOpen(owner, rootDescription, contextData)
-	if not ED.Database:GetGlobalSetting("DedicatedWindows") and not ED.Database:GetGlobalSetting("GroupWindows") then
-		return; -- Don't show when Dedicated and Group Windows are disabled.
+	local dedicatedOrGroup = ED.Database:GetGlobalSetting("DedicatedWindows") or ED.Database:GetGlobalSetting("GroupWindows");
+	local mentions = ED.Database:GetGlobalSetting("MentionsHistory") and ED.Database:GetGlobalSetting("MentionsHistoryUnitPopups");
+
+	if not dedicatedOrGroup and not mentions then
+		return; -- Every feature that could populate this menu is disabled.
 	elseif not owner or owner:IsForbidden() then
 		return; -- Invalid or forbidden owner.
-	elseif not self:ShouldCustomizeMenus() then
-		return; -- Menu customizations are disabled.
 	end
 
 	local menuEntries = self.MenuEntries[contextData.which];
@@ -55,10 +64,6 @@ function UnitPopups:OnMenuOpen(owner, rootDescription, contextData)
 
 		rootDescription:ClearQueuedDescriptions();
 	end
-end
-
-function UnitPopups:ShouldCustomizeMenus()
-	return ED.Database:GetGlobalSetting("DedicatedWindowsUnitPopups") and true or false;
 end
 
 -- ============================================================
@@ -204,7 +209,7 @@ local function BuildGroupMenu(menuDescription, contextData, sender, OnClick)
 end
 
 local function CreateBattleNetEavesdropGroupMenu(menuDescription, contextData)
-	if not ED.Database:GetGlobalSetting("GroupWindows") then return; end
+	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
 	local accountInfo = contextData.accountInfo;
 	local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo;
@@ -230,7 +235,7 @@ local function CreateBattleNetEavesdropGroupMenu(menuDescription, contextData)
 end
 
 local function CreateEavesdropGroupMenu(menuDescription, contextData)
-	if not ED.Database:GetGlobalSetting("GroupWindows") then return; end
+	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
 	local function OnClick(targetFrame, hasSender) -- luacheck: no redefined
 		local sender, guid = resolveCharacterData(contextData);
@@ -249,6 +254,146 @@ local function CreateEavesdropGroupMenu(menuDescription, contextData)
 	return BuildGroupMenu(menuDescription, contextData, resolveCharacterData(contextData), OnClick);
 end
 
+---Find the native Copy Character Name button already inserted into rootDescription
+---by Blizzard's own menu generation, which runs before UnitPopups:OnMenuOpen fires.
+---@param rootDescription table
+---@return table?
+local function FindNativeCopyNameButton(rootDescription)
+	for _, elementDescription in rootDescription:EnumerateElementDescriptions() do
+		if MenuUtil.GetElementText(elementDescription) == COPY_CHARACTER_NAME then
+			return elementDescription;
+		end
+	end
+end
+
+---Insert a button two positions after the "Other Options" subsection title, or
+---append it at the end if that title isn't present. Insert() with an index shifts
+---every following element down a slot; Blizzard wraps that move in securecallfunction.
+---Note: This position was chosen to mimic where Blizzard tends to place it.
+---@param menuDescription table
+---@param text string
+---@return table elementDescription
+local function CreateButtonAfterOtherOptions(menuDescription, text)
+	local titleIndex;
+	for index, elementDescription in menuDescription:EnumerateElementDescriptions() do
+		if MenuUtil.GetElementText(elementDescription) == UNIT_FRAME_DROPDOWN_SUBSECTION_TITLE_OTHER then
+			titleIndex = index;
+			break;
+		end
+	end
+
+	local elementDescription = MenuUtil.CreateButton(text);
+	if titleIndex then
+		menuDescription:Insert(elementDescription, titleIndex + 2);
+	else
+		menuDescription:Insert(elementDescription);
+	end
+	return elementDescription;
+end
+
+local function CreateCopyNameButton(menuDescription, contextData)
+	local sender = resolveCharacterData(contextData);
+	if not sender then return; end
+
+	local function OnClick(contextData) -- luacheck: no redefined
+		local clickedSender = resolveCharacterData(contextData);
+		if clickedSender then
+			ED.CopyTextDialog.ShowCopyName(clickedSender);
+		end
+	end
+
+	if contextData.which == "FRIEND" then
+		-- Eavesdropper's hyperlink click always opens FRIEND (Blizzard hardcodes this
+		-- for chat player links), the only path where the native button is tainted.
+		-- Leave it untouched when FRIEND opens from the real Blizzard paths instead.
+		if not UnitPopups.isHyperlinkOrigin then
+			return;
+		end
+
+		local nativeButton = FindNativeCopyNameButton(menuDescription);
+		if nativeButton then
+			-- Native button does not know contextData, so GetData() would end up being nil.
+			-- We inject this ourselves and set its Responder to use it with OnClick.
+			nativeButton:SetData(contextData);
+			nativeButton:SetResponder(OnClick);
+			return nativeButton;
+		end
+	end
+
+	-- Reuse Blizzard's globalstring so translation is already in place.
+	local elementDescription;
+	if contextData.which == "SELF" then
+		-- Blizzard does not expose a native Copy Character Name option for the local player.
+		elementDescription = CreateButtonAfterOtherOptions(menuDescription, COPY_CHARACTER_NAME);
+	else
+		elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
+	end
+
+	elementDescription:SetResponder(OnClick);
+	elementDescription:SetData(contextData);
+	return elementDescription;
+end
+
+local function CreateBattleNetCopyNameButton(menuDescription, contextData)
+	local function OnClick(contextData) -- luacheck: no redefined
+		local accountInfo = contextData.accountInfo;
+		local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo or nil;
+
+		-- Only a basic sanity test is required here.
+		if not gameAccountInfo then
+			return;
+		end
+
+		local clickedSender, _ = GetBattleNetCharacterFullName(gameAccountInfo);
+		if clickedSender then
+			ED.CopyTextDialog.ShowCopyName(clickedSender);
+		end
+	end
+
+	local accountInfo = contextData.accountInfo;
+	local gameAccountInfo = accountInfo and accountInfo.gameAccountInfo;
+	if gameAccountInfo.clientProgram ~= "WoW" then
+		return;
+	end
+
+	-- Reuse Blizzard's globalstring so translation is already in place.
+	local elementDescription;
+	if contextData.which == "BN_FRIEND" then
+		-- Blizzard does not expose a native Copy Character Name option WoW Bnet friends.
+		elementDescription = CreateButtonAfterOtherOptions(menuDescription, COPY_CHARACTER_NAME);
+	else
+		elementDescription = menuDescription:CreateButton(COPY_CHARACTER_NAME);
+	end
+
+	elementDescription:SetResponder(OnClick);
+	elementDescription:SetData(contextData);
+	return elementDescription;
+end
+
+local function CreateToggleMentionsButton(menuDescription, contextData)
+	if not ED.Database:GetGlobalSetting("MentionsHistory") or not ED.Database:GetGlobalSetting("MentionsHistoryUnitPopups") then
+		return;
+	end
+
+	-- Player themselves in chat frame is considered FRIEND, so check that we only run on ourselves.
+	local sender = resolveCharacterData(contextData);
+	if not sender or sender ~= ED.Utils.GetUnitName() then
+		return;
+	end
+
+	local elementDescription = menuDescription:CreateButton(L.SLASH_COMMAND_ED_MENTIONS);
+	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_TOGGLE_MENTIONS_HELP);
+	elementDescription:SetResponder(function()
+		if ED.MentionsFrame:IsShown() then
+			ED.MentionsFrame:Hide();
+		else
+			ED.MentionsFrame:Open();
+		end
+	end);
+	elementDescription:SetData(contextData);
+	return elementDescription;
+end
+
 -- ============================================================
 -- Registry
 -- ============================================================
@@ -258,21 +403,24 @@ UnitPopups.MenuElementFactories = {
 	OpenEavesdropperOn = CreateOpenCharacterEavesdropButton,
 	BattleNetEavesdropGroup = CreateBattleNetEavesdropGroupMenu,
 	EavesdropGroup = CreateEavesdropGroupMenu,
+	CopyName = CreateCopyNameButton,
+	BattleNetCopyName = CreateBattleNetCopyNameButton,
+	ToggleMentions = CreateToggleMentionsButton,
 };
 
 UnitPopups.MenuEntries = {
-	BN_FRIEND = { "OpenBattleNetProfile", "BattleNetEavesdropGroup" },
+	BN_FRIEND = { "OpenBattleNetProfile", "BattleNetEavesdropGroup", "BattleNetCopyName" },
 	CHAT_ROSTER = { "OpenEavesdropperOn", "EavesdropGroup" },
 	COMMUNITIES_GUILD_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	COMMUNITIES_MEMBER = { "OpenBattleNetProfile", "BattleNetEavesdropGroup" },
+	COMMUNITIES_MEMBER = { "OpenBattleNetProfile", "BattleNetEavesdropGroup", "BattleNetCopyName" },
 	COMMUNITIES_WOW_MEMBER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	FRIEND = { "OpenEavesdropperOn", "EavesdropGroup" },
+	FRIEND = { "OpenEavesdropperOn", "EavesdropGroup", "ToggleMentions", "CopyName" },
 	FRIEND_OFFLINE = { "OpenEavesdropperOn", "EavesdropGroup" },
 	PARTY = { "OpenEavesdropperOn", "EavesdropGroup" },
 	PLAYER = { "OpenEavesdropperOn", "EavesdropGroup" },
 	RAID = { "OpenEavesdropperOn", "EavesdropGroup" },
 	RAID_PLAYER = { "OpenEavesdropperOn", "EavesdropGroup" },
-	SELF = { "OpenEavesdropperOn", "EavesdropGroup" },
+	SELF = { "OpenEavesdropperOn", "EavesdropGroup", "ToggleMentions", "CopyName" },
 };
 
 ED.UnitPopups = UnitPopups;

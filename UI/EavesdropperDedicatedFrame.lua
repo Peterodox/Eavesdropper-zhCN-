@@ -79,7 +79,7 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	local titleBtn = self.TitleBar.TitleButton;
 	self:UpdateTitleBar();
 	titleBtn:SetScript("OnClick", function()
-		ED.Config:ShowConfigMenu(self, true);
+		ED.Config:ShowConfigMenu(self, "dedicated");
 	end);
 
 	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
@@ -150,7 +150,8 @@ end
 -- Chat
 -- ============================================================
 
----Repopulate the chat box from stored history
+---Repopulate the chat box from stored history. Uses jumpHistoryLimit instead of MaxHistory
+---once a jump has widened the buffer, so the timestamp ticker doesn't shrink it back down.
 ---@param retainScroll boolean? If true, retain the previous scroll position.
 function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 	if not self.ChatBox then return; end
@@ -161,7 +162,7 @@ function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 	self.ChatBox:Clear();
 	self.newestEntryTime = nil;
 
-	local maxMessages = ED.Database:GetSetting("MaxHistory");
+	local maxMessages = self.jumpHistoryLimit or ED.Database:GetSetting("MaxHistory");
 	local player = self.eavesdropped_player;
 
 	if player then
@@ -172,6 +173,50 @@ function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 		self.ChatBox:SetScrollOffset(scrollOffset or 0);
 	end
 
+	self:UpdateTitleBar();
+	self.refreshing = false;
+end
+
+---Scrolls so entryId lands as the bottom-most visible line. SetScrollOffset fixes to the
+---bottom edge, not the top. It will increase the history size when needed, persisted through
+---jumpHistoryLimit for the rest of the session (/reload, restart, etc.) for context purposes.
+---@param entryId number
+function Eavesdropper_Dedicated_FrameMixin:ScrollToEntry(entryId)
+	if not self.ChatBox then return; end
+
+	local targetEntry = ED.ChatHistory:GetEntry(entryId);
+	if targetEntry then
+		ED.ChatFilters:EnsureEntryVisible(self, targetEntry);
+	end
+
+	self.refreshing = true;
+	self.ChatBox:Clear();
+	self.newestEntryTime = nil;
+
+	local player = self.eavesdropped_player;
+	local padding = Constants.CHAT_BOX.JUMP_CONTEXT_PADDING;
+	local offset = 0;
+
+	if player then
+		local chat = ED.ChatHistory:GetPlayerHistoryAroundEntry(player, entryId, padding, self)
+			or ED.ChatHistory:GetPlayerHistoryAroundEntry(ED.Utils.StripRealmSuffix(player), entryId, padding, self);
+
+		if chat then
+			if #chat > (self.jumpHistoryLimit or Constants.CHAT_BOX.MAX_HISTORY) then
+				self.jumpHistoryLimit = #chat;
+				self.ChatBox:SetMaxLines(self.jumpHistoryLimit);
+			end
+
+			for i, entry in ipairs(chat) do
+				self:AddMessage(entry, true);
+				if entry.id == entryId then
+					offset = #chat - i;
+				end
+			end
+		end
+	end
+
+	self.ChatBox:SetScrollOffset(offset);
 	self:UpdateTitleBar();
 	self.refreshing = false;
 end
@@ -318,6 +363,14 @@ function DedicatedFrame:AddFrame(sender)
 	self:SaveToCharDB();
 
 	return frame;
+end
+
+---Open (or focus) sender's dedicated window and scroll it to entryId.
+---@param sender string
+---@param entryId number
+function DedicatedFrame:JumpToEntry(sender, entryId)
+	local frame = self:AddFrame(sender);
+	frame:ScrollToEntry(entryId);
 end
 
 ED.DedicatedFrame = DedicatedFrame;

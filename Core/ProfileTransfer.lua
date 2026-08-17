@@ -42,6 +42,7 @@ local ENUM_KEYS = {
 	AdvNameDisplayMode         = Enums.NAME_DISPLAY_MODE,
 	FocusTarget                = Enums.FOCUS_TARGET,
 	FontOutline                = Enums.CHAT_BOX.FONT_OUTLINE,
+	MentionsNameDisplayMode    = Enums.NAME_DISPLAY_MODE,
 	NameDisplayMode            = Enums.NAME_DISPLAY_MODE,
 	NPCAndQuestNameDisplayMode = Enums.NAME_DISPLAY_MODE,
 	TargetPriority             = Enums.TARGET_PRIORITY,
@@ -52,6 +53,7 @@ local ENUM_KEYS = {
 local NUMERIC_BOUNDS = {
 	FontSize             = { min = Constants.CHAT_BOX.MIN_FONT_SIZE, max = Constants.CHAT_BOX.MAX_FONT_SIZE },
 	MaxHistory           = { min = Constants.CHAT_BOX.MIN_HISTORY,   max = Constants.CHAT_BOX.MAX_HISTORY },
+	MentionsHistorySize  = { min = Constants.CHAT_BOX.MIN_MENTIONS_HISTORY, max = Constants.CHAT_BOX.MAX_MENTIONS_HISTORY },
 	NotificationThrottle = { min = 0 },
 };
 
@@ -153,14 +155,17 @@ local function sanitizeShape(value, default, extraFields)
 	return clean;
 end
 
+---Shared by both Filters-shaped tables (channel groups) and MentionsReasonFilters (mention-reason bits).
+---Both are just a set of named booleans validated against a different whitelist.
 ---@param value table
----@return table filters
+---@param whitelist table<string, any>
+---@return table clean
 ---@return number dropped
-local function sanitizeFilters(value)
+local function sanitizeToggleTable(value, whitelist)
 	local clean, dropped = {}, 0;
 
 	for key, enabled in pairs(value) do
-		if Constants.FILTER_OPTIONS[key] and type(enabled) == "boolean" then
+		if whitelist[key] and type(enabled) == "boolean" then
 			clean[key] = enabled;
 		else
 			dropped = dropped + 1;
@@ -182,8 +187,10 @@ local function sanitizeValue(key, value, default)
 	if type(value) == "table" then
 		if COLOR_KEYS[key] then
 			return sanitizeColor(value, default), 0;
-		elseif key == "Filters" then
-			return sanitizeFilters(value);
+		elseif key == "Filters" or key == "MentionsFilters" then
+			return sanitizeToggleTable(value, Constants.FILTER_OPTIONS);
+		elseif key == "MentionsReasonFilters" then
+			return sanitizeToggleTable(value, Enums.MENTION_REASON);
 		end
 
 		return sanitizeShape(value, default), 0;

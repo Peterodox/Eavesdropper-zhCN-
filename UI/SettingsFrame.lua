@@ -71,7 +71,20 @@ function Eavesdropper_SettingsMixin:CreateCategoryListButton(addToBottom)
 	return button;
 end
 
-function Eavesdropper_SettingsMixin:SetTab(index)
+---@param view number|string|nil A category's display name (preferred) or a tab index. nil deselects every tab
+function Eavesdropper_SettingsMixin:SetTab(view)
+	local index = view;
+
+	if type(view) == "string" then
+		index = nil;
+		for i, panel in ipairs(self.Views) do
+			if panel.categoryName == view then
+				index = i;
+				break;
+			end
+		end
+	end
+
 	for i, panel in ipairs(self.Views) do
 		local isSelected = (i == index);
 		panel:SetShown(isSelected);
@@ -86,7 +99,7 @@ function Eavesdropper_SettingsMixin:SetTab(index)
 		end
 	end
 
-	lastSelectedTab = index;
+	lastSelectedTab = view;
 end
 
 -- ============================================================
@@ -210,6 +223,7 @@ function Eavesdropper_SettingsMixin:CreateCategory(categoryName, isScrollable, o
 	end
 
 	frame.categoryListBtton = categoryListBtton;
+	frame.categoryName = categoryName;
 
 	-- Store the following two values because we need to re-index categories due to adding categories to the bottom
 	frame.categoryIndex = self.categoryIndex;
@@ -343,7 +357,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("MaxHistory"); end,
 			set = function(val)
 				ED.Database:SetSetting("MaxHistory", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -366,7 +380,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("NameDisplayMode"); end,
 			set = function(val)
 				ED.Database:SetSetting("NameDisplayMode", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -377,7 +391,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("UseRPNameColor"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameColor", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -387,7 +401,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("TimestampBrackets"); end,
 			set = function(val)
 				ED.Database:SetSetting("TimestampBrackets", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -524,12 +538,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("HideInCombat"); end,
 			set = function(val)
 				ED.Database:SetSetting("HideInCombat", val);
-				if ED.Utils.CombatLockdown() then
-					ED.Frame:Hide();
-					ED.DedicatedFrame:ForEachFrame(function(frame)
-						frame:Hide();
-					end);
-				end
+				Eavesdropper_SharedFrameMixin.ApplyCombatHidden(val and ED.Utils.CombatLockdown());
 			end,
 		},
 		{
@@ -670,7 +679,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("UseRPNameForTargets"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameForTargets", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -681,7 +690,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("UseRPNameInRolls"); end,
 			set = function(val)
 				ED.Database:SetSetting("UseRPNameInRolls", val);
-				ED.Frame:RefreshChat();
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},--[[ Decide on if we make this a separate category
 		{
@@ -814,6 +823,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 						frame:Hide();
 					end);
 				end
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
 			end,
 		},
 		{
@@ -1041,6 +1051,19 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			end,
 		},
 		{
+			type = "checkbox",
+			global = true,
+			label = L.JUMP_TO_CONTEXT,
+			tooltip = L.JUMP_TO_CONTEXT_HELP,
+			buildAdded = "0.6.0|120100",
+			disabled = function() return not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("DedicatedWindows"); end,
+			get = function() return ED.Database:GetGlobalSetting("GroupWindowsJumpToContext"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("GroupWindowsJumpToContext", val);
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+			end,
+		},
+		{
 			type = "slider",
 			global = true,
 			label = L.GROUP_HISTORY_SIZE,
@@ -1097,6 +1120,87 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetSetting("NotificationGroupFlashTaskbar"); end,
 			set = function(val)
 				ED.Database:SetSetting("NotificationGroupFlashTaskbar", val);
+			end,
+		},
+	};
+
+	-- --------------------------------------------------------
+	-- Mentions options
+	-- --------------------------------------------------------
+
+	local mentionsOptions = {
+		{
+			type = "subtitle",
+			label = L.MENTIONS_WINDOW_TITLE,
+			subLabel = L.MENTIONS_HELP,
+		},
+		{
+			type = "checkbox",
+			global = true,
+			label = ENABLE,
+			tooltip = L.MENTIONS_ENABLE_HELP,
+			buildAdded = "0.6.0|120100",
+			get = function() return ED.Database:GetGlobalSetting("MentionsHistory"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("MentionsHistory", val);
+				if not val and ED.MentionsFrame then
+					ED.MentionsFrame:Hide();
+				end
+			end,
+		},
+		{
+			type = "checkbox",
+			global = true,
+			label = L.NEW_WINDOWS_NEW_INDICATOR,
+			tooltip = L.NEW_WINDOWS_NEW_INDICATOR_HELP,
+			buildAdded = "0.6.0|120100",
+			disabled = function() return not ED.Database:GetGlobalSetting("MentionsHistory"); end,
+			get = function() return ED.Database:GetGlobalSetting("MentionsHistoryNewIndicator"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("MentionsHistoryNewIndicator", val);
+			end,
+		},
+		{
+			type = "checkbox",
+			global = true,
+			label = L.NEW_WINDOWS_UNIT_POPUPS,
+			tooltip = L.NEW_WINDOWS_UNIT_POPUPS_HELP,
+			buildAdded = "0.6.0|120100",
+			disabled = function() return not ED.Database:GetGlobalSetting("MentionsHistory"); end,
+			get = function() return ED.Database:GetGlobalSetting("MentionsHistoryUnitPopups"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("MentionsHistoryUnitPopups", val);
+			end,
+		},
+		{
+			type = "checkbox",
+			global = true,
+			label = L.JUMP_TO_CONTEXT,
+			tooltip = L.JUMP_TO_CONTEXT_HELP,
+			buildAdded = "0.6.0|120100",
+			disabled = function() return not ED.Database:GetGlobalSetting("MentionsHistory") or not ED.Database:GetGlobalSetting("DedicatedWindows"); end,
+			get = function() return ED.Database:GetGlobalSetting("MentionsHistoryJumpToContext"); end,
+			set = function(val)
+				ED.Database:SetGlobalSetting("MentionsHistoryJumpToContext", val);
+				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+			end,
+		},
+		{
+			type = "slider",
+			label = L.MENTIONS_HISTORY_SIZE,
+			tooltip = L.MENTIONS_HISTORY_SIZE_HELP,
+			buildAdded = "0.6.0|120100",
+			min = Constants.CHAT_BOX.MIN_MENTIONS_HISTORY,
+			max = Constants.CHAT_BOX.MAX_MENTIONS_HISTORY,
+			step = 1,
+			disabled = function() return not ED.Database:GetGlobalSetting("MentionsHistory"); end,
+			get = function() return ED.Database:GetSetting("MentionsHistorySize"); end,
+			set = function(val)
+				ED.Database:SetSetting("MentionsHistorySize", val);
+				if ED.MentionsFrame then
+					ED.MentionsFrame.ChatBox:SetMaxLines(val);
+					ED.MentionsFrame:RefreshChat();
+				end
 			end,
 		},
 	};
@@ -1282,6 +1386,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 	self:CreateCategory(L.KEYWORDS_TITLE, true, keywordsOptions);
 	self:CreateCategory(L.DEDICATED, false, dedicatedOptions);
 	self:CreateCategory(L.GROUPS, true, groupOptions);
+	self:CreateCategory(L.MENTIONS_WINDOW_TITLE, false, mentionsOptions);
 	self:CreateCategory(L.NOTIFICATIONS_TITLE, false, notificationsOptions);
 	self:CreateCategory(L.PROFILES_TITLE, false, profilesOptions);
 
@@ -1504,13 +1609,24 @@ end
 -- Settings module
 -- ============================================================
 
----@param view number? Optional tab index, defaults to 1.
-function Settings:ShowSettings(view)
+---Opens the settings window if closed, closes it if open. Never targets a specific tab —
+function Settings:ToggleSettings()
 	if not ED.SettingsFrame then
 		Settings:Init();
 	end
 
 	ED.SettingsFrame:SetShown(not ED.SettingsFrame:IsShown());
+	ED.SettingsFrame:Raise();
+end
+
+---Ensures the settings window is shown and switches to view if given (does not hide).
+---@param view number|string|nil A category's display name (preferred), a tab index, or nil which reopens the last selected tab (or first).
+function Settings:OpenSettings(view)
+	if not ED.SettingsFrame then
+		Settings:Init();
+	end
+
+	ED.SettingsFrame:Show();
 	ED.SettingsFrame:Raise();
 
 	if view then

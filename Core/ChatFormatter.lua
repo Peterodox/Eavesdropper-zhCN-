@@ -397,9 +397,10 @@ end
 ---@param entry EavesdropperChatEntry
 ---@param forGroup boolean? If true, uses group-aware formatting that always embeds the sender name.
 ---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
+---@param showJumpLink boolean? If true (and forGroup), prepends a Jump to Context link before the timestamp.
 ---@return string formattedMsg
 ---@return string? firstName
-function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode)
+function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode, showJumpLink)
 	if not entry or not entry.m then return ""; end
 
 	-- Timestamp
@@ -432,8 +433,19 @@ function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode)
 
 	timestamp = ED.Utils.WrapTextInColor(timestamp, timestampColor) .. " ";
 
+	-- Jump to Context: prepended before the timestamp so its horizontal position never shifts.
+	local jumpLink = "";
+	if forGroup and showJumpLink then
+		jumpLink = ED.Utils.JumpHyperlink(entry.id, entry.s, ED.Constants.JUMP_TO_CONTEXT_ICON_INLINE) .. " ";
+	end
+
 	-- Name handling
 	local name, applyRPName, firstName = ChatFormatter:GetFormattedName(entry, forceDisplayMode);
+
+	-- Only group-style windows (Group, Mentions) get a clickable name.
+	if forGroup then
+		name = ED.Utils.PlayerHyperlink(entry.s, name);
+	end
 
 	-- Format message
 	local eventType = NormalizeEventType(entry.e);
@@ -449,7 +461,7 @@ function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode)
 		msgText = FormatTextEmoteTargetWithRPName(entry, msgText, forceDisplayMode);
 	end
 
-	return timestamp .. msgText, firstName;
+	return jumpLink .. timestamp .. msgText, firstName;
 end
 
 ED.ChatFormatter = ChatFormatter;

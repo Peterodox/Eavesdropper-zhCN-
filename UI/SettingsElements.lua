@@ -966,7 +966,7 @@ function SettingsElements.CreateDeveloperInfoFrame(parent)
 
 	local function LogoButton_OnClick(self)
 		GameTooltip:Hide();
-		ED.LinkDialog.CreateExternalLinkDialog(self.info.link);
+		ED.CopyTextDialog.CreateExternalLinkDialog(self.info.link);
 	end
 
 	local function LogoButton_OnMouseDown(self)

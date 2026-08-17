@@ -37,11 +37,39 @@ local function ResolveEvent(chatType)
 	return remapped:upper();
 end
 
+---Check bit based on Mentions:Evaluate building its mask with addition.
+---@param mask number
+---@param bit number
+---@return boolean
+local function HasBit(mask, bit)
+	return mask % (bit * 2) >= bit;
+end
+
+---Resolve the proper DB setting for the chosen frame's filters.
+---Only Mentions gets a distinct key back; Main, Dedicated, and Group all resolve to Filters.
+---@param frame table
+---@return string
+local function ResolveFilterKey(frame)
+	if frame == ED.MentionsFrame then
+		return "MentionsFilters";
+	end
+	return "Filters";
+end
+
+---True only for Dedicated and Group windows, whose filters are session-based per-instance state.
+---@param frame table
+---@return boolean
+local function UsesInstanceFilterState(frame)
+	return frame ~= ED.Frame and frame ~= ED.MentionsFrame;
+end
+
 ---Generates the chat filter menu for UI
 ---@param frame table
 ---@param menu table
----@param useFrameState boolean?
-function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
+function ChatFilters:GenerateFilterListMenu(frame, menu)
+	local settingKey = ResolveFilterKey(frame);
+	local useFrameState = UsesInstanceFilterState(frame);
+
 	for i = 1, #ED.Constants.FILTER_ORDER do
 		local groupName = ED.Constants.FILTER_ORDER[i];
 
@@ -57,7 +85,7 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 					if not filters then return false; end
 					return filters[groupName] or false;
 				end
-				local current = ED.Database:GetSetting("Filters");
+				local current = ED.Database:GetSetting(settingKey);
 				if not current then return false; end
 				return current[groupName] or false;
 			end,
@@ -70,7 +98,7 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 					end
 					frame.filters[groupName] = not value;
 				else
-					local current = ED.Database:GetSetting("Filters") or {};
+					local current = ED.Database:GetSetting(settingKey) or {};
 					local value = current[groupName];
 					if value == nil then
 						value = ED.Constants.DEFAULT_FILTERS[groupName] or false;
@@ -79,7 +107,7 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 					local newFilters = ED.Utils.ShallowCopy(current);
 					newFilters[groupName] = not value;
 
-					ED.Database:SetSetting("Filters", newFilters);
+					ED.Database:SetSetting(settingKey, newFilters);
 				end
 				ChatFilters:UpdateFilters(frame);
 			end
@@ -91,12 +119,71 @@ function ChatFilters:GenerateFilterListMenu(frame, menu, useFrameState)
 	end
 end
 
+---No per-frame useFrameState split, unlike GenerateFilterListMenu.
+---Mentions only ever display entry.mn, so there's nothing else to branch on.
+---@param menu table
+function ChatFilters:GenerateMentionReasonFilterMenu(menu)
+	for i = 1, #ED.Constants.MENTION_REASON_ORDER do
+		local reasonName = ED.Constants.MENTION_REASON_ORDER[i];
+		local labelText = ED.Constants.MENTION_REASON_LABELS[reasonName] or reasonName;
+
+		local checkbox = menu:CreateCheckbox(
+			labelText,
+			function()
+				local current = ED.Database:GetSetting("MentionsReasonFilters");
+				if not current then return false; end
+				return current[reasonName] or false;
+			end,
+			function()
+				local current = ED.Database:GetSetting("MentionsReasonFilters") or {};
+				local value = current[reasonName];
+				if value == nil then
+					value = ED.Constants.DEFAULT_MENTION_REASON_FILTERS[reasonName] or false;
+				end
+
+				local newFilters = ED.Utils.ShallowCopy(current);
+				newFilters[reasonName] = not value;
+
+				ED.Database:SetSetting("MentionsReasonFilters", newFilters);
+				if ED.MentionsFrame then
+					ED.MentionsFrame:RefreshChat();
+				end
+			end
+		);
+
+		local tooltipText = ED.Constants.MENTION_REASON_HELP[reasonName];
+		if tooltipText then
+			ED.Utils.SetMenuTooltip(checkbox, tooltipText);
+		end
+	end
+end
+
+---@param mn EavesdropperMentionReason? nil when the entry isn't a mention.
+---@return boolean
+function ChatFilters:HasMentionReason(mn)
+	if not mn then return false; end
+
+	local filters = ED.Database:GetSetting("MentionsReasonFilters");
+	if not filters then return false; end
+
+	for reasonName, enabled in pairs(filters) do
+		if enabled then
+			local bit = ED.Enums.MENTION_REASON[reasonName];
+			if bit and HasBit(mn, bit) then
+				return true;
+			end
+		end
+	end
+
+	return false;
+end
+
 ---Updates active chat events on a given frame based on current filter settings.
 ---Tracks changes via a dirty flag and only refreshes the chat frame if needed.
 ---@param frame table?
 function ChatFilters:UpdateFilters(frame)
 	if not frame then return; end
-	local filters = frame.filters or ED.Database:GetSetting("Filters");
+	local filters = frame.filters or ED.Database:GetSetting(ResolveFilterKey(frame));
 	if not filters then return; end
 
 	frame.active_events = frame.active_events or {};
@@ -132,17 +219,41 @@ function ChatFilters:HasEvent(event, frame)
 	return frame.active_events[event] == true;
 end
 
+---Enables a filter group is visible to show a specific entry, if it isn't already.
+---Specifically for Jump to Context. Reuses GenerateFilterListMenu where possible.
+---@param frame table
+---@param entry EavesdropperChatEntry
+function ChatFilters:EnsureEntryVisible(frame, entry)
+	if self:HasEvent(entry.e, frame) then return; end
+
+	local groupName = ED.Constants.EVENT_TO_FILTER_GROUP[NormalizeEvent(entry.e)];
+	if not groupName then return; end
+
+	if UsesInstanceFilterState(frame) then
+		frame.filters = frame.filters or {};
+		frame.filters[groupName] = true;
+	else
+		local newFilters = ED.Utils.ShallowCopy(ED.Database:GetSetting(ResolveFilterKey(frame)) or {});
+		newFilters[groupName] = true;
+		ED.Database:SetSetting(ResolveFilterKey(frame), newFilters);
+	end
+
+	self:UpdateFilters(frame);
+end
+
 ---Initialises active events and per-frame filter state from the DB.
----Per-frame filters start from main frame as base (and don't save for now); the main frame always reads from DB.
+---Per-frame filters start from main frame as base (and don't save for now); the main and
+---Mentions frames always read live from their own key instead.
 ---@param frame table?
 function ChatFilters:Init(frame)
 	if not frame then return; end
 	frame.active_events = frame.active_events or {};
 
-	local filters = ED.Database:GetSetting("Filters");
+	local settingKey = ResolveFilterKey(frame);
+	local filters = ED.Database:GetSetting(settingKey);
 	if not filters then return; end
 
-	if frame ~= ED.Frame then
+	if UsesInstanceFilterState(frame) then
 		frame.filters = ED.Utils.ShallowCopy(filters);
 	end
 

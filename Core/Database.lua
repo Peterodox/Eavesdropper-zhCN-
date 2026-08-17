@@ -32,9 +32,14 @@ local Database = {};
 ---@field Flyway EavesdropperFlyway? Database patch versioning and migration tracking.
 ---@field GroupHistorySize number?
 ---@field GroupWindows boolean?
+---@field GroupWindowsJumpToContext boolean?
 ---@field GroupWindowsNewIndicator boolean?
 ---@field GroupWindowsUnitPopups boolean?
 ---@field GroupWindowsPersist boolean?
+---@field MentionsHistory boolean?
+---@field MentionsHistoryJumpToContext boolean?
+---@field MentionsHistoryNewIndicator boolean?
+---@field MentionsHistoryUnitPopups boolean?
 ---@field MinimapButton EavesdropperGlobalMinimapButton?
 ---@field SettingsWindowPosition EavesdropperWindowPosition?
 ---@field GroupWindowsNPCSpeechDetectionNameShown boolean?
@@ -54,10 +59,15 @@ local GLOBAL_DEFAULTS = {
 	},
 	GroupHistorySize = 100,
 	GroupWindows = true,
+	GroupWindowsJumpToContext = false,
 	GroupWindowsNewIndicator = true,
 	GroupWindowsNPCSpeechDetectionNameShown = false,
 	GroupWindowsUnitPopups = true,
 	GroupWindowsPersist = true,
+	MentionsHistory = true,
+	MentionsHistoryJumpToContext = true,
+	MentionsHistoryNewIndicator = true,
+	MentionsHistoryUnitPopups = true,
 	MinimapButton = {
 		Hide = false,
 		ShowAddonCompartmentButton = true,
@@ -98,6 +108,13 @@ local GLOBAL_IMPORT_EXCLUDED = {
 ---@field LockTitleBar boolean?
 ---@field LockWindow boolean?
 ---@field MaxHistory number?
+---@field MentionsFilters table<string, boolean>?
+---@field MentionsHistorySize number?
+---@field MentionsNameDisplayMode EavesdropperNameDisplayMode?
+---@field MentionsNameDisplayModeOverride boolean?
+---@field MentionsReasonFilters table<string, boolean>?
+---@field MentionsWindowPosition EavesdropperWindowPosition?
+---@field MentionsWindowSize EavesdropperWindowSize?
 ---@field NameDisplayMode EavesdropperNameDisplayMode?
 ---@field NotificationDedicatedSound boolean?
 ---@field NotificationDedicatedSoundFile string?
@@ -158,6 +175,13 @@ local DEFAULT_PROFILE = {
 	LockTitleBar = false,
 	LockWindow = false,
 	MaxHistory = 50,
+	MentionsFilters = ED.Utils.ShallowCopy(Constants.DEFAULT_FILTERS),
+	MentionsHistorySize = 300,
+	MentionsNameDisplayMode = 1,
+	MentionsNameDisplayModeOverride = false,
+	MentionsReasonFilters = ED.Utils.ShallowCopy(Constants.DEFAULT_MENTION_REASON_FILTERS),
+	MentionsWindowPosition = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_POSITION),
+	MentionsWindowSize = ED.Utils.ShallowCopy(Constants.DEFAULT_WINDOW_SIZE),
 	NameDisplayMode = 1,
 	NotificationDedicatedSound = true,
 	NotificationDedicatedSoundFile = "UI_VoiceChat_ChannelInitiated",
@@ -590,6 +614,13 @@ end
 ---| "LockTitleBar"
 ---| "LockWindow"
 ---| "MaxHistory"
+---| "MentionsFilters"
+---| "MentionsHistorySize"
+---| "MentionsNameDisplayMode"
+---| "MentionsNameDisplayModeOverride"
+---| "MentionsReasonFilters"
+---| "MentionsWindowPosition"
+---| "MentionsWindowSize"
 ---| "NameDisplayMode"
 ---| "NotificationDedicatedSound"
 ---| "NotificationDedicatedSoundFile"
@@ -729,10 +760,15 @@ end
 ---| "Flyway"
 ---| "GroupHistorySize"
 ---| "GroupWindows"
+---| "GroupWindowsJumpToContext"
 ---| "GroupWindowsNewIndicator"
 ---| "GroupWindowsNPCSpeechDetectionNameShown"
 ---| "GroupWindowsUnitPopups"
 ---| "GroupWindowsPersist"
+---| "MentionsHistory"
+---| "MentionsHistoryJumpToContext"
+---| "MentionsHistoryNewIndicator"
+---| "MentionsHistoryUnitPopups"
 ---| "MinimapButton"
 ---| "SettingsWindowPosition"
 ---| "WindowNewIndicator"
