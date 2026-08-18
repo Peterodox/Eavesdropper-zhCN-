@@ -42,6 +42,22 @@ function Eavesdropper_Dedicated_FrameMixin:IsTitleBarLocked()
 	return self.lockTitleBar;
 end
 
+---Returns the current name-display override, or nil to follow the profile setting.
+---Only visible on EMOTE/TEXT_EMOTE/ROLL entries (and emote-target RP substitution) since
+---those are the only message types that embed a sender name in a non-group window.
+---@return number?
+function Eavesdropper_Dedicated_FrameMixin:GetNameDisplayMode()
+	return self.nameDisplayMode;
+end
+
+---@param mode number? nil clears the override, reverting this window to follow the profile setting.
+function Eavesdropper_Dedicated_FrameMixin:SetNameDisplayMode(mode)
+	if self.nameDisplayMode == mode then return; end
+	self.nameDisplayMode = mode;
+	self:RefreshChat();
+	DedicatedFrame:SaveToCharDB();
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================
@@ -52,6 +68,9 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	local player = name:match("^Eavesdropper_Dedicated_Frame_(.+)$");
 	self.eavesdropped_player = player;
 	self.titlebar_name = nil;
+
+	-- When nil, follows the profile's NameDisplayMode until overridden in SetNameDisplayMode.
+	self.nameDisplayMode = nil;
 
 	self:InitInstanceFrameState();
 
@@ -106,6 +125,7 @@ end
 function Eavesdropper_Dedicated_FrameMixin:OnUnregisterFrame()
 	DedicatedFrame.sessionState[self.eavesdropped_player] = {
 		sender = self.eavesdropped_player,
+		nameDisplayMode = self.nameDisplayMode,
 		pos = self.savedPos,
 		size = self.savedSize,
 		filters = self.filters,
@@ -266,7 +286,7 @@ function Eavesdropper_Dedicated_FrameMixin:AddMessage(entry, fromHistory)
 	end
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
-	local formatted = ED.ChatFormatter:FormatMessage(entry);
+	local formatted = ED.ChatFormatter:FormatMessage(entry, false, self.nameDisplayMode);
 	self.ChatBox:AddMessage(formatted, r, g, b);
 
 	-- Only track lines (to keep frame awake) when they are actually inserted.
@@ -307,10 +327,12 @@ end
 function DedicatedFrame:SaveToCharDB()
 	if not EavesdropperCharDB then return; end
 
+	local profileMode = ED.Database:GetSetting("NameDisplayMode");
 	local saved = {};
+
 	for sender, frame in pairs(self.frames) do
 		if frame then
-			table.insert(saved, {
+			local entry = {
 				sender = sender,
 				pos = frame.savedPos,
 				size = frame.savedSize,
@@ -321,7 +343,14 @@ function DedicatedFrame:SaveToCharDB()
 				lockTitleBar = frame.lockTitleBar,
 				hideCloseButton = frame.hideCloseButton,
 				fontSize = frame.FontSize,
-			});
+			};
+
+			---Only persist nameDisplayMode when it differs from the profile default.
+			if frame.nameDisplayMode and frame.nameDisplayMode ~= profileMode then
+				entry.nameDisplayMode = frame.nameDisplayMode;
+			end
+
+			table.insert(saved, entry);
 		end
 	end
 
@@ -406,6 +435,9 @@ function DedicatedFrame:AddFrame(sender, savedEntry)
 
 		local entry = savedEntry or self.sessionState[sender] or self:FindSavedEntry(sender);
 		if entry then
+			if entry.nameDisplayMode then
+				frame.nameDisplayMode = entry.nameDisplayMode;
+			end
 			frame:ApplySavedLayout(entry.pos, entry.size);
 			frame:ApplySavedFilters(entry.filters);
 			frame:ApplySavedOptions(entry);

@@ -232,7 +232,7 @@ function Config:ShowConfigMenu(frame, mode)
 				end
 			);
 
-			if mode == "group" or mode == "mentions" then
+			if mode == "dedicated" or mode == "group" or mode == "mentions" then
 				-- frame:GetNameDisplayMode() is nil until explicitly overridden.
 				-- Follow Profile == nil, the others carry an override.
 				local frameNameDisplayMode = rootDescription:CreateButton(L.NAME_DISPLAY_MODE);

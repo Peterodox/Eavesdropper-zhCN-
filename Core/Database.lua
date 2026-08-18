@@ -322,6 +322,7 @@ end
 
 ---@class EavesdropperSavedDedicatedFrame
 ---@field sender string Tracked player in "Name-Realm" format
+---@field nameDisplayMode number? Only stored when it differs from main Eavesdropper
 ---@field pos EavesdropperWindowPosition?
 ---@field size EavesdropperWindowSize?
 ---@field filters table<string, boolean>? Per-instance filter overrides; absent means "not yet saved"
