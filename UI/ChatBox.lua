@@ -13,6 +13,16 @@ local ChatBox = {};
 ---@type table
 local SharedMedia = LibStub("LibSharedMedia-3.0");
 
+---Main and Mentions persist FontSize at the profile level with their own key.
+---Dedicated/Group use frame.FontSize instead (per-instance through CharDB).
+---@param frame table
+---@return string? profileKey
+local function ProfileFontSizeKey(frame)
+	if frame == ED.Frame then return "FontSize"; end
+	if frame == ED.MentionsFrame then return "MentionsFontSize"; end
+	return nil;
+end
+
 ---Apply all font-related options from the database
 ---@param frame table?
 function ChatBox:ApplyFontOptions(frame)
@@ -24,7 +34,8 @@ function ChatBox:ApplyFontOptions(frame)
 
 	local outline = ED.Database:GetSetting("FontOutline");
 	local face = ED.Database:GetSetting("FontFace");
-	local size = (owner == ED.Frame) and ED.Database:GetSetting("FontSize") or owner.FontSize;
+	local profileKey = ProfileFontSizeKey(owner);
+	local size = profileKey and ED.Database:GetSetting(profileKey) or owner.FontSize;
 	local shadow = ED.Database:GetSetting("FontShadow");
 
 	local flags = "";
@@ -51,18 +62,19 @@ end
 ---@param frame table
 ---@param delta number
 function ChatBox:AdjustFontSize(frame, delta)
-	local size = (frame == ED.Frame) and ED.Database:GetSetting("FontSize") or frame.FontSize;
+	local profileKey = ProfileFontSizeKey(frame);
+	local size = profileKey and ED.Database:GetSetting(profileKey) or frame.FontSize;
 	if not size then
 		return;
 	end
 
 	size = Clamp(size + delta, Constants.CHAT_BOX.MIN_FONT_SIZE, Constants.CHAT_BOX.MAX_FONT_SIZE);
 
-	-- Only save for main frame
-	if frame == ED.Frame then
-		ED.Database:SetSetting("FontSize", size);
+	if profileKey then
+		ED.Database:SetSetting(profileKey, size);
 	else
 		frame.FontSize = size;
+		frame:SaveInstanceState();
 	end
 
 	self:ApplyFontOptions(frame);

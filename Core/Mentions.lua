@@ -36,7 +36,7 @@ function Mentions:Evaluate(entry, message)
 
 	if ED.Database:GetSetting("EnableKeywords") then
 		-- Strip colour codes before scanning: a highlighted keyword fails the word-boundary
-		-- check otherwise. See MENTIONS-HISTORY.md "The colour-code trap".
+		-- check otherwise. This was documented prior as "the colour-code trap".
 		if ED.Keywords:HasMatch(ED.Utils.StripColorCodes(message)) then
 			reason = reason + ED.Enums.MENTION_REASON.KEYWORD;
 		end

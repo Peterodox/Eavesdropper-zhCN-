@@ -45,7 +45,12 @@ end
 ---@param mode "dedicated"|"group"|"mentions"|nil nil means the main Eavesdropper frame.
 ---@return nil
 function Config:ShowConfigMenu(frame, mode)
-	local useFrameState = mode ~= nil;
+	-- All three instance windows show the options section.
+	-- Dedicated/Group back it with frame state.
+	-- Mentions reads/writes its own profile keys instead, like Main.
+	local showInstanceOptions = mode ~= nil;
+	local useFrameState = mode == "dedicated" or mode == "group";
+	local keyPrefix = (mode == "mentions") and "Mentions" or "";
 
 	---Handles extra clicks on the Title Bar Button to not close the menu.
 	function frame.TitleBar.TitleButton.HandlesGlobalMouseEvent()
@@ -60,7 +65,7 @@ function Config:ShowConfigMenu(frame, mode)
 			local field = DedicatedFrameFieldMap[key] or key;
 			return frame[field];
 		end
-		return ED.Database:GetSetting(key);
+		return ED.Database:GetSetting(keyPrefix .. key);
 	end
 
 	---Toggles a setting on frame state or in the DB, then runs postUpdate
@@ -70,9 +75,11 @@ function Config:ShowConfigMenu(frame, mode)
 		if useFrameState then
 			local field = DedicatedFrameFieldMap[key] or key;
 			frame[field] = not frame[field];
+			frame:SaveInstanceState();
 		else
-			local current = ED.Database:GetSetting(key);
-			ED.Database:SetSetting(key, not current);
+			local dbKey = keyPrefix .. key;
+			local current = ED.Database:GetSetting(dbKey);
+			ED.Database:SetSetting(dbKey, not current);
 		end
 		if postUpdate then
 			postUpdate();
@@ -179,7 +186,7 @@ function Config:ShowConfigMenu(frame, mode)
 			end
 		end
 
-		if useFrameState then
+		if showInstanceOptions then
 			rootDescription:CreateDivider();
 
 			if mode == "group" then
@@ -201,9 +208,14 @@ function Config:ShowConfigMenu(frame, mode)
 			for i = ED.Constants.CHAT_BOX.MIN_FONT_SIZE, ED.Constants.CHAT_BOX.MAX_FONT_SIZE, 2 do
 				frameFontSize:CreateCheckbox(
 					i,
-					function() return i == frame.FontSize; end,
+					function() return i == (useFrameState and frame.FontSize or ED.Database:GetSetting(keyPrefix .. "FontSize")); end,
 					function()
-						frame.FontSize = i;
+						if useFrameState then
+							frame.FontSize = i;
+							frame:SaveInstanceState();
+						else
+							ED.Database:SetSetting(keyPrefix .. "FontSize", i);
+						end
 						ED.ChatBox:ApplyFontOptions(frame);
 					end
 				);

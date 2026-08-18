@@ -10,6 +10,11 @@ local DedicatedFrame = {};
 ---@type table<string, EavesdropperDedicatedFrame>
 DedicatedFrame.frames = DedicatedFrame.frames or {};
 
+---We save a table of current session's dedicated windows by sender.
+---Allowing us to restore current session's overrides just in case (close & re-open, etc.)
+---@type table<string, EavesdropperSavedDedicatedFrame>
+DedicatedFrame.sessionState = DedicatedFrame.sessionState or {};
+
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
 Eavesdropper_Dedicated_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
@@ -97,7 +102,21 @@ function Eavesdropper_Dedicated_FrameMixin:OnHide()
 end
 
 ---Remove self from the DedicatedFrame manager on hide and update saved data.
+---Saves to sessionState so we can re-use it in the same session still.
 function Eavesdropper_Dedicated_FrameMixin:OnUnregisterFrame()
+	DedicatedFrame.sessionState[self.eavesdropped_player] = {
+		sender = self.eavesdropped_player,
+		pos = self.savedPos,
+		size = self.savedSize,
+		filters = self.filters,
+		mouseEnabled = self.mouseEnabled,
+		lockWindow = self.lockWindow,
+		lockScroll = self.lockScroll,
+		lockTitleBar = self.lockTitleBar,
+		hideCloseButton = self.hideCloseButton,
+		fontSize = self.FontSize,
+	};
+
 	DedicatedFrame.frames[self.eavesdropped_player] = nil;
 	DedicatedFrame:SaveToCharDB();
 end
@@ -120,6 +139,11 @@ function Eavesdropper_Dedicated_FrameMixin:OnResizeFinished()
 	local point, _, relativePoint, x, y = self:GetPoint(1);
 	self.savedSize = { width = w, height = h };
 	self.savedPos = { point = point, relativePoint = relativePoint, x = x, y = y };
+	DedicatedFrame:SaveToCharDB();
+end
+
+---Persist per-instance state (filters, layout options) after a change.
+function Eavesdropper_Dedicated_FrameMixin:SaveInstanceState()
 	DedicatedFrame:SaveToCharDB();
 end
 
@@ -279,19 +303,25 @@ function DedicatedFrame:ForEachFrame(func)
 	end
 end
 
----Stores sender, position, and size for each visible dedicated frame.
+---Stores every per-instance option for each visible dedicated frame.
 function DedicatedFrame:SaveToCharDB()
 	if not EavesdropperCharDB then return; end
-
-	if not ED.Database:GetGlobalSetting("DedicatedWindowsPersist") then
-		EavesdropperCharDB.dedicatedFrames = {};
-		return;
-	end
 
 	local saved = {};
 	for sender, frame in pairs(self.frames) do
 		if frame then
-			table.insert(saved, { sender = sender, pos = frame.savedPos, size = frame.savedSize });
+			table.insert(saved, {
+				sender = sender,
+				pos = frame.savedPos,
+				size = frame.savedSize,
+				filters = frame.filters,
+				mouseEnabled = frame.mouseEnabled,
+				lockWindow = frame.lockWindow,
+				lockScroll = frame.lockScroll,
+				lockTitleBar = frame.lockTitleBar,
+				hideCloseButton = frame.hideCloseButton,
+				fontSize = frame.FontSize,
+			});
 		end
 	end
 
@@ -302,7 +332,6 @@ end
 ---Handles both the legacy string format and the current table format.
 function DedicatedFrame:RestoreFromCharDB()
 	if not EavesdropperCharDB then return; end
-	if not ED.Database:GetGlobalSetting("DedicatedWindowsPersist") then return; end
 
 	local saved = EavesdropperCharDB.dedicatedFrames;
 	if not saved or #saved == 0 then return; end
@@ -310,16 +339,30 @@ function DedicatedFrame:RestoreFromCharDB()
 	for _, entry in ipairs(saved) do
 		local sender = type(entry) == "string" and entry or entry.sender;
 		if sender and sender ~= "" then
-			local frame = self:AddFrame(sender);
-			if frame and type(entry) == "table" then
-				frame:ApplySavedLayout(entry.pos, entry.size);
-			end
+			-- Pass entry explicitly: AddFrame's own lookup reads the live CharDB table.
+			self:AddFrame(sender, type(entry) == "table" and entry or nil);
 		end
 	end
 
-	-- AddFrame calls SaveToCharDB before savedPos/savedSize are saved onto the frame.
-	-- Save once more now that all frames have their layout restored.
+	-- Save once more now that every frame's layout is settled.
 	self:SaveToCharDB();
+end
+
+---Look up sender's saved CharDB entry, used to restore a window reopened mid-session
+---RestoreFromCharDB does not require this as it passes entry explicitly.
+---@param sender string
+---@return EavesdropperSavedDedicatedFrame?
+function DedicatedFrame:FindSavedEntry(sender)
+	local saved = EavesdropperCharDB and EavesdropperCharDB.dedicatedFrames;
+	if not saved then return nil; end
+
+	for _, entry in ipairs(saved) do
+		if type(entry) == "table" and entry.sender == sender then
+			return entry;
+		end
+	end
+
+	return nil;
 end
 
 ---Returns true if a dedicated frame already exists for sender
@@ -342,10 +385,13 @@ function DedicatedFrame:AddFrameForMagnified()
 	end
 end
 
----Show an existing dedicated frame for sender, or create and initialise a new one
+---Show an existing dedicated frame for sender, or create and initialise a new one.
+---A fresh frame restores from, in priority order:
+---Explicit savedEntry > sessionState > CharDB's FindSavedEntry.
 ---@param sender string
+---@param savedEntry EavesdropperSavedDedicatedFrame? Pass explicitly from RestoreFromCharDB's pass.
 ---@return EavesdropperDedicatedFrame
-function DedicatedFrame:AddFrame(sender)
+function DedicatedFrame:AddFrame(sender, savedEntry)
 	local frame = _G["Eavesdropper_Dedicated_Frame_" .. sender];
 
 	if frame then
@@ -357,6 +403,13 @@ function DedicatedFrame:AddFrame(sender)
 		frame:HandleVisibility();
 		frame:ApplyWindowSettings();
 		ED.ChatFilters:Init(frame);
+
+		local entry = savedEntry or self.sessionState[sender] or self:FindSavedEntry(sender);
+		if entry then
+			frame:ApplySavedLayout(entry.pos, entry.size);
+			frame:ApplySavedFilters(entry.filters);
+			frame:ApplySavedOptions(entry);
+		end
 	end
 
 	self.frames[sender] = frame;

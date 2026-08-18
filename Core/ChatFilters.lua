@@ -97,6 +97,7 @@ function ChatFilters:GenerateFilterListMenu(frame, menu)
 						value = ED.Constants.DEFAULT_FILTERS[groupName] or false;
 					end
 					frame.filters[groupName] = not value;
+					frame:SaveInstanceState();
 				else
 					local current = ED.Database:GetSetting(settingKey) or {};
 					local value = current[groupName];
@@ -232,6 +233,7 @@ function ChatFilters:EnsureEntryVisible(frame, entry)
 	if UsesInstanceFilterState(frame) then
 		frame.filters = frame.filters or {};
 		frame.filters[groupName] = true;
+		frame:SaveInstanceState();
 	else
 		local newFilters = ED.Utils.ShallowCopy(ED.Database:GetSetting(ResolveFilterKey(frame)) or {});
 		newFilters[groupName] = true;

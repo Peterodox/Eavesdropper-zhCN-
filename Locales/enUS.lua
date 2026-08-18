@@ -204,14 +204,8 @@ L = {
 	JUMP_TO_CONTEXT_HELP = "Adds a small clickable icon |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t at the start of each message, opening (or focusing) that sender's Dedicated Window scrolled to that exact line.|n|n|cnWARNING_FONT_COLOR:Note: Requires Dedicated Windows to be enabled, and Enable Mouse on the window this is used in.|r",
 	JUMP_TO_CONTEXT_TOOLTIP = "|cnGREEN_FONT_COLOR:Click: Jump to this message in %s's Dedicated Window|r",
 
-	DEDICATED_WINDOWS_PERSIST = "Save Windows",
-	DEDICATED_WINDOWS_PERSIST_HELP = "Toggles whether currently open Dedicated Windows are restored after a game restart or UI reload.|n|nThe following data is preserved:|n- List of opened windows|n|n|cnWARNING_FONT_COLOR:Note: Visual settings such as font size and window positions are not saved and will reset.|r",
-
 	GROUP_WINDOWS = "Group Windows",
 	GROUP_WINDOWS_HELP = "Allows the creation of separate, independent windows to track multiple users simultaneously (e.g., DMs or Friends).|n|n|cnWARNING_FONT_COLOR:Note: Disabling this setting will close all independent group windows.|r",
-
-	GROUP_WINDOWS_PERSIST = "Save Groups",
-	GROUP_WINDOWS_PERSIST_HELP = "Toggles whether Group Window configurations are saved across game restarts or UI reloads.|n|nThe following data is preserved:|n- Group Window name|n- List of included players|n- Name Display Mode settings|n|n|cnWARNING_FONT_COLOR:Note: Visual settings such as font size and window positions are not saved and will reset.|r",
 
 	GROUP_HISTORY_SIZE = "History Size",
 	GROUP_HISTORY_SIZE_HELP = "Set the maximum number of history messages Eavesdropper displays for each Group Window, merged across every tracked player.|n|n|cnWARNING_FONT_COLOR:Note: High values on a Group Window tracking many players may cause temporary frame drops when refreshing the history window.|r",
@@ -372,6 +366,7 @@ L = {
 	UNIT_POPUPS_TOGGLE_MENTIONS_HELP = "Toggle the Mentions window, which lists every message that was aimed at you.|n|n- Catches keyword hits and emotes directed at you, even ones you missed in the moment.",
 
 	POPUP_EAVESDROP_GROUP = "Eavesdropper Group name.|nEnter to confirm.",
+	POPUP_RESTORE_GROUP = "A group named \"%s\" with %d member(s) was closed earlier this session.|n|nRestore its members?",
 	POPUP_RENAME_PROFILE = "Rename profile '%s'.|nEnter to confirm.",
 	POPUP_COPY_PROFILE = "Name the new profile copied from '%s'.|nEnter to confirm.",
 	POPUP_NEW_PROFILE = "Name the new profile.|nEnter to confirm.",

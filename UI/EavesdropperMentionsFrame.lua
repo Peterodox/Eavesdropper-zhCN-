@@ -10,27 +10,27 @@ local MentionsFrameModule = {};
 Eavesdropper_Mentions_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
--- Mentions Frame Getters (saved in local frame state)
+-- Mentions Frame getters (saved in DB with its own profile keys)
 -- ============================================================
 
 ---@return boolean
 function Eavesdropper_Mentions_FrameMixin:IsMouseEnabled()
-	return self.mouseEnabled;
+	return ED.Database:GetSetting("MentionsEnableMouse");
 end
 
 ---@return boolean
 function Eavesdropper_Mentions_FrameMixin:IsWindowLocked()
-	return self.lockWindow;
+	return ED.Database:GetSetting("MentionsLockWindow");
 end
 
 ---@return boolean
 function Eavesdropper_Mentions_FrameMixin:IsScrollLocked()
-	return self.lockScroll;
+	return ED.Database:GetSetting("MentionsLockScroll");
 end
 
 ---@return boolean
 function Eavesdropper_Mentions_FrameMixin:IsTitleBarLocked()
-	return self.lockTitleBar;
+	return ED.Database:GetSetting("MentionsLockTitleBar");
 end
 
 ---Returns the current name-display override, or nil to follow the profile setting.
@@ -56,7 +56,6 @@ end
 
 function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	self:InitInstanceFrameState();
-	self.mouseEnabled = true; -- Mentions ships with mouse on by default, unlike Dedicated/Group.
 
 	-- Never restored across logins/reloads; only Open() (a deliberate user action) sets this.
 	self.userOpened = false;
@@ -67,10 +66,7 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	Eavesdropper_SharedFrameMixin.InitChatBox(self, ED.Database:GetSetting("MentionsHistorySize"));
 	self.EmptyLabel.Text:SetText(L.MENTIONS_EMPTYLABEL_TEXT);
 
-	-- Inherit font size from the main frame settings
-	self.FontSize = ED.Database:GetSetting("FontSize");
-
-	if not self.lockWindow then
+	if not self:IsWindowLocked() then
 		self.ResizeHandle:Show();
 	end
 
@@ -83,7 +79,7 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 		self:Hide();
 	end);
 
-	if self.hideCloseButton then
+	if ED.Database:GetSetting("MentionsHideCloseButton") then
 		self.TitleBar.CloseButton:Hide();
 	end
 
@@ -154,8 +150,7 @@ end
 -- Layout / Visibility
 -- ============================================================
 
----Restore window position and size from the profile; resize handle and close button still
----follow local frame state, per the getters above.
+---Restore the title bar options, window position, size, etc all read from the profile.
 ---Overrides SharedFrameMixin:RestoreLayout which uses local frame state for everything.
 function Eavesdropper_Mentions_FrameMixin:RestoreLayout()
 	if not ED.Database then return; end
@@ -171,13 +166,13 @@ function Eavesdropper_Mentions_FrameMixin:RestoreLayout()
 		self:SetSize(size.width, size.height);
 	end
 
-	if not self.lockWindow then
+	if not self:IsWindowLocked() then
 		self.ResizeHandle:Show();
 	else
 		self.ResizeHandle:Hide();
 	end
 
-	if self.hideCloseButton then
+	if ED.Database:GetSetting("MentionsHideCloseButton") then
 		self.TitleBar.CloseButton:Hide();
 	else
 		self.TitleBar.CloseButton:Show();
@@ -185,7 +180,7 @@ function Eavesdropper_Mentions_FrameMixin:RestoreLayout()
 end
 
 ---Overrides SharedFrameMixin:HandleVisibility. Mentions never restores its open state across
----logins/reloads — self.userOpened starts false every session and is only set by Open(). Once
+---logins/reloads. self.userOpened starts false every session and is only set by Open(). Once
 ---open, it still respects HideInCombat like its siblings, via Events.lua's isCombatHidden wiring.
 function Eavesdropper_Mentions_FrameMixin:HandleVisibility()
 	if not self.userOpened then

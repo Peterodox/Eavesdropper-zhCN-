@@ -28,14 +28,12 @@ local Database = {};
 ---@field DedicatedWindows boolean?
 ---@field DedicatedWindowsNewIndicator boolean?
 ---@field DedicatedWindowsUnitPopups boolean?
----@field DedicatedWindowsPersist boolean?
 ---@field Flyway EavesdropperFlyway? Database patch versioning and migration tracking.
 ---@field GroupHistorySize number?
 ---@field GroupWindows boolean?
 ---@field GroupWindowsJumpToContext boolean?
 ---@field GroupWindowsNewIndicator boolean?
 ---@field GroupWindowsUnitPopups boolean?
----@field GroupWindowsPersist boolean?
 ---@field MentionsHistory boolean?
 ---@field MentionsHistoryJumpToContext boolean?
 ---@field MentionsHistoryNewIndicator boolean?
@@ -52,7 +50,6 @@ local GLOBAL_DEFAULTS = {
 	DedicatedWindows = true,
 	DedicatedWindowsNewIndicator = true,
 	DedicatedWindowsUnitPopups = true,
-	DedicatedWindowsPersist = true,
 	Flyway = {
 		CurrentBuild = 0,
 		Log = "",
@@ -63,7 +60,6 @@ local GLOBAL_DEFAULTS = {
 	GroupWindowsNewIndicator = true,
 	GroupWindowsNPCSpeechDetectionNameShown = false,
 	GroupWindowsUnitPopups = true,
-	GroupWindowsPersist = true,
 	MentionsHistory = true,
 	MentionsHistoryJumpToContext = true,
 	MentionsHistoryNewIndicator = true,
@@ -108,8 +104,14 @@ local GLOBAL_IMPORT_EXCLUDED = {
 ---@field LockTitleBar boolean?
 ---@field LockWindow boolean?
 ---@field MaxHistory number?
+---@field MentionsEnableMouse boolean?
 ---@field MentionsFilters table<string, boolean>?
+---@field MentionsFontSize number?
+---@field MentionsHideCloseButton boolean?
 ---@field MentionsHistorySize number?
+---@field MentionsLockScroll boolean?
+---@field MentionsLockTitleBar boolean?
+---@field MentionsLockWindow boolean?
 ---@field MentionsNameDisplayMode EavesdropperNameDisplayMode?
 ---@field MentionsNameDisplayModeOverride boolean?
 ---@field MentionsReasonFilters table<string, boolean>?
@@ -175,8 +177,14 @@ local DEFAULT_PROFILE = {
 	LockTitleBar = false,
 	LockWindow = false,
 	MaxHistory = 50,
+	MentionsEnableMouse = true,
 	MentionsFilters = ED.Utils.ShallowCopy(Constants.DEFAULT_FILTERS),
+	MentionsFontSize = 12,
+	MentionsHideCloseButton = false,
 	MentionsHistorySize = 300,
+	MentionsLockScroll = false,
+	MentionsLockTitleBar = true,
+	MentionsLockWindow = false,
 	MentionsNameDisplayMode = 1,
 	MentionsNameDisplayModeOverride = false,
 	MentionsReasonFilters = ED.Utils.ShallowCopy(Constants.DEFAULT_MENTION_REASON_FILTERS),
@@ -312,12 +320,24 @@ function Database:Init()
 	self:InitCharacterDatabase();
 end
 
+---@class EavesdropperSavedDedicatedFrame
+---@field sender string Tracked player in "Name-Realm" format
+---@field pos EavesdropperWindowPosition?
+---@field size EavesdropperWindowSize?
+---@field filters table<string, boolean>? Per-instance filter overrides; absent means "not yet saved"
+---@field mouseEnabled boolean?
+---@field lockWindow boolean?
+---@field lockScroll boolean?
+---@field lockTitleBar boolean?
+---@field hideCloseButton boolean?
+---@field fontSize number?
+
 ---@class EavesdropperCharDB
 ---@field version string
 ---@field history table
 ---@field playerCache table
 ---@field settings EavesdropperCharSettings
----@field dedicatedFrames string[]
+---@field dedicatedFrames EavesdropperSavedDedicatedFrame[]
 ---@field groupFrames EavesdropperSavedGroupFrame[]
 
 ---Initialises or migrates the character-specific chat database, clearing history on version change.
@@ -614,8 +634,14 @@ end
 ---| "LockTitleBar"
 ---| "LockWindow"
 ---| "MaxHistory"
+---| "MentionsEnableMouse"
 ---| "MentionsFilters"
+---| "MentionsFontSize"
+---| "MentionsHideCloseButton"
 ---| "MentionsHistorySize"
+---| "MentionsLockScroll"
+---| "MentionsLockTitleBar"
+---| "MentionsLockWindow"
 ---| "MentionsNameDisplayMode"
 ---| "MentionsNameDisplayModeOverride"
 ---| "MentionsReasonFilters"
@@ -756,7 +782,6 @@ end
 ---| "DedicatedWindows"
 ---| "DedicatedWindowsNewIndicator"
 ---| "DedicatedWindowsUnitPopups"
----| "DedicatedWindowsPersist"
 ---| "Flyway"
 ---| "GroupHistorySize"
 ---| "GroupWindows"
@@ -764,7 +789,6 @@ end
 ---| "GroupWindowsNewIndicator"
 ---| "GroupWindowsNPCSpeechDetectionNameShown"
 ---| "GroupWindowsUnitPopups"
----| "GroupWindowsPersist"
 ---| "MentionsHistory"
 ---| "MentionsHistoryJumpToContext"
 ---| "MentionsHistoryNewIndicator"

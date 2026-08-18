@@ -851,18 +851,6 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			end,
 		},
 		{
-			type = "checkbox",
-			global = true,
-			label = L.DEDICATED_WINDOWS_PERSIST,
-			tooltip = L.DEDICATED_WINDOWS_PERSIST_HELP,
-			buildAdded = "0.4.0|120001",
-			disabled = function() return not ED.Database:GetGlobalSetting("DedicatedWindows"); end,
-			get = function() return ED.Database:GetGlobalSetting("DedicatedWindowsPersist"); end,
-			set = function(val)
-				ED.Database:SetGlobalSetting("DedicatedWindowsPersist", val);
-			end,
-		},
-		{
 			type = "subtitle",
 			label = L.NOTIFICATIONS_TITLE,
 			subLabel = L.DEDICATED_NOTIFICATIONS_HELP,
@@ -1041,18 +1029,6 @@ function Eavesdropper_SettingsMixin:OnLoad()
 		{
 			type = "checkbox",
 			global = true,
-			label = L.GROUP_WINDOWS_PERSIST,
-			tooltip = L.GROUP_WINDOWS_PERSIST_HELP,
-			buildAdded = "0.4.0|120001",
-			disabled = function() return not ED.Database:GetGlobalSetting("GroupWindows"); end,
-			get = function() return ED.Database:GetGlobalSetting("GroupWindowsPersist"); end,
-			set = function(val)
-				ED.Database:SetGlobalSetting("GroupWindowsPersist", val);
-			end,
-		},
-		{
-			type = "checkbox",
-			global = true,
 			label = L.JUMP_TO_CONTEXT,
 			tooltip = L.JUMP_TO_CONTEXT_HELP,
 			buildAdded = "0.6.0|120100",
@@ -1183,6 +1159,23 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			set = function(val)
 				ED.Database:SetGlobalSetting("MentionsHistoryJumpToContext", val);
 				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+			end,
+		},
+		{
+			type = "slider",
+			label = L.FONT_SIZE,
+			tooltip = L.FONT_SIZE_HELP,
+			buildAdded = "0.6.0|120100",
+			min = Constants.CHAT_BOX.MIN_FONT_SIZE,
+			max = Constants.CHAT_BOX.MAX_FONT_SIZE,
+			step = 1,
+			disabled = function() return not ED.Database:GetGlobalSetting("MentionsHistory"); end,
+			get = function() return ED.Database:GetSetting("MentionsFontSize"); end,
+			set = function(val)
+				ED.Database:SetSetting("MentionsFontSize", val);
+				if ED.MentionsFrame then
+					ED.ChatBox:ApplyFontOptions(ED.MentionsFrame);
+				end
 			end,
 		},
 		{
@@ -1609,7 +1602,7 @@ end
 -- Settings module
 -- ============================================================
 
----Opens the settings window if closed, closes it if open. Never targets a specific tab —
+---Opens the settings window if closed, closes it if open. Never targets a specific tab.
 function Settings:ToggleSettings()
 	if not ED.SettingsFrame then
 		Settings:Init();

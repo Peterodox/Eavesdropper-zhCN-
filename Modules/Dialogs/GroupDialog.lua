@@ -9,6 +9,30 @@ local GroupDialog = {};
 ---Maximum character length for a user-defined group window name
 local MaxGroupNameLength = 32;
 
+---Creates a new group under chosen name. If it existed before (case-insensitive) this session
+---Then we prompt the user to restore it, re-using the old settings, old player list, etc.
+---Otherwise it starts fresh, with none of the saved info carrying over.
+---@param name string
+---@param sender string?
+function GroupDialog:CreateOrRestore(name, sender)
+	local closed = ED.GroupFrame.sessionState[name:lower()];
+	if closed and closed.players and #closed.players > 0 then
+		local message = L.POPUP_RESTORE_GROUP:format(name, #closed.players);
+		ED.ConfirmDialog:Show(message, function()
+			local playerList = ED.Utils.ShallowCopy(closed.players);
+			if sender and not tContains(playerList, sender) then
+				table.insert(playerList, sender);
+			end
+			ED.GroupFrame:CreateNamedFrame(name, nil, playerList, closed);
+		end, function()
+			ED.GroupFrame:CreateNamedFrame(name, sender, nil, nil, true);
+		end);
+		return;
+	end
+
+	ED.GroupFrame:CreateNamedFrame(name, sender);
+end
+
 -- ============================================================
 -- Name Group (initial creation)
 -- ============================================================
@@ -27,7 +51,7 @@ StaticPopupDialogs["EAVESDROPPER_NAME_GROUP"] = {
 	OnAccept = function(self, data)
 		local name = string.trim(self.EditBox:GetText());
 		if name ~= "" then
-			ED.GroupFrame:CreateNamedFrame(name, data and data.sender);
+			GroupDialog:CreateOrRestore(name, data and data.sender);
 		end
 	end,
 	---@param self table
@@ -55,8 +79,8 @@ StaticPopupDialogs["EAVESDROPPER_NAME_GROUP"] = {
 	EditBoxOnEnterPressed = function(self, data)
 		local name = string.trim(self:GetText());
 		if name ~= "" and not ED.GroupFrame:HasFrameWithName(name) then
-			ED.GroupFrame:CreateNamedFrame(name, data and data.sender);
 			StaticPopup_Hide("EAVESDROPPER_NAME_GROUP");
+			GroupDialog:CreateOrRestore(name, data and data.sender);
 		end
 	end,
 };
@@ -104,7 +128,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_GROUP"] = {
 
 		local newName = string.trim(self:GetText());
 		local currentName = data and data.frame and data.frame.displayName or "";
-		local isDuplicate = ED.GroupFrame:HasFrameWithName(newName);
+		local isDuplicate = ED.GroupFrame:HasFrameWithName(newName, data and data.frame);
 		local isSame = newName == currentName;
 
 		button1:SetEnabled(newName ~= "" and not isDuplicate and not isSame);
@@ -119,7 +143,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_GROUP"] = {
 		local newName = string.trim(self:GetText());
 		if data and data.frame then
 			local currentName = data.frame.displayName or "";
-			local isDuplicate = ED.GroupFrame:HasFrameWithName(newName);
+			local isDuplicate = ED.GroupFrame:HasFrameWithName(newName, data.frame);
 			if newName ~= "" and not isDuplicate and newName ~= currentName then
 				data.frame:RenameFrame(newName);
 				StaticPopup_Hide("EAVESDROPPER_RENAME_GROUP");
