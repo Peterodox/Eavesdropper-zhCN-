@@ -538,6 +538,37 @@ function Eavesdropper_SharedFrameMixin:ApplySavedLayout(pos, size)
 	end
 end
 
+---Applies saved per-instance filters from a CharDB entry, overriding Init's profile default.
+---@param filters table<string, boolean>?
+function Eavesdropper_SharedFrameMixin:ApplySavedFilters(filters)
+	if not filters then return; end
+	self.filters = filters;
+	ED.ChatFilters:UpdateFilters(self);
+end
+
+---Applies saved config & title bar options from a CharDB entry (Dedicated/Group only)
+---Mentions reads these from the profile instead.
+---Re-runs RestoreLayout/UpdateMouseLock to apply the proper states.
+---@param entry EavesdropperSavedDedicatedFrame|EavesdropperGroupSessionState|EavesdropperSavedGroupFrame|nil
+function Eavesdropper_SharedFrameMixin:ApplySavedOptions(entry)
+	if not entry then return; end
+
+	if entry.mouseEnabled ~= nil then self.mouseEnabled = entry.mouseEnabled; end
+	if entry.lockWindow ~= nil then self.lockWindow = entry.lockWindow; end
+	if entry.lockScroll ~= nil then self.lockScroll = entry.lockScroll; end
+	if entry.lockTitleBar ~= nil then self.lockTitleBar = entry.lockTitleBar; end
+	if entry.hideCloseButton ~= nil then self.hideCloseButton = entry.hideCloseButton; end
+	if entry.fontSize then self.FontSize = entry.fontSize; end
+
+	self:UpdateMouseLock();
+	self:RestoreLayout();
+	ED.ChatBox:ApplyFontOptions(self);
+end
+
+---Override in concrete mixins to persist per-instance state (filters, layout options for Dedicated/Group only).
+function Eavesdropper_SharedFrameMixin:SaveInstanceState()
+end
+
 ---Restore resize handle and close-button visibility from local frame state.
 ---Overridden by Eavesdropper_FrameMixin to also restore position and size from the DB.
 function Eavesdropper_SharedFrameMixin:RestoreLayout()

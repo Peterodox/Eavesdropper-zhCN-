@@ -13,11 +13,36 @@ local GroupFrame = {};
 ---@field name string Display name of the group window
 ---@field players string[] Tracked senders in "Name-Realm" format
 ---@field nameDisplayMode number? Only stored when it differs from main Eavesdropper
+---@field filters table<string, boolean>? Per-instance filter overrides; absent means "not yet saved"
+---@field mouseEnabled boolean?
+---@field lockWindow boolean?
+---@field lockScroll boolean?
+---@field lockTitleBar boolean?
+---@field hideCloseButton boolean?
+---@field fontSize number?
 
----Keyed by displayName, which is enforced unique by HasFrameWithName.
----The _G frame name uses a numeric index and is tracked separately.
+---@class EavesdropperGroupSessionState
+---@field name string Display name of the group window
+---@field pos EavesdropperWindowPosition?
+---@field size EavesdropperWindowSize?
+---@field filters table<string, boolean>?
+---@field nameDisplayMode number?
+---@field mouseEnabled boolean?
+---@field lockWindow boolean?
+---@field lockScroll boolean?
+---@field lockTitleBar boolean?
+---@field hideCloseButton boolean?
+---@field fontSize number?
+---@field players string[]? For GroupDialog's restore prompt only; CreateNamedFrame never reads it.
+
+---Held by group name (case-sensitive), which HasFrameWithName checks lowercase (non-sensitive).
 ---@type table<string, EavesdropperGroupFrame>
 GroupFrame.frames = GroupFrame.frames or {};
+
+---We save a table of current session's group windows by lowercase group names.
+---Allowing us to restore current session's overrides just in case (close & re-open, etc.)
+---@type table<string, EavesdropperGroupSessionState>
+GroupFrame.sessionState = GroupFrame.sessionState or {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
 Eavesdropper_Group_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
@@ -123,8 +148,24 @@ function Eavesdropper_Group_FrameMixin:OnHide()
 end
 
 ---Remove self from the GroupFrame manager on hide and update saved data.
+---Saves to sessionState so we can re-use it in the same session still (if using same group name).
 function Eavesdropper_Group_FrameMixin:OnUnregisterFrame()
 	if self.displayName then
+		GroupFrame.sessionState[self.displayName:lower()] = {
+			name = self.displayName,
+			pos = self.savedPos,
+			size = self.savedSize,
+			filters = self.filters,
+			nameDisplayMode = self.nameDisplayMode,
+			mouseEnabled = self.mouseEnabled,
+			lockWindow = self.lockWindow,
+			lockScroll = self.lockScroll,
+			lockTitleBar = self.lockTitleBar,
+			hideCloseButton = self.hideCloseButton,
+			fontSize = self.FontSize,
+			players = ED.Utils.ShallowCopy(self.players),
+		};
+
 		GroupFrame.frames[self.displayName] = nil;
 		GroupFrame:SaveToCharDB();
 	end
@@ -148,6 +189,11 @@ function Eavesdropper_Group_FrameMixin:OnResizeFinished()
 	local point, _, relativePoint, x, y = self:GetPoint(1);
 	self.savedSize = { width = w, height = h };
 	self.savedPos = { point = point, relativePoint = relativePoint, x = x, y = y };
+	GroupFrame:SaveToCharDB();
+end
+
+---Persist per-instance state (filters, layout options) after a change.
+function Eavesdropper_Group_FrameMixin:SaveInstanceState()
 	GroupFrame:SaveToCharDB();
 end
 
@@ -395,16 +441,20 @@ end
 -- ============================================================
 
 ---Update the display name and re-key in the manager table.
+---Also clears the old named session info and creates for the new name.
 ---@param newName string
 function Eavesdropper_Group_FrameMixin:RenameFrame(newName)
 	if not newName or newName == "" then return; end
 	if newName == self.displayName then return; end
-	if GroupFrame:HasFrameWithName(newName) then return; end
+	if GroupFrame:HasFrameWithName(newName, self) then return; end
+
+	local oldName = self.displayName;
 
 	-- Re-key before mutating displayName so HasFrameWithName stays consistent
-	GroupFrame.frames[self.displayName] = nil;
+	GroupFrame.frames[oldName] = nil;
 	self.displayName = newName;
 	GroupFrame.frames[self.displayName] = self;
+	GroupFrame.sessionState[oldName:lower()] = nil;
 
 	self:UpdateTitleBar();
 	GroupFrame:SaveToCharDB();
@@ -427,24 +477,24 @@ function GroupFrame:ForEachFrame(func)
 	end
 end
 
----Returns true if any active group frame already uses the given display name
+---Returns true if any active group frame already uses the given display name, case-insensitively.
 ---@param name string
+---@param excludeFrame EavesdropperGroupFrame? Skip this frame. Used when renaming, so a pure
+---case change (e.g. "Demo" -> "demo") isn't rejected as a duplicate of itself.
 ---@return boolean
-function GroupFrame:HasFrameWithName(name)
+function GroupFrame:HasFrameWithName(name, excludeFrame)
+	local lowerName = name:lower();
 	for _, frame in pairs(self.frames) do
-		if frame and frame.displayName == name then return true; end
+		if frame and frame ~= excludeFrame and frame.displayName and frame.displayName:lower() == lowerName then
+			return true;
+		end
 	end
 	return false;
 end
 
----Stores only displayName, players, and nameDisplayMode (when overridden) in saved variables.
+---Stores every per-instance option for each visible group frame.
 function GroupFrame:SaveToCharDB()
 	if not EavesdropperCharDB then return; end
-
-	if not ED.Database:GetGlobalSetting("GroupWindowsPersist") then
-		EavesdropperCharDB.groupFrames = {};
-		return;
-	end
 
 	local profileMode = ED.Database:GetSetting("NameDisplayMode");
 	local saved = {};
@@ -463,6 +513,13 @@ function GroupFrame:SaveToCharDB()
 
 			entry.pos = frame.savedPos;
 			entry.size = frame.savedSize;
+			entry.filters = frame.filters;
+			entry.mouseEnabled = frame.mouseEnabled;
+			entry.lockWindow = frame.lockWindow;
+			entry.lockScroll = frame.lockScroll;
+			entry.lockTitleBar = frame.lockTitleBar;
+			entry.hideCloseButton = frame.hideCloseButton;
+			entry.fontSize = frame.FontSize;
 
 			table.insert(saved, entry);
 		end
@@ -474,31 +531,37 @@ end
 ---Restore group frames from the character saved variables.
 function GroupFrame:RestoreFromCharDB()
 	if not EavesdropperCharDB then return; end
-	if not ED.Database:GetGlobalSetting("GroupWindowsPersist") then return; end
 
 	local saved = EavesdropperCharDB.groupFrames;
 	if not saved or #saved == 0 then return; end
 
 	for _, entry in ipairs(saved) do
 		if entry.name and entry.players and #entry.players > 0 then
-			self:CreateNamedFrame(entry.name, nil, entry.players);
-
-			local frame = self.frames[entry.name];
-			if frame then
-				---Apply saved nameDisplayMode override if present.
-				if entry.nameDisplayMode then
-					frame.nameDisplayMode = entry.nameDisplayMode;
-					frame:RefreshChat();
-				end
-
-				frame:ApplySavedLayout(entry.pos, entry.size);
-			end
+			-- Pass entry explicitly: CreateNamedFrame's own lookup reads the live CharDB table.
+			self:CreateNamedFrame(entry.name, nil, entry.players, entry);
 		end
 	end
 
-	-- CreateNamedFrame calls SaveToCharDB before savedPos/savedSize are saved onto the frame.
-	-- Save once more now that all frames have their layout restored.
+	-- Save once more now that every frame's layout is settled.
 	self:SaveToCharDB();
+end
+
+---Look up group name's saved CharDB entry, case-insensitively, used to restore a window reopened mid-session
+---RestoreFromCharDB does not require this as it passes entry explicitly.
+---@param displayName string
+---@return EavesdropperSavedGroupFrame?
+function GroupFrame:FindSavedEntry(displayName)
+	local saved = EavesdropperCharDB and EavesdropperCharDB.groupFrames;
+	if not saved then return nil; end
+
+	local lowerName = displayName:lower();
+	for _, entry in ipairs(saved) do
+		if entry.name and entry.name:lower() == lowerName then
+			return entry;
+		end
+	end
+
+	return nil;
 end
 
 ---Prompt the user for a group name before creating any frame.
@@ -508,13 +571,16 @@ function GroupFrame:AddFrame(sender)
 	StaticPopup_Show("EAVESDROPPER_NAME_GROUP", nil, nil, { sender = sender });
 end
 
----Find the lowest free numeric index for the stable _G frame name, create the frame,
----then register it in frames keyed by displayName.
----When playerList is provided (restore path), the full list is set directly.
+---Find the lowest free numeric index for the stable _G frame name, create the frame, then
+---register it keyed by displayName.
+---Restores options from savedEntry, sessionState, or CharDB's FindSavedEntry, in that priority.
+---It never restores the player list; see GroupDialog:CreateOrRestore.
 ---@param displayName string
 ---@param sender string? Initial sender to seed the frame with
 ---@param playerList string[]? Full player list for restore; takes precedence over sender
-function GroupFrame:CreateNamedFrame(displayName, sender, playerList)
+---@param savedEntry EavesdropperSavedGroupFrame? Pass explicitly from RestoreFromCharDB's pass.
+---@param forceFresh boolean? Skip all entry lookups, even a match. Used on a declined restore.
+function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry, forceFresh)
 	if not displayName or displayName == "" then return; end
 	if self:HasFrameWithName(displayName) then return; end
 
@@ -543,6 +609,16 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList)
 		frame:RefreshEmptyState();
 	elseif sender then
 		frame:AddPlayer(sender);
+	end
+
+	local entry = not forceFresh and (savedEntry or self.sessionState[displayName:lower()] or self:FindSavedEntry(displayName));
+	if entry then
+		if entry.nameDisplayMode then
+			frame.nameDisplayMode = entry.nameDisplayMode;
+		end
+		frame:ApplySavedLayout(entry.pos, entry.size);
+		frame:ApplySavedFilters(entry.filters);
+		frame:ApplySavedOptions(entry);
 	end
 
 	frame:UpdateTitleBar();
