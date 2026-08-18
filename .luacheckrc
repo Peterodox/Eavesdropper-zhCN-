@@ -45,6 +45,7 @@ read_globals = {
 	"EmoteSplitter",
 	"YapperAPI",
 	"LibEnscriber",
+	"TRP3RPNameInQuests",
 
 	-- Common protocol globals
 	"CUSTOM_CLASS_COLORS",

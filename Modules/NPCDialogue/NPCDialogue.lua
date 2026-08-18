@@ -24,7 +24,9 @@ end
 ---@return string?
 function NPCDialogue.SubstitutePlayerPreferredName(npcDialogue)
 	if not npcDialogue then return; end
-	if ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3 or not ED.Database:GetSetting("UseRPNameInNPCDialogue") then
+	if ED.Database:GetSetting("NPCAndQuestNameDisplayMode") == 3
+		or not ED.Database:GetSetting("UseRPNameInNPCDialogue")
+		or (TRP3RPNameInQuests and TRP3RPNameInQuests.API:IsTextModifierEnabled("npcspeech")) then
 		return npcDialogue;
 	end
 
