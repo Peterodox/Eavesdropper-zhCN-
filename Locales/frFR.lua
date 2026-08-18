@@ -16,6 +16,7 @@ L = {
 	SLASH_COMMAND_ED_TOGGLE = "Afficher/Masquer Eavesdropper",
 	SLASH_COMMAND_ED_SETTINGS = "Afficher/Masquer les options",
 	SLASH_COMMAND_ED_HELP = "Liste des commandes",
+	SLASH_COMMAND_ED_MENTIONS = "Afficher/Masquer les mentions",
 
 	BINDING_NAME_ED_TOGGLE = "Afficher/Masquer Eavesdropper",
 	BINDING_NAME_ED_SETTINGS = "Afficher/Masquer les options",
@@ -23,13 +24,25 @@ L = {
 
 	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:Clic gauche : Ouvrir les options|nClic droit : Ouvrir les profils|nShift-Click : Afficher/Masquer Eavesdropper|r",
 	POPUP_LINK = "|n|nAppuyez sur |cnGREEN_FONT_COLOR:CTRL-C|r pour copier le texte sélectionné, puis collez-le dans votre navigateur avec |cnGREEN_FONT_COLOR:CTRL-V|r.",
+	POPUP_COPY_NAME = "|n|nAppuyez sur |cnGREEN_FONT_COLOR:CTRL-C|r pour copier le nom de personnage sélectionné.",
 	COPY_SYSTEM_MESSAGE = "Copié dans le presse-papiers.",
 	GLOBAL_SETTING_TOOLTIP = "|cnLIGHTBLUE_FONT_COLOR:|n|n* Option commune à tous les profils.|r",
 
 	FILTER = "Filtres",
 	FILTER_HELP = "Sélectionne les types de messages visibles dans Eavesdropper.|n|n- Activer ou désactiver un filtre modifie uniquement l'affichage actuel.|n- Aucune donnée n'est supprimée ; les messages masqués s'afficheront à nouveau si le filtre est réactivé.|n|n|cnWARNING_FONT_COLOR:Note : les filtres s'appliquent immédiatement.|r",
 
+	MENTIONS_REASON_FILTER = "Types de mentions",
+	MENTIONS_REASON_FILTER_HELP = "Sélection des mentions visibles dans cette fenêtre.|n|n- Afficher ou masquer un type ne modifie que l'affichage actuel.|n- Aucune donnée n'est supprimée ; les mentions masquées réapparaîtront si réactivées.|n|n|cnWARNING_FONT_COLOR:Note : le filtre des mentions s'appliquent immédiatement.|r",
+	MENTIONS_REASON_KEYWORD = "Mots-clés",
+	MENTIONS_REASON_EMOTE = "Émotes Blizzard",
+
 	EMPTYLABEL_TEXT = "Groupe vide",
+	MENTIONS_EMPTYLABEL_TEXT = "Aucune mention",
+	MENTIONS_WINDOW_TITLE = "Mentions",
+	MENTIONS_HELP = "Fenêtre indépendante regroupant l'ensemble des messages qui vous ciblent, extraits des correspondances de mots-clés et des émotes Blizzard.",
+	MENTIONS_ENABLE_HELP = "Active la fenêtre des mentions ainsi que le système de détection qui l'alimente.|n|n|cnWARNING_FONT_COLOR:Note : désactiver ce paramètre interrompt l'enregistrement des nouvelles mentions et masque la fenêtre si elle est ouverte.|r",
+	MENTIONS_HISTORY_SIZE = "Taille de l'historique",
+	MENTIONS_HISTORY_SIZE_HELP = "Définit le nombre maximum de mentions conservées dans cette fenêtre.|n|n|cnWARNING_FONT_COLOR:Note : les mentions étant assez rares, cette limite n'a guère d'impact, sauf lors de sessions intenses ou si vos mots-clés sont trop génériques.|r",
 	SCROLLMARKER_TEXT = "Défiler jusqu'en bas",
 
 	FILTER_PUBLIC = "Public",
@@ -53,6 +66,7 @@ L = {
 	LOCK_TITLEBAR_HELP = "Active la barre de titre de la fenêtre.|n|n- Activée : La barre de titre reste visible en permanence.|n- Désactivée : La barre de titre est masquée et n'apparaît que lorsque vous survolez la fenêtre avec la souris.|n|nNote : vous pouvez activer 'Nom de la cible en barre de titre' dans les options pour remplacer 'Eavesdropper' par le nom de votre cible actuelle.",
 
 	DEDICATED_OPTIONS = "Options des fenêtres individuelles",
+	MENTIONS_OPTIONS = "Options des mentions",
 
 	-- Category Titles
 	APPEARANCE_TITLE = "Apparences",
@@ -92,6 +106,7 @@ L = {
 	NAME_DISPLAY_MODE_FULL_NAME = "Nom complet",
 	NAME_DISPLAY_MODE_FIRST_NAME = "Prénom",
 	NAME_DISPLAY_MODE_ORIGINAL_NAME = "Nom original (HRP)",
+	NAME_DISPLAY_MODE_FOLLOW_PROFILE = "Utiliser les options du profil actif",
 
 	USE_RP_NAME_COLOR = "Couleurs des noms",
 	USE_RP_NAME_COLOR_HELP = "Colore les noms en fonction de leurs paramètres RP personnalisés (ex. depuis TRP3).|n|n- Si aucune couleur RP n'est détectée, Eavesdropper utilise la couleur de classe Blizzard par défaut.",
@@ -112,7 +127,7 @@ L = {
 	USE_RP_NAME_FOR_QUEST_TEXT_HELP = "Active l'utilisation du format d'affichage choisi dans 'Affichage du nom (PNJ et quêtes)' pour les textes de quête, au lieu de votre nom HRP.|n|n|cnWARNING_FONT_COLOR:Note : nécessite un addon d'interaction compatible (ex. Dialogue UI) actif.|r",
 
 	USE_RP_NAME_FOR_NPC_DIALOGUE = "Configuration du dialogue des PNJ",
-	USE_RP_NAME_FOR_NPC_DIALOGUE_HELP = "Active l'utilisation du format d'affichage choisi dans 'Affichage du nom (PNJ et quêtes)' pour les dialogues de PNJ (Dire, Emote, etc.), au lieu de votre nom HRP.|n|n|cnWARNING_FONT_COLOR:Note : les bulles de discussion afficheront toujours votre nom HRP, car elles ne peuvent pas être modifiées par des addons.|r",
+	USE_RP_NAME_FOR_NPC_DIALOGUE_HELP = "Active l'utilisation du format d'affichage choisi dans 'Affichage du nom (PNJ et quêtes)' pour les dialogues de PNJ (Dire, Emote, etc.), au lieu de votre nom HRP.|n|nLes bulles de discussion afficheront toujours votre nom HRP, car Eavesdropper ne les modifie pas (pour l'instant).|n|n|cnWARNING_FONT_COLOR:Note : ce paramètre est désactivé (et n'aura aucun effet) si l'extension 'Total RP 3: RP Name in Quest Text' est installé et configuré pour modifier l'option 'NPC Speech', afin d'éviter tout conflit.|r",
 
 	TIMESTAMP_BRACKETS = "Crochets des horodatages",
 	TIMESTAMP_BRACKETS_HELP = "Active l'affichage des crochets autour des horodatages de message (ex. [5m] vs 5m).",
@@ -184,6 +199,10 @@ L = {
 
 	NEW_WINDOWS_NEW_INDICATOR = "Indicateur de nouveau message",
 	NEW_WINDOWS_NEW_INDICATOR_HELP = "Affiche une alerte visuelle dans la fenêtre qui reçoit un nouveau message.|n|n- L'alerte disparaît automatiquement après 10 secondes ou immédiatement au survol de la fenêtre.",
+
+	JUMP_TO_CONTEXT = "Voir le contexte",
+	JUMP_TO_CONTEXT_HELP = "Ajoute une icône cliquable |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t au début de chaque message. Cliquer dessus ouvre (ou ramène au premier plan) la fenêtre individuelle de cet expéditeur, directement à la ligne correspondante.|n|n|cnWARNING_FONT_COLOR:Note : nécessite l'activation des 'Fenêtres individuelles', ainsi que l'option 'Activer la souris' sur la fenêtre concernée.|r",
+	JUMP_TO_CONTEXT_TOOLTIP = "|cnGREEN_FONT_COLOR:Clic : Revenir à ce message dans la fenêtre individuelle de %s|r",
 
 	DEDICATED_WINDOWS_PERSIST = "Sauvegarde des fenêtres de suivi individuel",
 	DEDICATED_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de suivi individuel après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Liste des fenêtres ouvertes|n- Position et taille de la fenêtre|n|n|cnWARNING_FONT_COLOR:Note : les filtres et la taille de la police ne sont pas sauvegardés et seront réinitialisés.|r",
@@ -350,6 +369,7 @@ L = {
 	UNIT_POPUPS_EAVESDROP_GROUP = "Écouter un groupe",
 	UNIT_POPUPS_EAVESDROP_GROUP_HELP = "Assigne la cible actuelle à une fenêtre de groupe spécifique ou l'en retire.|n|n|cnWARNING_FONT_COLOR:Note : |cnGREEN_FONT_COLOR:les noms de groupe en vert|r indiquent que la cible est déjà membre de ce groupe.|r",
 	UNIT_POPUPS_EAVESDROP_GROUP_NEW = "Créer un nouveau groupe",
+	UNIT_POPUPS_TOGGLE_MENTIONS_HELP = "Affiche ou masque la fenêtre des mentions, qui répertorie l'ensemble des messages vous ciblant.|n|n- Détecte les mots-clés et les émotes qui vous sont destinés, même ceux manqués sur le moment.",
 
 	POPUP_EAVESDROP_GROUP = "Nom du groupe.|nAppuyez sur Entrée pour confirmer.",
 	POPUP_RENAME_PROFILE = "Renommer le profil '%s'.|nAppuyez sur Entrée pour confirmer.",
