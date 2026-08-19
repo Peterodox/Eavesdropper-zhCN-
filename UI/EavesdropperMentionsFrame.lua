@@ -230,6 +230,8 @@ function Eavesdropper_Mentions_FrameMixin:RefreshChat(retainScroll)
 		self.ChatBox:SetScrollOffset(scrollOffset or 0);
 	end
 
+	self:UpdateScrollbar();
+
 	self.refreshing = false;
 end
 
