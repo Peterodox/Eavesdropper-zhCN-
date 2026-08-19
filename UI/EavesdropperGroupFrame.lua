@@ -36,7 +36,7 @@ local GroupFrame = {};
 ---@field players string[]? For GroupDialog's restore prompt only; CreateNamedFrame never reads it.
 
 ---Held by group name (case-sensitive), which HasFrameWithName checks lowercase (non-sensitive).
----@type table<string, EavesdropperGroupFrame>
+---@type table<string, EavesdropperGroupFrameInstance>
 GroupFrame.frames = GroupFrame.frames or {};
 
 ---We save a table of current session's group windows by lowercase group names.
@@ -45,6 +45,7 @@ GroupFrame.frames = GroupFrame.frames or {};
 GroupFrame.sessionState = GroupFrame.sessionState or {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
+---@class EavesdropperGroupFrameInstance
 Eavesdropper_Group_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -470,7 +471,7 @@ end
 -- ============================================================
 
 ---Iterate all live group frames and call func on each
----@param func fun(frame: EavesdropperGroupFrame)
+---@param func fun(frame: EavesdropperGroupFrameInstance)
 function GroupFrame:ForEachFrame(func)
 	for _, frame in pairs(self.frames) do
 		if frame then func(frame); end
@@ -479,7 +480,7 @@ end
 
 ---Returns true if any active group frame already uses the given display name, case-insensitively.
 ---@param name string
----@param excludeFrame EavesdropperGroupFrame? Skip this frame. Used when renaming, so a pure
+---@param excludeFrame EavesdropperGroupFrameInstance? Skip this frame. Used when renaming, so a pure
 ---case change (e.g. "Demo" -> "demo") isn't rejected as a duplicate of itself.
 ---@return boolean
 function GroupFrame:HasFrameWithName(name, excludeFrame)

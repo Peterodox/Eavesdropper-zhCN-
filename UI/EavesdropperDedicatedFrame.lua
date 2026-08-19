@@ -7,7 +7,7 @@ local Constants = ED.Constants;
 ---@class EavesdropperDedicatedFrame
 local DedicatedFrame = {};
 
----@type table<string, EavesdropperDedicatedFrame>
+---@type table<string, EavesdropperDedicatedFrameInstance>
 DedicatedFrame.frames = DedicatedFrame.frames or {};
 
 ---We save a table of current session's dedicated windows by sender.
@@ -16,6 +16,7 @@ DedicatedFrame.frames = DedicatedFrame.frames or {};
 DedicatedFrame.sessionState = DedicatedFrame.sessionState or {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
+---@class EavesdropperDedicatedFrameInstance
 Eavesdropper_Dedicated_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -314,7 +315,7 @@ end
 -- ============================================================
 
 ---Iterate all live dedicated frames
----@param func fun(frame: EavesdropperDedicatedFrame)
+---@param func fun(frame: EavesdropperDedicatedFrameInstance)
 function DedicatedFrame:ForEachFrame(func)
 	for _, frame in pairs(self.frames) do
 		if frame then
@@ -419,7 +420,7 @@ end
 ---Explicit savedEntry > sessionState > CharDB's FindSavedEntry.
 ---@param sender string
 ---@param savedEntry EavesdropperSavedDedicatedFrame? Pass explicitly from RestoreFromCharDB's pass.
----@return EavesdropperDedicatedFrame
+---@return EavesdropperDedicatedFrameInstance
 function DedicatedFrame:AddFrame(sender, savedEntry)
 	local frame = _G["Eavesdropper_Dedicated_Frame_" .. sender];
 

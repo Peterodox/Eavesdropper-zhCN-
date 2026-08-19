@@ -11,6 +11,7 @@ local FrameModule = {};
 local EAVESDROP_TARGET = nil;
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
+---@class EavesdropperFrameInstance
 Eavesdropper_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -358,6 +359,7 @@ end
 -- ============================================================
 
 function FrameModule:Init()
+	---@type EavesdropperFrameInstance
 	local frame = CreateFrame("Frame", "Eavesdropper_Frame", UIParent, "Eavesdropper_FrameTemplate");
 	ED.Frame = frame;
 	frame:Raise();
