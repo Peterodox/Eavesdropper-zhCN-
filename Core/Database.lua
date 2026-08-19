@@ -91,7 +91,7 @@ local GLOBAL_IMPORT_EXCLUDED = {
 ---@field EnablePartialKeywords boolean?
 ---@field FocusTarget EavesdropperFocusTarget?
 ---@field FontFace string?
----@field FontOutline number?
+---@field FontOutline EavesdropperFontOutline?
 ---@field FontShadow boolean?
 ---@field FontSize number?
 ---@field HideCloseButton boolean?
@@ -164,7 +164,7 @@ local DEFAULT_PROFILE = {
 	EnablePartialKeywords = false,
 	FocusTarget = Enums.FOCUS_TARGET.OVERRIDE,
 	FontFace = "Arial Narrow",
-	FontOutline = 1,
+	FontOutline = Enums.CHAT_BOX.FONT_OUTLINE.NONE,
 	FontShadow = true,
 	FontSize = 12,
 	HideCloseButton = false,
