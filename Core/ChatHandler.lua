@@ -44,7 +44,7 @@ end
 ---@param event string Chat event
 ---@param ... any
 ---@return boolean?
-function ChatHandler:ChatFrameFilter(chatFrame, event, ...)
+function ChatHandler:ChatFrameFilter(chatFrame, event, ...) -- luacheck: no unused (chatFrame)
 	local message, sender, language, _, _, _, _, _, channel, _, lineID, guid = ...;
 
 	if not message or not canaccessvalue(message) then return; end
