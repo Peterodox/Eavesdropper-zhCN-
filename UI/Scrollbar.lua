@@ -249,7 +249,7 @@ end
 
 function Eavesdropper_SimpleSliderMixin:UpdateSlider()
 	local sliderHeight = self:GetHeight();
-	local thumbHeight = self.visibleExtentPercentage * sliderHeight;
+	local thumbHeight = math.max(Def.ThumbMinHeight, self.visibleExtentPercentage * sliderHeight);
 	local thumbRange = sliderHeight - thumbHeight;
 
 	local offsetY;
@@ -262,7 +262,7 @@ function Eavesdropper_SimpleSliderMixin:UpdateSlider()
 	end
 
 	self.Thumb:SetPoint("TOPRIGHT", 0, -offsetY);
-	self.Thumb:SetHeight(math.max(Def.ThumbMinHeight, self.visibleExtentPercentage * sliderHeight));
+	self.Thumb:SetHeight(thumbHeight);
 	self.thumbRange = thumbRange;
 
 	self:SetShown(self.maxScrollRange > Def.ShowScrollbarMinimumRange);
