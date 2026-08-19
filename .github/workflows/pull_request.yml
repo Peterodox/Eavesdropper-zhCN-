@@ -59,7 +59,7 @@ jobs:
           include-hidden-files: true
 
       - name: Send Webhook Notification
-        if: failure()
+        if: ${{ !cancelled() }}
         uses: ./.github/actions/send-webhook-notification
         with:
           webhook-url: ${{ secrets.WEBHOOK_URL }}
