@@ -328,14 +328,17 @@ end
 -- Hyperlink click
 -- ============================================================
 
----Handle hyperlink clicks when IsMouseEnabled() is true
+---Handle hyperlink clicks when IsMouseEnabled() is true; edjump bypasses this when
+---IsJumpToContextMouseExempt() is true, so it stays clickable in ghost mode.
 function Eavesdropper_SharedFrameMixin:OnHyperlinkClick(link, text, button)
-	if not self:IsMouseEnabled() then return; end
+	local linkType, value = link:match("^(.-):(.*)$");
+
+	if not self:IsMouseEnabled() then
+		if linkType ~= "edjump" or not self:IsJumpToContextMouseExempt() then return; end
+	end
 
 	-- Suppress rapid clicks when scroll position just changed
 	if GetTime() < (self.clickblock or 0) + Constants.FRAME.CLICKBLOCK_TIME then return; end
-
-	local linkType, value = link:match("^(.-):(.*)$");
 
 	-- Open edurls directly in the chat edit box
 	if linkType == "edurl" and value then
@@ -412,9 +415,12 @@ end
 ---@param width number?
 ---@param height number?
 function Eavesdropper_SharedFrameMixin:OnHyperlinkEnter(link, text, region, left, bottom, width, height) -- luacheck: no unused (text)
-	if not self:IsMouseEnabled() then return; end
-
 	local linkType, value = link:match("^(.-):(.*)$");
+
+	if not self:IsMouseEnabled() then
+		if linkType ~= "edjump" or not self:IsJumpToContextMouseExempt() then return; end
+	end
+
 	if not value then return; end
 
 	if linkType == "edjump" then
@@ -445,6 +451,12 @@ end
 -- Mouse lock / propagation
 -- ============================================================
 
+---Override in Group/Mentions to let the Jump to Context link stay clickable in ghost mode.
+---@return boolean
+function Eavesdropper_SharedFrameMixin:IsJumpToContextMouseExempt()
+	return false;
+end
+
 ---Mouse-click propagation depends on IsMouseEnabled(), passthrough on false.
 function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 	local isEnabled = self:IsMouseEnabled();
@@ -471,12 +483,15 @@ function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 		end
 	end
 
-	-- Enable/Disable OnHyperlinkClick
+	-- SetHyperlinksEnabled stays true when exempt so edjump can still hit-test; OnHyperlinkClick/
+	-- OnHyperlinkEnter's per-linkType gate is what blocks every other link.
+	local hyperlinksEnabled = isEnabled or self:IsJumpToContextMouseExempt();
+
 	-- This delay is essential otherwise it won't take effect
 	RunNextFrame(function()
-		self:SetHyperlinksEnabled(isEnabled);
+		self:SetHyperlinksEnabled(hyperlinksEnabled);
 		if self.ChatBox then
-			self.ChatBox:SetHyperlinksEnabled(isEnabled);
+			self.ChatBox:SetHyperlinksEnabled(hyperlinksEnabled);
 		end
 	end);
 end

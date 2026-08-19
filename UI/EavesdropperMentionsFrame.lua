@@ -19,6 +19,11 @@ function Eavesdropper_Mentions_FrameMixin:IsMouseEnabled()
 end
 
 ---@return boolean
+function Eavesdropper_Mentions_FrameMixin:IsJumpToContextMouseExempt()
+	return not ED.Database:GetGlobalSetting("MentionsHistoryJumpToContextRequireEnableMouse");
+end
+
+---@return boolean
 function Eavesdropper_Mentions_FrameMixin:IsWindowLocked()
 	return ED.Database:GetSetting("MentionsLockWindow");
 end

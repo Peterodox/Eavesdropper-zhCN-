@@ -58,6 +58,11 @@ function Eavesdropper_Group_FrameMixin:IsMouseEnabled()
 end
 
 ---@return boolean
+function Eavesdropper_Group_FrameMixin:IsJumpToContextMouseExempt()
+	return not ED.Database:GetGlobalSetting("GroupWindowsJumpToContextRequireEnableMouse");
+end
+
+---@return boolean
 function Eavesdropper_Group_FrameMixin:IsWindowLocked()
 	return self.lockWindow;
 end
