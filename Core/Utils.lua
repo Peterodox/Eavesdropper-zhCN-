@@ -210,18 +210,6 @@ function Utils.ShallowCopy(tbl)
 	return copy;
 end
 
----Returns a fully independent recursive copy of tbl, or the value itself if not a table.
----@param tbl any
----@return any
-function Utils.DeepCopy(tbl)
-	if type(tbl) ~= "table" then return tbl; end
-	local copy = {};
-	for k, v in pairs(tbl) do
-		copy[k] = Utils.DeepCopy(v);
-	end
-	return copy;
-end
-
 -- ============================================================================
 -- UNIT / PLAYER UTILITIES
 -- ============================================================================

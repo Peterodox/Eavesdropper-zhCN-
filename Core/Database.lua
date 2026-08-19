@@ -234,9 +234,9 @@ local CHAR_DEFAULTS = {
 };
 
 Database.currentProfile = nil;
-Database.defaults = ED.Utils.DeepCopy(DEFAULT_PROFILE);
-Database.charDefaults = ED.Utils.DeepCopy(CHAR_DEFAULTS);
-Database.globalDefaults = ED.Utils.DeepCopy(GLOBAL_DEFAULTS);
+Database.defaults = CopyTable(DEFAULT_PROFILE);
+Database.charDefaults = CopyTable(CHAR_DEFAULTS);
+Database.globalDefaults = CopyTable(GLOBAL_DEFAULTS);
 
 ---Returns a new table containing all keys from `base`, with keys from `override` applied on top.
 ---@param base table
@@ -514,7 +514,7 @@ function Database:CopyProfile(sourceName)
 		current[k] = nil;
 	end
 
-	local copy = ED.Utils.DeepCopy(source);
+	local copy = CopyTable(source);
 	for k, v in pairs(copy) do
 		current[k] = v;
 	end
@@ -552,7 +552,7 @@ function Database:ImportProfile(profileName, data, overwrite)
 		target[k] = nil;
 	end
 
-	local copy = ED.Utils.DeepCopy(data);
+	local copy = CopyTable(data);
 	for k, v in pairs(copy) do
 		target[k] = v;
 	end
