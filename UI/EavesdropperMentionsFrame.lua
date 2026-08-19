@@ -86,7 +86,7 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	local titleBtn = self.TitleBar.TitleButton;
 	titleBtn.Text:SetText(L.MENTIONS_WINDOW_TITLE);
 	titleBtn:SetScript("OnClick", function()
-		ED.Config:ShowConfigMenu(self, "mentions");
+		ED.Config.ShowConfigMenu(self, "mentions");
 	end);
 	self:ResizeTitleButton();
 

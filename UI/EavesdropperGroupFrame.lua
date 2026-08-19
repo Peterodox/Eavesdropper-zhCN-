@@ -131,7 +131,7 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	-- Configure title button; triggers the group config menu
 	local titleBtn = self.TitleBar.TitleButton;
 	titleBtn:SetScript("OnClick", function()
-		ED.Config:ShowConfigMenu(self, "group");
+		ED.Config.ShowConfigMenu(self, "group");
 	end);
 
 	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()

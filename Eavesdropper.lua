@@ -65,7 +65,7 @@ function ED.Init()
 		ED.DedicatedFrame:RestoreFromCharDB();
 		ED.GroupFrame:RestoreFromCharDB();
 		ED.ChatHandler:Init();
-		ED.Config:Init();
+		ED.Config.Init();
 		ED.Magnifier:Setup();
 		ED.UnitPopups:Init()
 
