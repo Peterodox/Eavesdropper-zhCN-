@@ -40,7 +40,7 @@ function Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn)
 		closeBtn.svg = svg;
 		svg:SetSVG("Interface/AddOns/Eavesdropper/Resources/CloseButton.svg");
 		svg:SetPoint("CENTER", closeBtn, "CENTER", 0, 0);
-		svg:SetAllPoints(true);
+		svg:SetSize(12, 12);
 
 		local function UpdateVisual()
 			if closeBtn:IsMouseMotionFocus() then

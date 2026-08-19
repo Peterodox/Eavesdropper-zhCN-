@@ -37,6 +37,116 @@
 		</Scripts>
 	</Button>
 
+
+	<!-- Title Bar -->
+	<Frame name="Eavesdropper_TitleBarTemplate" parentKey="TitleBar" registerForDrag="LeftButton" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconKey" value="Person" type="string"/>
+		</KeyValues>
+
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"><Offset x="0" y="-15"/></Anchor>
+		</Anchors>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<!-- Close Button -->
+			<Button parentKey="CloseButton">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():GetParent():OnLeave();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<!-- Title Button -->
+			<Button parentKey="TitleButton" registerForDrag="LeftButton">
+				<Size x="128" y="15"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnEnter>
+						self:GetParent():GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():GetParent():OnLeave();
+					</OnLeave>
+					<OnDragStart>
+						self:GetParent():GetParent():OnDragStart();
+					</OnDragStart>
+					<OnDragStop>
+						self:GetParent():GetParent():OnDragStop();
+					</OnDragStop>
+				</Scripts>
+
+				<Layers>
+					<!-- Hover highlight -->
+					<Layer level="HIGHLIGHT">
+						<Texture parentKey="Highlight" setAllPoints="true" alphaMode="ADD">
+							<Color r="1" g="1" b="1" a="0.15"/>
+						</Texture>
+					</Layer>
+
+					<!-- Icon and Text -->
+					<Layer level="ARTWORK">
+						<Texture parentKey="TitleIcon" file="Interface\AddOns\Eavesdropper\Resources\Type-Person.png" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" x="2"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" maxLines="1">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TitleIcon" relativePoint="RIGHT" x="1"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				if self.iconKey then
+					self.TitleButton.TitleIcon:SetTexture(string.format("Interface/AddOns/Eavesdropper/Resources/Type-%s.png", self.iconKey));
+				end
+			</OnLoad>
+			<OnMouseDown>
+				self:GetParent():OnDragStart();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:GetParent():OnDragStop();
+			</OnMouseUp>
+			<OnEnter>
+				self:GetParent():OnEnter();
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
 	<Frame name="Eavesdropper_FrameTemplate" mixin="Eavesdropper_FrameMixin" virtual="true" parent="UIParent"
 			toplevel="true" movable="true" clampedToScreen="true" resizable="true" frameStrata="BACKGROUND">
 		<Size x="200" y="300"/>
@@ -108,93 +218,7 @@
 			</Frame>
 
 			<!-- Title Bar -->
-			<Frame parentKey="TitleBar" registerForDrag="LeftButton" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"><Offset x="0" y="-15"/></Anchor>
-				</Anchors>
-
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" setAllPoints="true">
-							<Color r="0" g="0" b="0" a="0.25"/>
-						</Texture>
-					</Layer>
-				</Layers>
-
-				<Scripts>
-					<OnMouseDown>
-						self:GetParent():OnDragStart();
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():OnDragStop();
-					</OnMouseUp>
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-
-				<Frames>
-					<!-- Close Button -->
-					<Button parentKey="CloseButton">
-						<Size x="12" y="12"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
-						</Anchors>
-						<Scripts>
-							<OnEnter>
-								self:GetParent():GetParent():OnEnter();
-							</OnEnter>
-							<OnLeave>
-								self:GetParent():GetParent():OnLeave();
-							</OnLeave>
-						</Scripts>
-					</Button>
-
-					<!-- Title Button -->
-					<Button parentKey="TitleButton" registerForDrag="LeftButton">
-						<Size x="110" y="15"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-							</OnLoad>
-							<OnEnter>
-								self:GetParent():GetParent():OnEnter();
-							</OnEnter>
-							<OnLeave>
-								self:GetParent():GetParent():OnLeave();
-							</OnLeave>
-							<OnDragStart>
-								self:GetParent():GetParent():OnDragStart();
-							</OnDragStart>
-							<OnDragStop>
-								self:GetParent():GetParent():OnDragStop();
-							</OnDragStop>
-						</Scripts>
-
-						<Layers>
-							<!-- Hover highlight -->
-							<Layer level="HIGHLIGHT">
-								<Texture parentKey="Highlight" setAllPoints="true" alphaMode="ADD">
-									<Color r="1" g="1" b="1" a="0.15"/>
-								</Texture>
-							</Layer>
-
-							<!-- Text -->
-							<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE" setAllPoints="true" />
-							</Layer>
-						</Layers>
-					</Button>
-				</Frames>
-			</Frame>
+			<Frame parentKey="TitleBar" inherits="Eavesdropper_TitleBarTemplate"/>
 
 			<!-- Resize Handle -->
 			<Button parentKey="ResizeHandle" inherits="Eavesdropper_ResizeHandleTemplate"/>
