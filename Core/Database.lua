@@ -728,7 +728,7 @@ function Database:SetSetting(key, value)
 	end
 
 	if ED.SettingsFrame then
-		ED.SettingsFrame:RefreshWidgets();
+		ED.SettingsFrame:RefreshCurrentPanel();
 	end
 end
 
@@ -849,7 +849,7 @@ function Database:SetGlobalSetting(key, value)
 	end
 
 	if ED.SettingsFrame then
-		ED.SettingsFrame:RefreshWidgets();
+		ED.SettingsFrame:RefreshCurrentPanel();
 	end
 end
 

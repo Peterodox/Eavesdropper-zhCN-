@@ -23,6 +23,7 @@ for _, fontName in ipairs(SharedMedia:List("font")) do
 end
 
 local lastSelectedTab;
+local selectedPanelIndex;
 local allWidgets = {};
 
 -- ============================================================
@@ -35,6 +36,27 @@ function Eavesdropper_SettingsMixin:RefreshWidgets()
 			widget:Refresh();
 		end
 	end
+end
+
+---Refreshes only the widgets belonging to a single panel (Views entry), not the whole Settings frame
+function Eavesdropper_SettingsMixin:RefreshPanelWidgets(panel)
+	local widgets = (panel.scrollChild and panel.scrollChild.widgets) or panel.widgets;
+	if not widgets then return; end
+
+	for _, widget in pairs(widgets) do
+		if widget.Refresh then
+			widget:Refresh();
+		end
+	end
+end
+
+---Refresh only the widgets on the currently-selected tab, which is better for single setting changes.
+---Profile-wide operations, like switch profile etc., still require the usual full RefreshWidgets.
+function Eavesdropper_SettingsMixin:RefreshCurrentPanel()
+	local panel = selectedPanelIndex and self.Views[selectedPanelIndex];
+	if not panel then return; end
+
+	self:RefreshPanelWidgets(panel);
 end
 
 -- ============================================================
@@ -97,9 +119,14 @@ function Eavesdropper_SettingsMixin:SetTab(view)
 				scroll.ScrollBar:SetShown(isSelected);
 			end
 		end
+
+		if isSelected then
+			self:RefreshPanelWidgets(panel);
+		end
 	end
 
 	lastSelectedTab = view;
+	selectedPanelIndex = index;
 end
 
 -- ============================================================
@@ -192,6 +219,9 @@ function Eavesdropper_SettingsMixin:PopulatePanel(panel, options)
 		if widget then
 			local key = widget.settingKey or (#allWidgets + 1);
 			allWidgets[key] = widget;
+
+			panel.widgets = panel.widgets or {};
+			panel.widgets[#panel.widgets + 1] = widget;
 		end
 
 		previousContainer = container;
