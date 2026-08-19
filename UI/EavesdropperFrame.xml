@@ -5,6 +5,38 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ../Eavesdropper.xsd">
 
+	<!-- Resize Handle -->
+	<Button name="Eavesdropper_ResizeHandleTemplate" parentKey="ResizeHandle" hidden="true" alpha="0.5" virtual="true">
+		<Size x="16" y="16"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<VectorGraphics parentKey="Texture" setAllPoints="true" file="Interface\AddOns\Eavesdropper\Resources\ResizeButton.svg"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self:GetParent():StartSizing("BOTTOMRIGHT");
+			</OnMouseDown>
+			<OnMouseUp>
+				self:GetParent():StopMovingOrSizing();
+				self:GetParent():OnResizeFinished();
+			</OnMouseUp>
+			<OnEnter>
+				self:GetParent():OnEnter();
+				self:SetAlpha(1);
+				self.Texture:SetVertexColor(0.443, 0.835, 1.000);
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():OnLeave();
+				self:SetAlpha(0.5);
+				self.Texture:SetVertexColor(1, 1, 1);
+			</OnLeave>
+		</Scripts>
+	</Button>
+
 	<Frame name="Eavesdropper_FrameTemplate" mixin="Eavesdropper_FrameMixin" virtual="true" parent="UIParent"
 			toplevel="true" movable="true" clampedToScreen="true" resizable="true" frameStrata="BACKGROUND">
 		<Size x="200" y="300"/>
@@ -165,30 +197,7 @@
 			</Frame>
 
 			<!-- Resize Handle -->
-			<Button parentKey="ResizeHandle" hidden="true">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
-				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
-				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
-				<Scripts>
-					<OnMouseDown>
-						self:GetParent():StartSizing("BOTTOMRIGHT");
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():StopMovingOrSizing();
-						self:GetParent():OnResizeFinished();
-					</OnMouseUp>
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-			</Button>
+			<Button parentKey="ResizeHandle" inherits="Eavesdropper_ResizeHandleTemplate"/>
 
 			<!-- Chat Box -->
 			<ScrollingMessageFrame parentKey="ChatBox">

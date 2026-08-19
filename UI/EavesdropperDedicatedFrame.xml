@@ -166,30 +166,7 @@
 			</Frame>
 
 			<!-- Resize Handle -->
-			<Button parentKey="ResizeHandle" hidden="true">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
-				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
-				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
-				<Scripts>
-					<OnMouseDown>
-						self:GetParent():StartSizing("BOTTOMRIGHT");
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():StopMovingOrSizing();
-						self:GetParent():OnResizeFinished();
-					</OnMouseUp>
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-			</Button>
+			<Button parentKey="ResizeHandle" inherits="Eavesdropper_ResizeHandleTemplate"/>
 
 			<!-- Chat Box -->
 			<ScrollingMessageFrame parentKey="ChatBox">
