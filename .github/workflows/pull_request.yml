@@ -57,3 +57,9 @@ jobs:
           path: .release/
           archive: true
           include-hidden-files: true
+
+      - name: Send Webhook Notification
+        if: failure()
+        uses: ./.github/actions/send-webhook-notification
+        with:
+          webhook-url: ${{ secrets.WEBHOOK_URL }}
