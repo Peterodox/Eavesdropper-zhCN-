@@ -170,8 +170,11 @@ function Config:ShowConfigMenu(frame, mode)
 		ED.Utils.SetMenuTooltip(lockTitleBar, L.LOCK_TITLEBAR_HELP);
 
 		-- Jump to Context: Mentions/Group only. A per-family global (mirroring Settings).
+		-- Aside from a checkbox, it also opens a submenu with a Require Enable Mouse option.
 		if mode == "group" or mode == "mentions" then
 			local jumpToContextKey = (mode == "mentions") and "MentionsHistoryJumpToContext" or "GroupWindowsJumpToContext";
+			local requireEnableMouseKey = jumpToContextKey .. "RequireEnableMouse";
+
 			local jumpToContext = rootDescription:CreateCheckbox(
 				L.JUMP_TO_CONTEXT,
 				function() return ED.Database:GetGlobalSetting(jumpToContextKey); end,
@@ -181,9 +184,27 @@ function Config:ShowConfigMenu(frame, mode)
 				end
 			);
 			ED.Utils.SetMenuTooltip(jumpToContext, L.JUMP_TO_CONTEXT_HELP);
+			jumpToContext:CreateTitle(L.JUMP_TO_CONTEXT .. " " .. MAIN_MENU);
 			if not ED.Database:GetGlobalSetting("DedicatedWindows") then
 				jumpToContext:SetEnabled(false);
 			end
+
+			local requireEnableMouse = jumpToContext:CreateCheckbox(
+				L.JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE,
+				function() return ED.Database:GetGlobalSetting(requireEnableMouseKey); end,
+				function()
+					ED.Database:SetGlobalSetting(requireEnableMouseKey, not ED.Database:GetGlobalSetting(requireEnableMouseKey));
+					-- RefreshAllWindows (used above) only calls RefreshChat, not UpdateMouseLock,
+					-- so it wouldn't re-apply SetHyperlinksEnabled; call it directly instead.
+					if mode == "group" then
+						ED.GroupFrame:ForEachFrame(function(f) f:UpdateMouseLock(); end);
+					else
+						ED.MentionsFrame:UpdateMouseLock();
+					end
+				end
+			);
+			ED.Utils.SetMenuTooltip(requireEnableMouse, L.JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE_HELP);
+			requireEnableMouse:SetEnabled(function() return ED.Database:GetGlobalSetting(jumpToContextKey); end);
 		end
 
 		if showInstanceOptions then
