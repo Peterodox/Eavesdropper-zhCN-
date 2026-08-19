@@ -11,6 +11,8 @@ local Def = {
 	ThumbMinimizedWidth = 2,
 	ThumbMinHeight = 16,
 
+	MinimizeDelay = 0.5,
+
 	ThumbNormalAlpha = 0.2,
 	ThumbHighlightAlpha = 0.3,
 	ThumbDragAlpha = 0.5;
@@ -28,6 +30,7 @@ function Eavesdropper_SimpleSliderMixin:OnLoad()
 	self.maxScrollRange = 0;
 	self.scrollPercentage = 0;
 	self.visibleExtentPercentage = 0;
+	self.minimizeDelay = 0;
 
 	self.messageFrame = self:GetParent();
 
@@ -139,9 +142,11 @@ function Eavesdropper_SimpleSliderMixin:Maximize()
 		self.isMaximized = true;
 		self.thumbFinalWidth = Def.SliderWidth - 1 * Def.ThumbPadding;
 		self.widthMultiplier = Def.SliderWidth / 0.12;
+		self.minimizeDelay = 0;
 
 		self.Thumb:SetScript("OnUpdate", function(f, elapsed)
 			local isAnimating;
+
 			local alpha = self.Track:GetAlpha() + 1 * elapsed;
 			if alpha > 0.1 then
 				alpha = 0.1;
@@ -160,6 +165,7 @@ function Eavesdropper_SimpleSliderMixin:Maximize()
 
 			if not isAnimating then
 				f:SetScript("OnUpdate", nil);
+				self.minimizeDelay = Def.MinimizeDelay;
 			end
 		end);
 	end
@@ -172,6 +178,11 @@ function Eavesdropper_SimpleSliderMixin:Minimize()
 		self.widthMultiplier = Def.SliderWidth / 0.2;
 
 		self.Thumb:SetScript("OnUpdate", function(f, elapsed)
+			if self.minimizeDelay and self.minimizeDelay > 0 then
+				self.minimizeDelay = self.minimizeDelay - elapsed;
+				return
+			end
+
 			local isAnimating;
 
 			local alpha = self.Track:GetAlpha() - 1 * elapsed;
