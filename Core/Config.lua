@@ -44,7 +44,7 @@ end
 ---@param frame table
 ---@param mode "dedicated"|"group"|"mentions"|nil nil means the main Eavesdropper frame.
 ---@return nil
-function Config:ShowConfigMenu(frame, mode)
+function Config.ShowConfigMenu(frame, mode)
 	-- All three instance windows show the options section.
 	-- Dedicated/Group back it with frame state.
 	-- Mentions reads/writes its own profile keys instead, like Main.
@@ -249,12 +249,12 @@ end
 ---@return nil
 local function SetupMenu()
 	ED.Frame.TitleBar.TitleButton:SetScript("OnClick", function()
-		Config:ShowConfigMenu(ED.Frame);
+		Config.ShowConfigMenu(ED.Frame);
 	end);
 end
 
 ---@return nil
-function Config:Init()
+function Config.Init()
 	SetupSounds();
 	SetupMenu();
 end

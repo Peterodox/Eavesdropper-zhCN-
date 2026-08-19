@@ -91,7 +91,7 @@ local GLOBAL_IMPORT_EXCLUDED = {
 ---@field EnablePartialKeywords boolean?
 ---@field FocusTarget EavesdropperFocusTarget?
 ---@field FontFace string?
----@field FontOutline number?
+---@field FontOutline EavesdropperFontOutline?
 ---@field FontShadow boolean?
 ---@field FontSize number?
 ---@field HideCloseButton boolean?
@@ -164,7 +164,7 @@ local DEFAULT_PROFILE = {
 	EnablePartialKeywords = false,
 	FocusTarget = Enums.FOCUS_TARGET.OVERRIDE,
 	FontFace = "Arial Narrow",
-	FontOutline = 1,
+	FontOutline = Enums.CHAT_BOX.FONT_OUTLINE.NONE,
 	FontShadow = true,
 	FontSize = 12,
 	HideCloseButton = false,
@@ -234,9 +234,9 @@ local CHAR_DEFAULTS = {
 };
 
 Database.currentProfile = nil;
-Database.defaults = ED.Utils.DeepCopy(DEFAULT_PROFILE);
-Database.charDefaults = ED.Utils.DeepCopy(CHAR_DEFAULTS);
-Database.globalDefaults = ED.Utils.DeepCopy(GLOBAL_DEFAULTS);
+Database.defaults = CopyTable(DEFAULT_PROFILE);
+Database.charDefaults = CopyTable(CHAR_DEFAULTS);
+Database.globalDefaults = CopyTable(GLOBAL_DEFAULTS);
 
 ---Returns a new table containing all keys from `base`, with keys from `override` applied on top.
 ---@param base table
@@ -514,7 +514,7 @@ function Database:CopyProfile(sourceName)
 		current[k] = nil;
 	end
 
-	local copy = ED.Utils.DeepCopy(source);
+	local copy = CopyTable(source);
 	for k, v in pairs(copy) do
 		current[k] = v;
 	end
@@ -552,7 +552,7 @@ function Database:ImportProfile(profileName, data, overwrite)
 		target[k] = nil;
 	end
 
-	local copy = ED.Utils.DeepCopy(data);
+	local copy = CopyTable(data);
 	for k, v in pairs(copy) do
 		target[k] = v;
 	end

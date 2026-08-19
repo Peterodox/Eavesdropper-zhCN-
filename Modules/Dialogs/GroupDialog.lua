@@ -99,7 +99,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_GROUP"] = {
 	hideOnEscape = true,
 	preferredIndex = 3,
 	---@param self table
-	---@param data { frame: EavesdropperGroupFrame }
+	---@param data { frame: EavesdropperGroupFrameInstance }
 	OnAccept = function(self, data)
 		local newName = string.trim(self.EditBox:GetText());
 		if data and data.frame then
@@ -107,7 +107,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_GROUP"] = {
 		end
 	end,
 	---@param self table
-	---@param data { frame: EavesdropperGroupFrame }
+	---@param data { frame: EavesdropperGroupFrameInstance }
 	OnShow = function(self, data)
 		local button1 = _G[self:GetName() .. "Button1"];
 		if button1 then
@@ -120,7 +120,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_GROUP"] = {
 		self.EditBox:SetFocus();
 	end,
 	---@param self EditBox
-	---@param data { frame: EavesdropperGroupFrame }
+	---@param data { frame: EavesdropperGroupFrameInstance }
 	EditBoxOnTextChanged = function(self, data)
 		local popup = self:GetParent();
 		local button1 = _G[popup:GetName() .. "Button1"];
@@ -138,7 +138,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_GROUP"] = {
 		StaticPopup_Hide("EAVESDROPPER_RENAME_GROUP");
 	end,
 	---@param self EditBox
-	---@param data { frame: EavesdropperGroupFrame }
+	---@param data { frame: EavesdropperGroupFrameInstance }
 	EditBoxOnEnterPressed = function(self, data)
 		local newName = string.trim(self:GetText());
 		if data and data.frame then
