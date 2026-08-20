@@ -90,7 +90,7 @@ function Eavesdropper_SimpleSliderMixin:OnShow()
 	self.Thumb.Texture:ClearAllPoints();
 	self.Thumb.Texture:SetPoint("TOPRIGHT", self.Thumb, "TOPRIGHT", -self.thumbPadding, -self.thumbPadding);
 	self.Thumb.Texture:SetPoint("BOTTOMRIGHT", self.Thumb, "BOTTOMRIGHT", -self.thumbPadding, self.thumbPadding);
-	self:UpdateVisual();
+	self:UpdateVisual(true);
 end
 
 function Eavesdropper_SimpleSliderMixin:OnHide()
@@ -238,10 +238,10 @@ function Eavesdropper_SimpleSliderMixin:TriggerMaximizeMode()
 	end
 end
 
-function Eavesdropper_SimpleSliderMixin:UpdateVisual()
+function Eavesdropper_SimpleSliderMixin:UpdateVisual(instant)
 	if self:IsDraggingThumb() then
 		self.Thumb.Texture:SetColorTexture(1, 1, 1, Constants.SCROLLBAR.THUMB_DRAG_ALPHA);
-		self:Maximize();
+		self:Maximize(instant);
 	else
 		if self.Thumb:IsMouseMotionFocus() then
 			self.Thumb.Texture:SetColorTexture(1, 1, 1, Constants.SCROLLBAR.THUMB_HIGHLIGHT_ALPHA);
@@ -250,9 +250,9 @@ function Eavesdropper_SimpleSliderMixin:UpdateVisual()
 		end
 
 		if self:IsMouseMotionFocus() then
-			self:Maximize();
+			self:Maximize(instant);
 		else
-			self:Minimize();
+			self:Minimize(instant);
 		end
 	end
 end
