@@ -32,7 +32,7 @@ function Eavesdropper_SharedFrameMixin.InitChatBox(frame, maxLines)
 	frame.ChatBox.ScrollMarker.Text:SetText(L.SCROLLMARKER_TEXT);
 end
 
----Set the three atlas states on a close button
+---Create the close button's SVG icon
 ---@param closeBtn Button
 function Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn)
 	if not closeBtn.svg then
