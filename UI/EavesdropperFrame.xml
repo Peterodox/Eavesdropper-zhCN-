@@ -129,7 +129,6 @@
 		<Scripts>
 			<OnLoad>
 				if self.iconFile then
-					print(self.iconFile)
 					self.TitleButton.TitleIcon:SetTexture(self.iconFile);
 				end
 			</OnLoad>
@@ -219,7 +218,11 @@
 			</Frame>
 
 			<!-- Title Bar -->
-			<Frame parentKey="TitleBar" inherits="Eavesdropper_TitleBarTemplate"/>
+			<Frame parentKey="TitleBar" inherits="Eavesdropper_TitleBarTemplate">
+				<KeyValues>
+					<KeyValue key="iconFile" value="ED.Constants.ICONS.MAGNIFIER" type="global"/>
+				</KeyValues>
+			</Frame>
 
 			<!-- Resize Handle -->
 			<Button parentKey="ResizeHandle" inherits="Eavesdropper_ResizeHandleTemplate"/>
