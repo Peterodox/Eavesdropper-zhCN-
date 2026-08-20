@@ -311,7 +311,7 @@ end
 
 ---Toggle a full-screen background ON/OFF
 ---
----Save the file as png under `Interface/AddOns/Eavesdropper/Assets`, the file name must start with `EDBG`
+---Save the file as png under `Interface/AddOns/Eavesdropper/Assets/Base`, the file name must start with `EDBG`
 ---@param fileIndex number|string? Example: `1` for `EDBG1.png`
 function ScreenshotHelper.ToggleFullScreenBackground(fileIndex)
 	local frame = ScreenshotHelper.FullScreenBackground;
@@ -325,7 +325,7 @@ function ScreenshotHelper.ToggleFullScreenBackground(fileIndex)
 		ScreenshotHelper.FullScreenBackground = frame;
 	end
 
-	local filePath = "Interface/AddOns/Eavesdropper/Assets/EDBG%s.png";
+	local filePath = "Interface/AddOns/Eavesdropper/Assets/Base/EDBG%s.png";
 	frame.Texture:SetTexture(string.format(filePath, fileIndex or ""));
 	frame:SetShown(not frame:IsShown());
 end
