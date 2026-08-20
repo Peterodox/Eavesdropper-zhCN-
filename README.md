@@ -1,5 +1,5 @@
 # Eavesdropper 🔍
-Eavesdropper helps you stay immersed in busy RP environments by focusing on the interactions that matter most. 
+Eavesdropper helps you stay immersed in busy RP environments by focusing on the interactions that matter most.
 
 **Key Features:**
 - **History Window:** A focused, real-time feed for your current target or mouseover.  
