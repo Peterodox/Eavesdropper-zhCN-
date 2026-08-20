@@ -260,7 +260,13 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 end
 
 ---Hide various of UI element
-function ScreenshotHelper.HideDistractions()
+---@param bitmask number? Select extra UI element to hide. `ActionBar, Minimap`
+function ScreenshotHelper.HideDistractions(bitmask)
+	local optionalBlockedRolesets = {
+		"actionBars",
+		"minimap",
+	};
+
 	local objects = {
 		TargetFrame.TargetFrameContent.TargetFrameContentContextual,  --Target's Auras
 		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual,  --Animated Zzz, Leader Crown
@@ -288,6 +294,14 @@ function ScreenshotHelper.HideDistractions()
 		"statusBars",
 		"widgets",
 	};
+
+	bitmask = bitmask or 0;
+
+	for index, tag in ipairs(optionalBlockedRolesets) do
+		if bit.band(1, bit.arshift(bitmask, index - 1)) == 1 then
+			table.insert(blockedRolesets, tag);
+		end
+	end
 
 	local allowedRolesets = {};
 
