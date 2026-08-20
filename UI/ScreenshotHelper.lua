@@ -259,4 +259,75 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 	end
 end
 
+---Hide various of UI element
+---@param bitmask number? Select extra UI element to hide. `ActionBar, Minimap`
+function ScreenshotHelper.HideDistractions(bitmask)
+	local optionalBlockedRolesets = {
+		"actionBars",
+		"minimap",
+	};
+
+	local objects = {
+		TargetFrame.TargetFrameContent.TargetFrameContentContextual,  --Target's Auras
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentContextual,  --Animated Zzz, Leader Crown
+		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture,  --Portrait Flash
+		WarlockPowerFrame,
+		RogueComboPointBarFrame,
+		PTR_IssueReporter,
+	};
+
+	for _, obj in ipairs(objects) do
+		if obj then
+			obj:Hide();
+		end
+	end
+
+	local blockedRolesets = {
+		"arenaFrames",
+		"bags",
+		"buffs",
+		"cooldownViewers",
+		"encounterUI",
+		"extraAbilities",
+		"microMenu",
+		"objectives",
+		"pvp",
+		"statusBars",
+		"widgets",
+	};
+
+	bitmask = bitmask or 0;
+
+	for index, tag in ipairs(optionalBlockedRolesets) do
+		if bit.band(1, bit.arshift(bitmask, index - 1)) == 1 then
+			table.insert(blockedRolesets, tag);
+		end
+	end
+
+	local allowedRolesets = {};
+
+	C_Roleset.ApplyRolesetFilters(blockedRolesets, allowedRolesets);
+end
+
+---Toggle a full-screen background ON/OFF
+---
+---Save the file as png under `Interface/AddOns/Eavesdropper/Assets/Base`, the file name must start with `EDBG`
+---@param fileIndex number|string? Example: `1` for `EDBG1.png`
+function ScreenshotHelper.ToggleFullScreenBackground(fileIndex)
+	local frame = ScreenshotHelper.FullScreenBackground;
+	if not frame then
+		frame = CreateFrame("Frame", nil, UIParent);
+		frame:Hide();
+		frame:SetAllPoints(true);
+		frame:SetFrameStrata("BACKGROUND");
+		frame.Texture = frame:CreateTexture();
+		frame.Texture:SetAllPoints(true);
+		ScreenshotHelper.FullScreenBackground = frame;
+	end
+
+	local filePath = "Interface/AddOns/Eavesdropper/Assets/Base/EDBG%s.png";
+	frame.Texture:SetTexture(string.format(filePath, fileIndex or ""));
+	frame:SetShown(not frame:IsShown());
+end
+
 ED.ScreenshotHelper = ScreenshotHelper;

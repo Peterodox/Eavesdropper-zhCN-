@@ -317,6 +317,12 @@ stds.wow = {
 			},
 		},
 
+		C_Roleset = {
+			fields = {
+				"ApplyRolesetFilters",
+			},
+		},
+
 		C_Secrets = {
 			fields = {
 				"ShouldAurasBeSecret",
@@ -794,6 +800,9 @@ stds.wow = {
 		"MenuResponse",
 		"ModelFrameMixin",
 		"NamePlateDriverFrame",
+		"PlayerFrame",
+		"PTR_IssueReporter",
+		"RogueComboPointBarFrame",
 		"SystemFont_LargeNamePlate",
 		"SystemFont_NamePlate",
 		"SystemFont_Shadow_Huge1",
@@ -804,6 +813,7 @@ stds.wow = {
 		"UIErrorsFrame",
 		"UIParent",
 		"UISpecialFrames",
+		"WarlockPowerFrame",
 		"WorldFrame",
 		"WorldMapFrame",
 
