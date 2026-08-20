@@ -273,6 +273,7 @@ function ScreenshotHelper.HideDistractions(bitmask)
 		PlayerFrame.PlayerFrameContent.PlayerFrameContentMain.StatusTexture,  --Portrait Flash
 		WarlockPowerFrame,
 		RogueComboPointBarFrame,
+		PTR_IssueReporter,
 	};
 
 	for _, obj in ipairs(objects) do

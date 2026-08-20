@@ -801,6 +801,7 @@ stds.wow = {
 		"ModelFrameMixin",
 		"NamePlateDriverFrame",
 		"PlayerFrame",
+		"PTR_IssueReporter",
 		"RogueComboPointBarFrame",
 		"SystemFont_LargeNamePlate",
 		"SystemFont_NamePlate",
