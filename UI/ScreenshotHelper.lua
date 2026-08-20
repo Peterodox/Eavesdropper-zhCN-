@@ -275,26 +275,23 @@ function ScreenshotHelper.HideDistractions()
 		end
 	end
 
-	local modeName = "ED_ScreenshotHelper";
-	if not ScreenshotHelper.roleSetsSet then
-		ScreenshotHelper.roleSetsSet = true;
-		UIModeUtil.RegisterMode(modeName, {
-			rolesetBlocklist = {
-				"arenaFrames",
-				"bags",
-				"buffs",
-				"cooldownViewers",
-				"encounterUI",
-				"extraAbilities",
-				"microMenu",
-				"objectives",
-				"pvp",
-				"statusBars",
-				"widgets",
-			},
-		});
-	end
-	UIModeUtil.SetModeActive(modeName, true);
+	local blockedRolesets = {
+		"arenaFrames",
+		"bags",
+		"buffs",
+		"cooldownViewers",
+		"encounterUI",
+		"extraAbilities",
+		"microMenu",
+		"objectives",
+		"pvp",
+		"statusBars",
+		"widgets",
+	};
+
+	local allowedRolesets = {};
+
+	C_Roleset.ApplyRolesetFilters(blockedRolesets, allowedRolesets);
 end
 
 ---Toggle a full-screen background ON/OFF

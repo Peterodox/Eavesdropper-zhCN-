@@ -317,6 +317,12 @@ stds.wow = {
 			},
 		},
 
+		C_Roleset = {
+			fields = {
+				"ApplyRolesetFilters",
+			},
+		},
+
 		C_Secrets = {
 			fields = {
 				"ShouldAurasBeSecret",
@@ -512,13 +518,6 @@ stds.wow = {
 		TimerunningUtil = {
 			fields = {
 				"AddSmallIcon",
-			},
-		},
-
-		UIModeUtil = {
-			fields = {
-				"RegisterMode",
-				"SetModeActive",
 			},
 		},
 
