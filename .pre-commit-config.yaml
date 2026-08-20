@@ -38,5 +38,5 @@ repos:
         additional_dependencies:
           - lxml~=6.1
         types: [xml]
-        exclude: ^(Bindings\.xml|.*\.xsd)$
+        exclude: ^(Bindings\.xml|.*\.xsd|.*\.svg)$
         require_serial: true
