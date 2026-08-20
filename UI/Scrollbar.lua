@@ -207,7 +207,7 @@ function Eavesdropper_SimpleSliderMixin:Minimize(instant)
 		self.Thumb:SetScript("OnUpdate", function(f, elapsed)
 			if self.minimizeDelay and self.minimizeDelay > 0 then
 				self.minimizeDelay = self.minimizeDelay - elapsed;
-				return
+				return;
 			end
 
 			local isAnimating;
