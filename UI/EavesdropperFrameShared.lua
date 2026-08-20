@@ -36,7 +36,7 @@ end
 ---@param closeBtn Button
 function Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn)
 	if not closeBtn.svg then
-		local svg = closeBtn:CreateVectorGraphics(nil, "OVERLAY")
+		local svg = closeBtn:CreateVectorGraphics(nil, "OVERLAY");
 		closeBtn.svg = svg;
 		svg:SetSVG("Interface/AddOns/Eavesdropper/Resources/CloseButton.svg");
 		svg:SetPoint("CENTER", closeBtn, "CENTER", 0, 0);
