@@ -173,6 +173,7 @@ function Eavesdropper_SharedFrameMixin.RefreshAllWindows()
 	end);
 
 	ED.GroupFrame:ForEachFrame(function(frame)
+		frame.playerListDirty = true;
 		frame:RefreshChat(true);
 	end);
 

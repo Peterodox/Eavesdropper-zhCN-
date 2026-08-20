@@ -607,6 +607,8 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 
 	frame.displayName = displayName;
 	frame.players = {};
+	frame.playerListDirty = true;
+	frame.playerListCache = nil;
 
 	if playerList and #playerList > 0 then
 		for _, player in ipairs(playerList) do
@@ -672,6 +674,136 @@ function GroupFrame:GetGroupWindows(sender)
 end
 
 -- ============================================================
+-- Player List menu
+-- ============================================================
+
+---Creates a checkbox menu of cached tracked players (or newly iterated on if frame.playerListDirty).
+---Each row is a tracked player with a dedicated window button, with first row being a "Add Target" option.
+---@param frame EavesdropperGroupFrame
+---@param menu table
+function GroupFrame:GeneratePlayerListMenu(frame, menu)
+	if menu.SetScrollMode then
+		local optionHeight = 20; -- 20 is the default height.
+		local maxLines = 20;
+		local maxScrollExtent = optionHeight * maxLines;
+		menu:SetScrollMode(maxScrollExtent);
+	end
+
+	-- Leading action row, like "Profile Management" has to add current target to tracked players.
+	local canAddTarget = UnitExists("target") and UnitIsPlayer("target");
+	local targetSender, targetGUID;
+	if canAddTarget then
+		targetSender = ED.Utils.GetUnitName("target");
+		targetGUID = UnitGUID("target");
+		if not targetSender or frame:HasPlayer(targetSender) then
+			canAddTarget = false;
+		end
+	end
+
+	local addTargetIcon = CreateAtlasMarkup(canAddTarget and "editmode-new-layout-plus" or "editmode-new-layout-plus-disabled");
+	local addTargetText = L.PLAYER_LIST_ADD_TARGET;
+	if canAddTarget then
+		addTargetText = "|cnPURE_GREEN_COLOR:" .. addTargetText .. "|r";
+	end
+
+	local addTargetEntry = menu:CreateButton(addTargetIcon .. " " .. addTargetText, function()
+		ED.PlayerCache:InsertAndRetrieve(targetSender, targetGUID);
+		frame:AddPlayer(targetSender);
+	end);
+	addTargetEntry:SetEnabled(canAddTarget);
+	ED.Utils.SetMenuTooltip(addTargetEntry, L.PLAYER_LIST_ADD_TARGET_HELP, L.PLAYER_LIST_ADD_TARGET);
+
+	menu:CreateDivider();
+
+	if frame.playerListDirty or not frame.playerListCache then
+		local rows = {};
+
+		for _, player in ipairs(frame.players) do
+			local entry = ED.PlayerCache:GetSenderEntry(player);
+			local guid = entry and entry.guid;
+			local firstName;
+			if guid then
+				_, firstName = ED.MSP.TryGetMSPData(player, guid);
+			end
+
+			local oocName = ED.Utils.IsSameRealmName(player) and ED.Utils.StripRealmSuffix(player) or player;
+			local label = (firstName and firstName ~= oocName) and (firstName .. " (" .. oocName .. ")") or oocName;
+
+			rows[#rows + 1] = { player = player, guid = guid, label = label, sortKey = firstName or oocName };
+		end
+
+		table.sort(rows, function(a, b) return a.sortKey < b.sortKey; end);
+
+		frame.playerListCache = rows;
+		frame.playerListDirty = false;
+	end
+
+	if #frame.playerListCache == 0 then
+		menu:CreateButton(L.PLAYER_LIST_EMPTY):SetEnabled(false);
+		return;
+	end
+
+	local dedicatedWindowsEnabled = ED.Database:GetGlobalSetting("DedicatedWindows");
+
+	for _, row in ipairs(frame.playerListCache) do
+		-- Unchecking removes the player, re-checking re-adds them; CreateCheckbox stays open on
+		-- click, so an accidental removal is undone just by checking the box again.
+		local rowCheckbox = menu:CreateCheckbox(
+			row.label,
+			function() return frame:HasPlayer(row.player); end,
+			function()
+				if frame:HasPlayer(row.player) then
+					frame:RemovePlayer(row.player);
+				else
+					ED.PlayerCache:InsertAndRetrieve(row.player, row.guid);
+					frame:AddPlayer(row.player);
+				end
+			end
+		);
+		ED.Utils.SetMenuTooltip(rowCheckbox, L.PLAYER_LIST_ROW_HELP);
+
+		rowCheckbox:AddInitializer(function(button)
+			local dedicatedButton = MenuTemplates.AttachAutoHideCancelButton(button);
+			-- TODO: temporary atlas; swap for a dedicated addon icon once added.
+			dedicatedButton.Texture:SetAtlas("squad_size_solo");
+
+			-- Checking/unchecking re-initializes attached widgets without a real mouse leave/enter,
+			-- so the auto-hide button stays hidden; re-show it next frame if still hovered.
+			RunNextFrame(function()
+				if button:IsMouseOver() then
+					dedicatedButton:Show();
+					dedicatedButton.Texture:Show();
+				end
+			end);
+
+			MenuTemplates.SetUtilityButtonAnchor(dedicatedButton, MenuVariants.GearButtonAnchor, button);
+			MenuTemplates.SetUtilityButtonClickHandler(dedicatedButton, function()
+				if not dedicatedWindowsEnabled or ED.DedicatedFrame:FrameExists(row.player) then
+					return;
+				end
+				ED.PlayerCache:InsertAndRetrieve(row.player, row.guid);
+				ED.DedicatedFrame:AddFrame(row.player);
+			end);
+
+			MenuUtil.HookTooltipScripts(dedicatedButton, function(tooltip)
+				GameTooltip_SetTitle(tooltip, L.PLAYER_LIST_OPEN_DEDICATED);
+				GameTooltip_AddNormalLine(tooltip, L.PLAYER_LIST_OPEN_DEDICATED_HELP);
+			end);
+
+			-- Small hack to keep showing tooltips when you move between the dedicated button and row.
+			dedicatedButton:HookScript("OnLeave", function()
+				if button:IsMouseOver() then
+					local description = button:GetElementDescription();
+					if description then
+						description:HandleOnEnter(button);
+					end
+				end
+			end);
+		end);
+	end
+end
+
+-- ============================================================
 -- Mixin: player list management
 -- ============================================================
 
@@ -690,6 +822,7 @@ function Eavesdropper_Group_FrameMixin:AddPlayer(sender)
 		if existing == sender then return; end
 	end
 	table.insert(self.players, sender);
+	self.playerListDirty = true;
 	self:RefreshEmptyState();
 	self:RefreshChat();
 	GroupFrame:SaveToCharDB();
@@ -701,6 +834,7 @@ function Eavesdropper_Group_FrameMixin:RemovePlayer(sender)
 	for i, existing in ipairs(self.players) do
 		if existing == sender then
 			table.remove(self.players, i);
+			self.playerListDirty = true;
 			self:RefreshEmptyState();
 			self:RefreshChat();
 			GroupFrame:SaveToCharDB();

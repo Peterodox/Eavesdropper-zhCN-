@@ -215,6 +215,15 @@ L = {
 	GROUP_OPTIONS = "Group Options",
 	GROUP_RENAME = "Change Group Name",
 
+	PLAYER_LIST = "Player List",
+	PLAYER_LIST_HELP = "Lists every player currently tracked by this Group Window.",
+	PLAYER_LIST_ADD_TARGET = "Add Target",
+	PLAYER_LIST_ADD_TARGET_HELP = "Add your current target to this group.|n|n|cnWARNING_FONT_COLOR:Note: Disabled if you have no target, your target isn't a player, or they're already in this group.|r",
+	PLAYER_LIST_EMPTY = "No players tracked",
+	PLAYER_LIST_ROW_HELP = "Uncheck to remove this player from the group; check again to re-add them.|n|n|cnWARNING_FONT_COLOR:Note: This list only refreshes once the menu is fully closed and reopened.|r",
+	PLAYER_LIST_OPEN_DEDICATED = "Open Dedicated Window",
+	PLAYER_LIST_OPEN_DEDICATED_HELP = "Open a Dedicated Window for this player.",
+
 	MINIMAP_BUTTON = "Minimap Button",
 	MINIMAP_BUTTON_HELP = "Toggles the display of the minimap button.",
 
@@ -361,7 +370,7 @@ L = {
 
 	UNIT_POPUPS_EAVESDROPPER_OPTIONS_HEADER = "Eavesdropper Options",
 	UNIT_POPUPS_EAVESDROP_ON = "Eavesdrop On",
-	UNIT_POPUPS_EAVESDROP_ON_HELP = "Open a Dedicated Window for the current target.|n|n|cnWARNING_FONT_COLOR:Disabled if the target already has a Dedicated Window.|r",
+	UNIT_POPUPS_EAVESDROP_ON_HELP = "Open a Dedicated Window for the current target.|n|n|cnWARNING_FONT_COLOR:Note: Disabled if the target already has a Dedicated Window.|r",
 	UNIT_POPUPS_EAVESDROP_GROUP = "Eavesdrop Group",
 	UNIT_POPUPS_EAVESDROP_GROUP_HELP = "Assign the current target to a specific Group Window or remove them from one.|n|n|cnWARNING_FONT_COLOR:Note: |cnGREEN_FONT_COLOR:Green group names|r indicate that the target is already a member of that group.|r",
 	UNIT_POPUPS_EAVESDROP_GROUP_NEW = "Create New",

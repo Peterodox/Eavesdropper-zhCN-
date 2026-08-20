@@ -116,6 +116,13 @@ function Config.ShowConfigMenu(frame, mode)
 			ED.ChatFilters:GenerateMentionReasonFilterMenu(mentionTypes);
 		end
 
+		if mode == "group" then
+			local playerList = rootDescription:CreateButton(L.PLAYER_LIST);
+			ED.Utils.SetMenuTooltip(playerList, L.PLAYER_LIST_HELP);
+			playerList:CreateTitle(L.PLAYER_LIST .. " " .. MAIN_MENU);
+			ED.GroupFrame:GeneratePlayerListMenu(frame, playerList);
+		end
+
 		-- Settings, scoped to this frame's own category. nil for the main frame.
 		local settingsView;
 		if mode == "dedicated" then

@@ -96,6 +96,7 @@ function Debug:InjectTestEntry(groupName, event, class, senderName, message)
 	---Directly insert into the player list to avoid triggering SaveToCharDB.
 	if not frame:HasPlayer(coloredName) then
 		table.insert(frame.players, coloredName);
+		frame.playerListDirty = true;
 		frame:RefreshEmptyState();
 	end
 
@@ -176,6 +177,7 @@ function Debug:ClearTestEntries(groupName)
 		local player = frame.players[i];
 		if sendersToClean[player] and not ED.ChatHistory.history[player] then
 			table.remove(frame.players, i);
+			frame.playerListDirty = true;
 		end
 	end
 
