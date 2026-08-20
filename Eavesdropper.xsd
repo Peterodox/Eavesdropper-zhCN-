@@ -1121,7 +1121,7 @@
 	</xs:complexType>
 	<xs:element name="Model" type="ModelType" substitutionGroup="ui:FrameRef"/>
 	<xs:element name="ModelFFX" type="ModelType" substitutionGroup="ui:FrameRef"/>
-  <xs:element name="MapScene" type="ModelType" substitutionGroup="ui:FrameRef"/>
+	<xs:element name="MapScene" type="ModelType" substitutionGroup="ui:FrameRef"/>
 
 	<xs:complexType name="SimpleHTMLType">
 		<xs:complexContent>
