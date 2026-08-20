@@ -571,6 +571,7 @@ Constants.ICONS = {
 	JUMP = "Interface/AddOns/Eavesdropper/Resources/Jump.png",
 	PERSON = "Interface/AddOns/Eavesdropper/Resources/Person.png",
 	GROUP = "Interface/AddOns/Eavesdropper/Resources/Group.png",
+	MENTION = "Interface/AddOns/Eavesdropper/Resources/Mention.png",
 };
 
 ED.Constants = Constants;
