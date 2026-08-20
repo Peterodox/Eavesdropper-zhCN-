@@ -629,6 +629,7 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 
 	frame:UpdateTitleBar();
 	frame:RefreshChat();
+	frame:UpdateScrollbar();
 
 	self.frames[displayName] = frame;
 	self:SaveToCharDB();

@@ -800,3 +800,13 @@ function Eavesdropper_SharedFrameMixin:SetAlphaChannelMode(mode)
 
 	self:SetFrameStrata(frameStrata);
 end
+
+-- ============================================================
+-- Chatbox Scrollbar
+-- ============================================================
+
+function Eavesdropper_SharedFrameMixin:UpdateScrollbar()
+	if self.ChatBox.Scrollbar then
+		self.ChatBox.Scrollbar:FullUpdate();
+	end
+end

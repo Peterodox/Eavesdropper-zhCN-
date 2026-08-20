@@ -95,6 +95,7 @@ Modules\UnitPopups\UnitPopups.lua
 
 ## UI
 UI\ChatBox.lua
+UI\Scrollbar.xml
 UI\EavesdropperFrameShared.lua
 UI\EavesdropperFrame.lua
 UI\EavesdropperFrame.xml

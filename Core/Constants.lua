@@ -495,6 +495,31 @@ Constants.PLAYER_CACHE = {
 	TIME = 1e-6,
 };
 
+---Visual and timing constants for the Eavesdropper_SimpleSliderMixin scrollbar thumb.
+---@class EavesdropperScrollbarConstants
+---@field SLIDER_WIDTH number
+---@field THUMB_MINIMIZED_WIDTH number
+---@field THUMB_MIN_HEIGHT number
+---@field MINIMIZE_DELAY number Seconds the thumb stays maximized after the last interaction before it starts minimizing.
+---@field TRACK_NORMAL_ALPHA number
+---@field THUMB_NORMAL_ALPHA number
+---@field THUMB_HIGHLIGHT_ALPHA number
+---@field THUMB_DRAG_ALPHA number
+---@field SHOW_MIN_SCROLL_RANGE number Only show the scrollbar once maxScrollRange exceeds this threshold.
+---@field MAXIMIZE_ON_SHOW boolean Briefly force the thumb maximized when the containing window is shown.
+Constants.SCROLLBAR = {
+	SLIDER_WIDTH = 16,
+	THUMB_MINIMIZED_WIDTH = 2,
+	THUMB_MIN_HEIGHT = 16,
+	MINIMIZE_DELAY = 0.5,
+	TRACK_NORMAL_ALPHA = 0.1,
+	THUMB_NORMAL_ALPHA = 0.2,
+	THUMB_HIGHLIGHT_ALPHA = 0.3,
+	THUMB_DRAG_ALPHA = 0.5,
+	SHOW_MIN_SCROLL_RANGE = 0,
+	MAXIMIZE_ON_SHOW = true,
+};
+
 ---Layout constants for the settings panel widgets.
 ---@class EavesdropperSettingsConstants
 ---@field WIDGET_HEIGHT number

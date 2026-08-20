@@ -260,6 +260,9 @@
 							</OnMouseUp>
 						</Scripts>
 					</Frame>
+
+					<!-- Scroll Bar -->
+					<Frame parentKey="Scrollbar" inherits="Eavesdropper_SimpleSliderTemplate" hidden="true"/>
 				</Frames>
 
 				<Scripts>

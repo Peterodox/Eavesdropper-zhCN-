@@ -370,7 +370,10 @@ function DedicatedFrame:RestoreFromCharDB()
 		local sender = type(entry) == "string" and entry or entry.sender;
 		if sender and sender ~= "" then
 			-- Pass entry explicitly: AddFrame's own lookup reads the live CharDB table.
-			self:AddFrame(sender, type(entry) == "table" and entry or nil);
+			local frame = self:AddFrame(sender, type(entry) == "table" and entry or nil);
+			if frame then
+				frame:ApplySavedLayout(entry.pos, entry.size);
+			end
 		end
 	end
 
@@ -444,6 +447,8 @@ function DedicatedFrame:AddFrame(sender, savedEntry)
 			frame:ApplySavedOptions(entry);
 		end
 	end
+
+	frame:UpdateScrollbar();
 
 	self.frames[sender] = frame;
 	self:SaveToCharDB();
