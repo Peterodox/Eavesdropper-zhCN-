@@ -292,7 +292,8 @@ end
 
 function Eavesdropper_SimpleSliderMixin:UpdateSlider()
 	local sliderHeight = self:GetHeight();
-	local thumbHeight = math.max(Constants.SCROLLBAR.THUMB_MIN_HEIGHT, self.visibleExtentPercentage * sliderHeight);
+	-- 2x here increases the thumb height, since we can't calculate the actual offset without rendering all texts, which will be costly.
+	local thumbHeight = Clamp(2 * self.visibleExtentPercentage * sliderHeight, Constants.SCROLLBAR.THUMB_MIN_HEIGHT, sliderHeight);
 	local thumbRange = sliderHeight - thumbHeight;
 
 	local offsetY;
