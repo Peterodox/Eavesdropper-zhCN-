@@ -310,7 +310,10 @@ function ScreenshotHelper.HideDistractions(bitmask)
 end
 
 ---Toggle a full-screen background ON/OFF
-function ScreenshotHelper.ToggleFullScreenBackground()
+---
+---Save the file as png under `Interface/AddOns/Eavesdropper/Assets`, the file name must start with `EDBG`
+---@param fileIndex number|string? Example: `1` for `EDBG1.png`
+function ScreenshotHelper.ToggleFullScreenBackground(fileIndex)
 	local frame = ScreenshotHelper.FullScreenBackground;
 	if not frame then
 		frame = CreateFrame("Frame", nil, UIParent);
@@ -319,9 +322,11 @@ function ScreenshotHelper.ToggleFullScreenBackground()
 		frame:SetFrameStrata("BACKGROUND");
 		frame.Texture = frame:CreateTexture();
 		frame.Texture:SetAllPoints(true);
-		frame.Texture:SetTexture("Interface/AddOns/EDBG.jpg");
 		ScreenshotHelper.FullScreenBackground = frame;
 	end
+
+	local filePath = "Interface/AddOns/Eavesdropper/Assets/EDBG%s.png";
+	frame.Texture:SetTexture(string.format(filePath, fileIndex or ""));
 	frame:SetShown(not frame:IsShown());
 end
 
