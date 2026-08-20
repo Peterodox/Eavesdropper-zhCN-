@@ -506,7 +506,7 @@ Constants.PLAYER_CACHE = {
 ---@field THUMB_HIGHLIGHT_ALPHA number
 ---@field THUMB_DRAG_ALPHA number
 ---@field SHOW_MIN_SCROLL_RANGE number Only show the scrollbar once maxScrollRange exceeds this threshold.
----@field MAXIMIZE_ON_SHOW boolean Briefly force the thumb maximized when the scrollbar is shown.
+---@field MAXIMIZE_ON_SHOW boolean Briefly force the thumb maximized when the containing window is shown.
 Constants.SCROLLBAR = {
 	SLIDER_WIDTH = 16,
 	THUMB_MINIMIZED_WIDTH = 2,

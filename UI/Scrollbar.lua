@@ -21,6 +21,7 @@ function Eavesdropper_SimpleSliderMixin:OnLoad()
 	self.thumbPadding = 1;
 
 	self.messageFrame = self:GetParent();
+	self.windowFrame = self.messageFrame:GetParent();
 
 	self.Thumb:SetScript("OnEnter", function()
 		self:UpdateVisual();
@@ -29,6 +30,12 @@ function Eavesdropper_SimpleSliderMixin:OnLoad()
 	self.Thumb:SetScript("OnLeave", function()
 		self:UpdateVisual();
 	end);
+
+	if Constants.SCROLLBAR.MAXIMIZE_ON_SHOW and self.windowFrame then
+		self.windowFrame:HookScript("OnShow", function()
+			self:TriggerMaximizeMode();
+		end);
+	end
 
 	RunNextFrame(function()
 		self:InitScrollbarForMessageFrame(self.messageFrame);
@@ -84,10 +91,6 @@ function Eavesdropper_SimpleSliderMixin:OnShow()
 	self.Thumb.Texture:SetPoint("TOPRIGHT", self.Thumb, "TOPRIGHT", -self.thumbPadding, -self.thumbPadding);
 	self.Thumb.Texture:SetPoint("BOTTOMRIGHT", self.Thumb, "BOTTOMRIGHT", -self.thumbPadding, self.thumbPadding);
 	self:UpdateVisual();
-
-	if Constants.SCROLLBAR.MAXIMIZE_ON_SHOW then
-		self:TriggerMaximizeMode();
-	end
 end
 
 function Eavesdropper_SimpleSliderMixin:OnHide()
