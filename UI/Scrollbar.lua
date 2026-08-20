@@ -1,39 +1,24 @@
 -- Copyright The Eavesdropper Authors
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
+---@type EavesdropperConstants
+local Constants = ED.Constants;
+
 ---@class Eavesdropper_SimpleSliderMixin
 Eavesdropper_SimpleSliderMixin = {};
-
-local Def = {
-	SliderWidth = 16,
-
-	ThumbPadding = 1,				-- Convert to 1 pixel
-	ThumbMinimizedWidth = 2,
-	ThumbMinHeight = 16,
-
-	MinimizeDelay = 0.5,
-
-	TrackNormalAlpha = 0.1,
-	ThumbNormalAlpha = 0.2,
-	ThumbHighlightAlpha = 0.3,
-	ThumbDragAlpha = 0.5;
-
-	ShowScrollbarMinimumRange = 0,  -- Only show scrollbar if maxScrollRange reaches this threshold
-
-	MaximizeSrollbarOnShow = true,	-- Check mouse focus after 0.5 s, minimize if not focused.
-};
 
 local GetCursorPosition = GetCursorPosition;
 
 function Eavesdropper_SimpleSliderMixin:OnLoad()
-	self.Thumb:SetWidth(Def.SliderWidth);
-	self:SetWidth(Def.SliderWidth);
+	self.Thumb:SetWidth(Constants.SCROLLBAR.SLIDER_WIDTH);
+	self:SetWidth(Constants.SCROLLBAR.SLIDER_WIDTH);
 	self:UpdateVisual();
 
 	self.maxScrollRange = 0;
 	self.scrollPercentage = 0;
 	self.visibleExtentPercentage = 0;
 	self.minimizeDelay = 0;
+	self.thumbPadding = 1;
 
 	self.messageFrame = self:GetParent();
 
@@ -50,6 +35,8 @@ function Eavesdropper_SimpleSliderMixin:OnLoad()
 	end);
 end
 
+---Hook into the message frame's own refresh cycle so the slider stays in sync with scroll state.
+---@param messageFrame table
 function Eavesdropper_SimpleSliderMixin:InitScrollbarForMessageFrame(messageFrame)
 	messageFrame:AddOnDisplayRefreshedCallback(function()
 		self:OnDisplayRefreshed();
@@ -92,14 +79,13 @@ function Eavesdropper_SimpleSliderMixin:OnLeave()
 end
 
 function Eavesdropper_SimpleSliderMixin:OnShow()
-	local size = PixelUtil.ConvertPixelsToUIForRegion(1, self);
-	Def.ThumbPadding = size;
+	self.thumbPadding = PixelUtil.ConvertPixelsToUIForRegion(1, self);
 	self.Thumb.Texture:ClearAllPoints();
-	self.Thumb.Texture:SetPoint("TOPRIGHT", self.Thumb, "TOPRIGHT", -Def.ThumbPadding, -Def.ThumbPadding);
-	self.Thumb.Texture:SetPoint("BOTTOMRIGHT", self.Thumb, "BOTTOMRIGHT", -Def.ThumbPadding, Def.ThumbPadding);
+	self.Thumb.Texture:SetPoint("TOPRIGHT", self.Thumb, "TOPRIGHT", -self.thumbPadding, -self.thumbPadding);
+	self.Thumb.Texture:SetPoint("BOTTOMRIGHT", self.Thumb, "BOTTOMRIGHT", -self.thumbPadding, self.thumbPadding);
 	self:UpdateVisual();
 
-	if Def.MaximizeSrollbarOnShow then
+	if Constants.SCROLLBAR.MAXIMIZE_ON_SHOW then
 		self:TriggerMaximizeMode();
 	end
 end
@@ -142,33 +128,35 @@ function Eavesdropper_SimpleSliderMixin:OnMouseUp()
 	self:UpdateVisual();
 end
 
+---@param percentage number
 function Eavesdropper_SimpleSliderMixin:SetMessageFrameScrollPercentage(percentage)
 	percentage = Clamp(percentage, 0, 1);
 	self.messageFrame:SetScrollOffset(math.floor(self.maxScrollRange * (1 - percentage) + 0.5));
 end
 
+---@param instant boolean?
 function Eavesdropper_SimpleSliderMixin:Maximize(instant)
-	local thumbFinalWidth = Def.SliderWidth - 1 * Def.ThumbPadding;
+	local thumbFinalWidth = Constants.SCROLLBAR.SLIDER_WIDTH - 1 * self.thumbPadding;
 
 	if instant then
 		self.isMaximized = true;
-		self.Track:SetAlpha(Def.TrackNormalAlpha);
+		self.Track:SetAlpha(Constants.SCROLLBAR.TRACK_NORMAL_ALPHA);
 		self.Thumb.Texture:SetWidth(thumbFinalWidth);
-		self.minimizeDelay = Def.MinimizeDelay;
+		self.minimizeDelay = Constants.SCROLLBAR.MINIMIZE_DELAY;
 		return;
 	end
 
 	if not self.isMaximized then
 		self.isMaximized = true;
-		self.widthMultiplier = Def.SliderWidth / 0.12;
+		self.widthMultiplier = Constants.SCROLLBAR.SLIDER_WIDTH / 0.12;
 		self.minimizeDelay = 0;
 
 		self.Thumb:SetScript("OnUpdate", function(f, elapsed)
 			local isAnimating;
 
 			local alpha = self.Track:GetAlpha() + 1 * elapsed;
-			if alpha > Def.TrackNormalAlpha then
-				alpha = Def.TrackNormalAlpha;
+			if alpha > Constants.SCROLLBAR.TRACK_NORMAL_ALPHA then
+				alpha = Constants.SCROLLBAR.TRACK_NORMAL_ALPHA;
 			else
 				isAnimating = true;
 			end
@@ -184,25 +172,26 @@ function Eavesdropper_SimpleSliderMixin:Maximize(instant)
 
 			if not isAnimating then
 				f:SetScript("OnUpdate", nil);
-				self.minimizeDelay = Def.MinimizeDelay;
+				self.minimizeDelay = Constants.SCROLLBAR.MINIMIZE_DELAY;
 			end
 		end);
 	end
 end
 
+---@param instant boolean?
 function Eavesdropper_SimpleSliderMixin:Minimize(instant)
 	if self.forceMaximized then return; end
 
 	if instant then
 		self.isMaximized = false;
 		self.Track:SetAlpha(0);
-		self.Thumb.Texture:SetWidth(Def.ThumbMinimizedWidth);
+		self.Thumb.Texture:SetWidth(Constants.SCROLLBAR.THUMB_MINIMIZED_WIDTH);
 		return;
 	end
 
 	if self.isMaximized ~= false then
 		self.isMaximized = false;
-		self.widthMultiplier = Def.SliderWidth / 0.2;
+		self.widthMultiplier = Constants.SCROLLBAR.SLIDER_WIDTH / 0.2;
 
 		self.Thumb:SetScript("OnUpdate", function(f, elapsed)
 			if self.minimizeDelay and self.minimizeDelay > 0 then
@@ -221,8 +210,8 @@ function Eavesdropper_SimpleSliderMixin:Minimize(instant)
 			self.Track:SetAlpha(alpha);
 
 			local width = self.Thumb.Texture:GetWidth() - self.widthMultiplier * elapsed;
-			if width <= Def.ThumbMinimizedWidth then
-				width = Def.ThumbMinimizedWidth;
+			if width <= Constants.SCROLLBAR.THUMB_MINIMIZED_WIDTH then
+				width = Constants.SCROLLBAR.THUMB_MINIMIZED_WIDTH;
 			else
 				isAnimating = true;
 			end
@@ -248,13 +237,13 @@ end
 
 function Eavesdropper_SimpleSliderMixin:UpdateVisual()
 	if self:IsDraggingThumb() then
-		self.Thumb.Texture:SetColorTexture(1, 1, 1, Def.ThumbDragAlpha);
+		self.Thumb.Texture:SetColorTexture(1, 1, 1, Constants.SCROLLBAR.THUMB_DRAG_ALPHA);
 		self:Maximize();
 	else
 		if self.Thumb:IsMouseMotionFocus() then
-			self.Thumb.Texture:SetColorTexture(1, 1, 1, Def.ThumbHighlightAlpha);
+			self.Thumb.Texture:SetColorTexture(1, 1, 1, Constants.SCROLLBAR.THUMB_HIGHLIGHT_ALPHA);
 		else
-			self.Thumb.Texture:SetColorTexture(1, 1, 1, Def.ThumbNormalAlpha);
+			self.Thumb.Texture:SetColorTexture(1, 1, 1, Constants.SCROLLBAR.THUMB_NORMAL_ALPHA);
 		end
 
 		if self:IsMouseMotionFocus() then
@@ -293,13 +282,14 @@ function Eavesdropper_SimpleSliderMixin:OnUpdate_DraggingThumb()
 	end
 end
 
+---@return boolean
 function Eavesdropper_SimpleSliderMixin:IsDraggingThumb()
 	return self.isDraggingThumb;
 end
 
 function Eavesdropper_SimpleSliderMixin:UpdateSlider()
 	local sliderHeight = self:GetHeight();
-	local thumbHeight = math.max(Def.ThumbMinHeight, self.visibleExtentPercentage * sliderHeight);
+	local thumbHeight = math.max(Constants.SCROLLBAR.THUMB_MIN_HEIGHT, self.visibleExtentPercentage * sliderHeight);
 	local thumbRange = sliderHeight - thumbHeight;
 
 	local offsetY;
@@ -315,7 +305,7 @@ function Eavesdropper_SimpleSliderMixin:UpdateSlider()
 	self.Thumb:SetHeight(thumbHeight);
 	self.thumbRange = thumbRange;
 
-	self:SetShown(self.maxScrollRange > Def.ShowScrollbarMinimumRange);
+	self:SetShown(self.maxScrollRange > Constants.SCROLLBAR.SHOW_MIN_SCROLL_RANGE);
 end
 
 function Eavesdropper_SimpleSliderMixin:OnSizeChanged()
