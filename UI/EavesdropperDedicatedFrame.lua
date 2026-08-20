@@ -447,10 +447,10 @@ function DedicatedFrame:AddFrame(sender, savedEntry)
 		end
 	end
 
+	frame:UpdateScrollbar();
+
 	self.frames[sender] = frame;
 	self:SaveToCharDB();
-
-	frame:UpdateScrollbar();
 
 	return frame;
 end
