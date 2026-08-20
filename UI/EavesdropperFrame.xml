@@ -41,7 +41,7 @@
 	<!-- Title Bar -->
 	<Frame name="Eavesdropper_TitleBarTemplate" parentKey="TitleBar" registerForDrag="LeftButton" hidden="true" virtual="true">
 		<KeyValues>
-			<KeyValue key="iconKey" value="Person" type="string"/>
+			<KeyValue key="iconFile" value="ED.Constants.ICONS.PERSON" type="global"/>
 		</KeyValues>
 
 		<Anchors>
@@ -109,7 +109,7 @@
 
 					<!-- Icon and Text -->
 					<Layer level="ARTWORK">
-						<Texture parentKey="TitleIcon" file="Interface\AddOns\Eavesdropper\Resources\Type-Person.png" texelSnappingBias="0.0" snapToPixelGrid="false">
+						<Texture parentKey="TitleIcon" texelSnappingBias="0.0" snapToPixelGrid="false">
 							<Size x="14" y="14"/>
 							<Anchors>
 								<Anchor point="LEFT" x="2"/>
@@ -128,8 +128,9 @@
 
 		<Scripts>
 			<OnLoad>
-				if self.iconKey then
-					self.TitleButton.TitleIcon:SetTexture(string.format("Interface/AddOns/Eavesdropper/Resources/Type-%s.png", self.iconKey));
+				if self.iconFile then
+					print(self.iconFile)
+					self.TitleButton.TitleIcon:SetTexture(self.iconFile);
 				end
 			</OnLoad>
 			<OnMouseDown>

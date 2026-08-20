@@ -79,7 +79,7 @@
 			<!-- Title Bar -->
 			<Frame parentKey="TitleBar" inherits="Eavesdropper_TitleBarTemplate">
 				<KeyValues>
-					<KeyValue key="iconKey" value="Hollow" type="string"/>
+					<KeyValue key="iconFile" value="ED.Constants.ICONS.PERSON" type="global"/>
 				</KeyValues>
 			</Frame>
 

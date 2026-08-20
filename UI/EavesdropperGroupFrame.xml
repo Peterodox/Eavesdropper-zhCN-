@@ -106,7 +106,7 @@
 			<!-- Title Bar -->
 			<Frame parentKey="TitleBar" inherits="Eavesdropper_TitleBarTemplate">
 				<KeyValues>
-					<KeyValue key="iconKey" value="Group" type="string"/>
+					<KeyValue key="iconFile" value="ED.Constants.ICONS.GROUP" type="global"/>
 				</KeyValues>
 			</Frame>
 
