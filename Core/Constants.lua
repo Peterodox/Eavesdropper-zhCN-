@@ -574,6 +574,7 @@ Constants.ICONS = {
 	MAGNIFIER = "Interface/AddOns/Eavesdropper/Resources/Magnifier.png",
 	MENTION = "Interface/AddOns/Eavesdropper/Resources/Mention.png",
 	PERSON = "Interface/AddOns/Eavesdropper/Resources/Person.png",
+	PERSON_BUTTON = "Interface/AddOns/Eavesdropper/Resources/PersonButton.png",
 	STOP = "Interface/AddOns/Eavesdropper/Resources/Stop.png",
 };
 

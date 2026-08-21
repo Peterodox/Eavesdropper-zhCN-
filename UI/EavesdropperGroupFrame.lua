@@ -764,7 +764,11 @@ function GroupFrame:GeneratePlayerListMenu(frame, menu)
 
 		rowCheckbox:AddInitializer(function(button)
 			local dedicatedButton = MenuTemplates.AttachAutoHideCancelButton(button);
-			dedicatedButton.Texture:SetTexture(Constants.ICONS.PERSON);
+			dedicatedButton:SetSize(20, 20);
+			dedicatedButton.Texture:SetTexture(ED.Constants.ICONS.PERSON_BUTTON);
+			dedicatedButton.Texture:SetSize(18, 18);
+			dedicatedButton.Texture:ClearAllPoints();
+			dedicatedButton.Texture:SetPoint("CENTER", dedicatedButton, "CENTER", 0, 0);
 
 			-- Checking/unchecking re-initializes attached widgets without a real mouse leave/enter,
 			-- so the auto-hide button stays hidden; re-show it next frame if still hovered.
