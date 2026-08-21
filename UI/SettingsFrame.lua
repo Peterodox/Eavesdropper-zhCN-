@@ -835,10 +835,11 @@ function Eavesdropper_SettingsMixin:OnLoad()
 	-- --------------------------------------------------------
 
 	local dedicatedOptions = {
-				{
+		{
 			type = "subtitle",
 			label = L.DEDICATED,
 			subLabel = L.DEDICATED_HELP,
+			icon = Constants.ICONS.PERSON,
 		},
 		{
 			type = "checkbox",
@@ -1012,10 +1013,11 @@ function Eavesdropper_SettingsMixin:OnLoad()
 	-- --------------------------------------------------------
 
 	local groupOptions = {
-				{
+		{
 			type = "subtitle",
 			label = L.GROUPS,
 			subLabel = L.GROUP_HELP,
+			icon = Constants.ICONS.GROUP,
 		},
 		{
 			type = "checkbox",
@@ -1140,6 +1142,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			type = "subtitle",
 			label = L.MENTIONS_WINDOW_TITLE,
 			subLabel = L.MENTIONS_HELP,
+			icon = Constants.ICONS.MENTION,
 		},
 		{
 			type = "checkbox",

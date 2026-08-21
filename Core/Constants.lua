@@ -535,6 +535,7 @@ Constants.SCROLLBAR = {
 ---@field CATEGORY_BUTTON_TEXT_MIN_WIDTH number
 ---@field TITLE_JUSTIFY_H string
 ---@field TITLE_OFFSET number
+---@field TITLE_ICON_SIZE number
 ---@field OPTION_OFFSET_LEFT number
 ---@field OPTION_OFFSET_RIGHT number
 Constants.SETTINGS = {
@@ -551,6 +552,7 @@ Constants.SETTINGS = {
 	CATEGORY_BUTTON_TEXT_MIN_WIDTH = 80,
 	TITLE_JUSTIFY_H = "LEFT", -- Align the Titles and Options to the LEFT or CENTER
 	TITLE_OFFSET = 20,
+	TITLE_ICON_SIZE = 16, -- Optional leading icon for subtitles
 	OPTION_OFFSET_LEFT = 36, -- The distance to vertical divider and the left of the option
 	OPTION_OFFSET_RIGHT = 20, -- Usually the value should be the same as TITLE_OFFSET
 };
@@ -572,6 +574,7 @@ Constants.ICONS = {
 	MAGNIFIER = "Interface/AddOns/Eavesdropper/Resources/Magnifier.png",
 	MENTION = "Interface/AddOns/Eavesdropper/Resources/Mention.png",
 	PERSON = "Interface/AddOns/Eavesdropper/Resources/Person.png",
+	PERSON_BUTTON = "Interface/AddOns/Eavesdropper/Resources/PersonButton.png",
 	STOP = "Interface/AddOns/Eavesdropper/Resources/Stop.png",
 };
 
