@@ -595,7 +595,7 @@ local function CreateDropDown(parent, data)
 						if showDelete then
 							local cancelButton = MenuTemplates.AttachAutoHideCancelButton(button);
 
-							cancelButton.Texture:SetAtlas("talents-button-reset");
+							cancelButton.Texture:SetTexture(Constants.ICONS.STOP);
 
 							MenuTemplates.SetUtilityButtonLockedEnabledState(cancelButton, true);
 							MenuTemplates.SetUtilityButtonAnchor(cancelButton, MenuVariants.CancelButtonAnchor, gearButton or button);

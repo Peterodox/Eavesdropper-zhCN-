@@ -32,12 +32,28 @@ function Eavesdropper_SharedFrameMixin.InitChatBox(frame, maxLines)
 	frame.ChatBox.ScrollMarker.Text:SetText(L.SCROLLMARKER_TEXT);
 end
 
----Set the three atlas states on a close button
+---Create the close button's SVG icon
 ---@param closeBtn Button
 function Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn)
-	closeBtn:SetNormalAtlas("uitools-icon-close");
-	closeBtn:SetPushedAtlas("uitools-icon-close");
-	closeBtn:SetHighlightAtlas("uitools-icon-close");
+	if not closeBtn.svg then
+		local svg = closeBtn:CreateVectorGraphics(nil, "OVERLAY");
+		closeBtn.svg = svg;
+		svg:SetSVG("Interface/AddOns/Eavesdropper/Resources/CloseButton.svg");
+		svg:SetPoint("CENTER", closeBtn, "CENTER", 0, 0);
+		svg:SetSize(12, 12);
+
+		local function UpdateVisual()
+			if closeBtn:IsMouseMotionFocus() then
+				svg:SetVertexColor(1, 1, 1);
+			else
+				svg:SetVertexColor(0.6, 0.6, 0.6);
+			end
+		end
+
+		closeBtn:SetScript("OnEnter", UpdateVisual);
+		closeBtn:SetScript("OnLeave", UpdateVisual);
+		UpdateVisual();
+	end
 end
 
 ---Initialise local frame state shared by Dedicated and Group instance frames.

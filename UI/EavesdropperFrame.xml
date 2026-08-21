@@ -5,6 +5,148 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ../Eavesdropper.xsd">
 
+	<!-- Resize Handle -->
+	<Button name="Eavesdropper_ResizeHandleTemplate" parentKey="ResizeHandle" hidden="true" alpha="0.5" virtual="true">
+		<Size x="16" y="16"/>
+		<Anchors>
+			<Anchor point="BOTTOMRIGHT"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<VectorGraphics parentKey="Texture" setAllPoints="true" file="Interface\AddOns\Eavesdropper\Resources\ResizeButton.svg"/>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnMouseDown>
+				self:GetParent():StartSizing("BOTTOMRIGHT");
+			</OnMouseDown>
+			<OnMouseUp>
+				self:GetParent():StopMovingOrSizing();
+				self:GetParent():OnResizeFinished();
+			</OnMouseUp>
+			<OnEnter>
+				self:GetParent():OnEnter();
+				self:SetAlpha(1);
+				self.Texture:SetVertexColor(0.443, 0.835, 1.000);
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():OnLeave();
+				self:SetAlpha(0.5);
+				self.Texture:SetVertexColor(1, 1, 1);
+			</OnLeave>
+		</Scripts>
+	</Button>
+
+
+	<!-- Title Bar -->
+	<Frame name="Eavesdropper_TitleBarTemplate" parentKey="TitleBar" registerForDrag="LeftButton" hidden="true" virtual="true">
+		<KeyValues>
+			<KeyValue key="iconFile" value="ED.Constants.ICONS.PERSON" type="global"/>
+		</KeyValues>
+
+		<Anchors>
+			<Anchor point="TOPLEFT" x="0" y="0"/>
+			<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"><Offset x="0" y="-15"/></Anchor>
+		</Anchors>
+
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="Background" setAllPoints="true">
+					<Color r="0" g="0" b="0" a="0.25"/>
+				</Texture>
+			</Layer>
+		</Layers>
+
+		<Frames>
+			<!-- Close Button -->
+			<Button parentKey="CloseButton">
+				<Size x="15" y="15"/>
+				<Anchors>
+					<Anchor point="TOPRIGHT" x="0" y="0"/>
+				</Anchors>
+				<Scripts>
+					<OnEnter>
+						self:GetParent():GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():GetParent():OnLeave();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<!-- Title Button -->
+			<Button parentKey="TitleButton" registerForDrag="LeftButton">
+				<Size x="128" y="15"/>
+				<Anchors>
+					<Anchor point="TOPLEFT"/>
+				</Anchors>
+
+				<Scripts>
+					<OnLoad>
+						self:RegisterForClicks("LeftButtonUp", "RightButtonUp");
+					</OnLoad>
+					<OnEnter>
+						self:GetParent():GetParent():OnEnter();
+					</OnEnter>
+					<OnLeave>
+						self:GetParent():GetParent():OnLeave();
+					</OnLeave>
+					<OnDragStart>
+						self:GetParent():GetParent():OnDragStart();
+					</OnDragStart>
+					<OnDragStop>
+						self:GetParent():GetParent():OnDragStop();
+					</OnDragStop>
+				</Scripts>
+
+				<Layers>
+					<!-- Hover highlight -->
+					<Layer level="HIGHLIGHT">
+						<Texture parentKey="Highlight" setAllPoints="true" alphaMode="ADD">
+							<Color r="1" g="1" b="1" a="0.15"/>
+						</Texture>
+					</Layer>
+
+					<!-- Icon and Text -->
+					<Layer level="ARTWORK">
+						<Texture parentKey="TitleIcon" texelSnappingBias="0.0" snapToPixelGrid="false">
+							<Size x="14" y="14"/>
+							<Anchors>
+								<Anchor point="LEFT" x="2"/>
+							</Anchors>
+						</Texture>
+						<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="LEFT" justifyV="MIDDLE" maxLines="1">
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.TitleIcon" relativePoint="RIGHT" x="1"/>
+								<Anchor point="RIGHT"/>
+							</Anchors>
+						</FontString>
+					</Layer>
+				</Layers>
+			</Button>
+		</Frames>
+
+		<Scripts>
+			<OnLoad>
+				if self.iconFile then
+					self.TitleButton.TitleIcon:SetTexture(self.iconFile);
+				end
+			</OnLoad>
+			<OnMouseDown>
+				self:GetParent():OnDragStart();
+			</OnMouseDown>
+			<OnMouseUp>
+				self:GetParent():OnDragStop();
+			</OnMouseUp>
+			<OnEnter>
+				self:GetParent():OnEnter();
+			</OnEnter>
+			<OnLeave>
+				self:GetParent():OnLeave();
+			</OnLeave>
+		</Scripts>
+	</Frame>
+
 	<Frame name="Eavesdropper_FrameTemplate" mixin="Eavesdropper_FrameMixin" virtual="true" parent="UIParent"
 			toplevel="true" movable="true" clampedToScreen="true" resizable="true" frameStrata="BACKGROUND">
 		<Size x="200" y="300"/>
@@ -76,119 +218,14 @@
 			</Frame>
 
 			<!-- Title Bar -->
-			<Frame parentKey="TitleBar" registerForDrag="LeftButton" hidden="true">
-				<Anchors>
-					<Anchor point="TOPLEFT" x="0" y="0"/>
-					<Anchor point="BOTTOMRIGHT" relativePoint="TOPRIGHT"><Offset x="0" y="-15"/></Anchor>
-				</Anchors>
-
-				<Layers>
-					<Layer level="BACKGROUND">
-						<Texture parentKey="Background" setAllPoints="true">
-							<Color r="0" g="0" b="0" a="0.25"/>
-						</Texture>
-					</Layer>
-				</Layers>
-
-				<Scripts>
-					<OnMouseDown>
-						self:GetParent():OnDragStart();
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():OnDragStop();
-					</OnMouseUp>
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-
-				<Frames>
-					<!-- Close Button -->
-					<Button parentKey="CloseButton">
-						<Size x="12" y="12"/>
-						<Anchors>
-							<Anchor point="TOPRIGHT" x="-2" y="-2"/>
-						</Anchors>
-						<Scripts>
-							<OnEnter>
-								self:GetParent():GetParent():OnEnter();
-							</OnEnter>
-							<OnLeave>
-								self:GetParent():GetParent():OnLeave();
-							</OnLeave>
-						</Scripts>
-					</Button>
-
-					<!-- Title Button -->
-					<Button parentKey="TitleButton" registerForDrag="LeftButton">
-						<Size x="110" y="15"/>
-						<Anchors>
-							<Anchor point="TOPLEFT"/>
-						</Anchors>
-
-						<Scripts>
-							<OnLoad>
-								self:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-							</OnLoad>
-							<OnEnter>
-								self:GetParent():GetParent():OnEnter();
-							</OnEnter>
-							<OnLeave>
-								self:GetParent():GetParent():OnLeave();
-							</OnLeave>
-							<OnDragStart>
-								self:GetParent():GetParent():OnDragStart();
-							</OnDragStart>
-							<OnDragStop>
-								self:GetParent():GetParent():OnDragStop();
-							</OnDragStop>
-						</Scripts>
-
-						<Layers>
-							<!-- Hover highlight -->
-							<Layer level="HIGHLIGHT">
-								<Texture parentKey="Highlight" setAllPoints="true" alphaMode="ADD">
-									<Color r="1" g="1" b="1" a="0.15"/>
-								</Texture>
-							</Layer>
-
-							<!-- Text -->
-							<Layer level="ARTWORK">
-								<FontString parentKey="Text" inherits="GameFontHighlight" justifyH="CENTER" justifyV="MIDDLE" setAllPoints="true" />
-							</Layer>
-						</Layers>
-					</Button>
-				</Frames>
+			<Frame parentKey="TitleBar" inherits="Eavesdropper_TitleBarTemplate">
+				<KeyValues>
+					<KeyValue key="iconFile" value="ED.Constants.ICONS.MAGNIFIER" type="global"/>
+				</KeyValues>
 			</Frame>
 
 			<!-- Resize Handle -->
-			<Button parentKey="ResizeHandle" hidden="true">
-				<Size x="16" y="16"/>
-				<Anchors>
-					<Anchor point="BOTTOMRIGHT"/>
-				</Anchors>
-				<NormalTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Up"/>
-				<HighlightTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Highlight"/>
-				<PushedTexture file="Interface\ChatFrame\UI-ChatIM-SizeGrabber-Down"/>
-				<Scripts>
-					<OnMouseDown>
-						self:GetParent():StartSizing("BOTTOMRIGHT");
-					</OnMouseDown>
-					<OnMouseUp>
-						self:GetParent():StopMovingOrSizing();
-						self:GetParent():OnResizeFinished();
-					</OnMouseUp>
-					<OnEnter>
-						self:GetParent():OnEnter();
-					</OnEnter>
-					<OnLeave>
-						self:GetParent():OnLeave();
-					</OnLeave>
-				</Scripts>
-			</Button>
+			<Button parentKey="ResizeHandle" inherits="Eavesdropper_ResizeHandleTemplate"/>
 
 			<!-- Chat Box -->
 			<ScrollingMessageFrame parentKey="ChatBox">

@@ -565,4 +565,14 @@ Constants.TRP = {
 	},
 };
 
+---@class EavesdropperIconsConstants
+Constants.ICONS = {
+	GROUP = "Interface/AddOns/Eavesdropper/Resources/Group.png",
+	JUMP = "Interface/AddOns/Eavesdropper/Resources/Jump.png",
+	MAGNIFIER = "Interface/AddOns/Eavesdropper/Resources/Magnifier.png",
+	MENTION = "Interface/AddOns/Eavesdropper/Resources/Mention.png",
+	PERSON = "Interface/AddOns/Eavesdropper/Resources/Person.png",
+	STOP = "Interface/AddOns/Eavesdropper/Resources/Stop.png",
+};
+
 ED.Constants = Constants;
