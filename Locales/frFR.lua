@@ -383,7 +383,7 @@ L = {
 	UNIT_POPUPS_TOGGLE_MENTIONS_HELP = "Affiche ou masque la fenêtre des mentions, qui répertorie l'ensemble des messages vous ciblant.|n|n- Détecte les mots-clés et les émotes qui vous sont destinés, même ceux manqués sur le moment.",
 
 	POPUP_EAVESDROP_GROUP = "Nom du groupe.|nAppuyez sur Entrée pour confirmer.",
-	POPUP_RESTORE_GROUP = "A group named \"%s\" with %d member(s) was closed earlier this session.|n|nRestore its members?", -- NEW
+	POPUP_RESTORE_GROUP = "Un groupe nommé \"%s\" avec %d membre(s) a précédemment été fermé au cours de cette session.|n|nRétablir ses membres ?",
 	POPUP_RENAME_PROFILE = "Renommer le profil '%s'.|nAppuyez sur Entrée pour confirmer.",
 	POPUP_COPY_PROFILE = "Saisissez le nom du nouveau profil copié depuis '%s'.|nAppuyez sur Entrée pour confirmer.",
 	POPUP_NEW_PROFILE = "Saisissez le nom du nouveau profil.|nAppuyez sur Entrée pour confirmer.",
