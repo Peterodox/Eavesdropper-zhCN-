@@ -24,6 +24,13 @@ function SettingsElements.CreateSubTitle(parent, titleText, subTitleText, data)
 	-- Title
 	local title = container:CreateFontString(nil, "OVERLAY", "GameFontNormalMed1");
 	local padding = Constants.SETTINGS.TITLE_OFFSET;
+
+	if type(data) == "table" and data.icon then
+		local iconSize = Constants.SETTINGS.TITLE_ICON_SIZE;
+		local icon = CreateTextureMarkup(data.icon, 1, 1, iconSize, iconSize, 0, 1, 0, 1);
+		titleText = icon .. " " .. (titleText or "");
+	end
+
 	title:SetText(titleText or "");
 	title:SetJustifyH(Constants.SETTINGS.TITLE_JUSTIFY_H);
 	title:SetPoint("TOPLEFT", container, "TOPLEFT", padding, 0);
