@@ -770,14 +770,20 @@ function GroupFrame:GeneratePlayerListMenu(frame, menu)
 			dedicatedButton.Texture:ClearAllPoints();
 			dedicatedButton.Texture:SetPoint("CENTER", dedicatedButton, "CENTER", 0, 0);
 
-			-- Checking/unchecking re-initializes attached widgets without a real mouse leave/enter,
-			-- so the auto-hide button stays hidden; re-show it next frame if still hovered.
-			RunNextFrame(function()
-				if button:IsMouseOver() then
+			-- Checking/unchecking re-initializes attached widgets without a real mouse leave/enter.
+			-- If the button is already visible post-re-init, check focus immediately; otherwise it
+			-- was hidden by the re-init, so defer the check to next frame once it's back.
+			if button:IsVisible() then
+				if button:IsMouseMotionFocus() then
 					dedicatedButton:Show();
-					dedicatedButton.Texture:Show();
 				end
-			end);
+			else
+				RunNextFrame(function()
+					if button:IsMouseMotionFocus() then
+						dedicatedButton:Show();
+					end
+				end);
+			end
 
 			MenuTemplates.SetUtilityButtonAnchor(dedicatedButton, MenuVariants.GearButtonAnchor, button);
 			MenuTemplates.SetUtilityButtonClickHandler(dedicatedButton, function()
