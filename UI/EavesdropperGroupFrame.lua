@@ -764,8 +764,7 @@ function GroupFrame:GeneratePlayerListMenu(frame, menu)
 
 		rowCheckbox:AddInitializer(function(button)
 			local dedicatedButton = MenuTemplates.AttachAutoHideCancelButton(button);
-			-- TODO: temporary atlas; swap for a dedicated addon icon once added.
-			dedicatedButton.Texture:SetAtlas("squad_size_solo");
+			dedicatedButton.Texture:SetTexture(Constants.ICONS.PERSON);
 
 			-- Checking/unchecking re-initializes attached widgets without a real mouse leave/enter,
 			-- so the auto-hide button stays hidden; re-show it next frame if still hovered.
