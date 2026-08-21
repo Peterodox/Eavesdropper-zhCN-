@@ -57,7 +57,7 @@ L = {
 
 	WINDOW_OPTIONS = "Options de la fenêtre",
 	ENABLE_MOUSE = "Activer la souris",
-	ENABLE_MOUSE_HELP = "Détermine si vous pouvez interagir avec la fenêtre d'Eavesdropper avec la souris.|n|n- Activée : Autorise l'interaction avec les liens d'objets et les URLs dans l'historique. |n- Désactivée : Les clics traversent la fenêtre, évitant les clics accidentels en jeu.",
+	ENABLE_MOUSE_HELP = "Détermine si vous pouvez interagir avec la fenêtre d'Eavesdropper avec la souris.|n|n- Activée : Permet de cliquer sur les liens d'objets, les URLs et les noms de joueurs dans l'historique.|n- Désactivée : Les clics traversent la fenêtre, évitant toute interaction accidentelle.|n|n|cnWARNING_FONT_COLOR:Note : dans les fenêtres de groupe/mentions, l'icône 'Voir le contexte' reste toujours cliquable, sauf si l'option 'Requiert Activer la souris' est activée.|r",
 	LOCK_SCROLL = "Verrouiller le défilement",
 	LOCK_SCROLL_HELP = "Désactive le défilement dans l'historique des messages.|n|n- Utilisez cette option pour vous assurer qu'Eavesdropper reste toujours en bas de la liste afin d'afficher les derniers messages.",
 	LOCK_WINDOW = "Verrouiller la fenêtre",
@@ -201,8 +201,10 @@ L = {
 	NEW_WINDOWS_NEW_INDICATOR_HELP = "Affiche une alerte visuelle dans la fenêtre qui reçoit un nouveau message.|n|n- L'alerte disparaît automatiquement après 10 secondes ou immédiatement au survol de la fenêtre.",
 
 	JUMP_TO_CONTEXT = "Voir le contexte",
-	JUMP_TO_CONTEXT_HELP = "Ajoute une icône cliquable |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t au début de chaque message. Cliquer dessus ouvre (ou ramène au premier plan) la fenêtre individuelle de cet expéditeur, directement à la ligne correspondante.|n|n|cnWARNING_FONT_COLOR:Note : nécessite l'activation des 'Fenêtres individuelles', ainsi que l'option 'Activer la souris' sur la fenêtre concernée.|r",
+	JUMP_TO_CONTEXT_HELP = "Ajoute une icône cliquable |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t au début de chaque message. Cliquer dessus ouvre (ou ramène au premier plan) la fenêtre individuelle de l'émetteur, directement à la ligne correspondante.|n|n|cnWARNING_FONT_COLOR:Note : nécessite l'activation des 'Fenêtres individuelles'. L'icône reste cliquable sur cette fenêtre, quel que soit le réglage de l'option 'Activer la souris', sauf si l'option ci-dessous 'Requiert Activer la souris' est activée.|r",
 	JUMP_TO_CONTEXT_TOOLTIP = "|cnGREEN_FONT_COLOR:Clic : Revenir à ce message dans la fenêtre individuelle de %s|r",
+	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE = "Requiert Activer la souris",
+	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE_HELP = "Assujettit l'icône 'Voir le contexte' à l'option 'Activer la souris' de cette fenêtre, à l'instar des autres liens cliquables.|n|n|cnWARNING_FONT_COLOR:Note : si cette option est activée et que 'Activer la souris' est désactivée, l'icône devient inactive. Elle ne réagira ni aux clics ni au survol tant que l'option 'Activer la souris' n'est pas réactivée.|r",
 
 	DEDICATED_WINDOWS_PERSIST = "Sauvegarde des fenêtres de suivi individuel",
 	DEDICATED_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de suivi individuel après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Liste des fenêtres ouvertes|n- Position et taille de la fenêtre|n|n|cnWARNING_FONT_COLOR:Note : les filtres et la taille de la police ne sont pas sauvegardés et seront réinitialisés.|r",
@@ -218,6 +220,15 @@ L = {
 
 	GROUP_OPTIONS = "Options du groupe",
 	GROUP_RENAME = "Changer le nom du groupe",
+
+	PLAYER_LIST = "Liste des joueurs",
+	PLAYER_LIST_HELP = "Affiche l'ensemble des joueurs suivis par cette fenêtre de groupe.",
+	PLAYER_LIST_ADD_TARGET = "Ajouter la cible",
+	PLAYER_LIST_ADD_TARGET_HELP = "Ajoute votre cible actuelle à ce groupe.|n|n|cnWARNING_FONT_COLOR:Note : indisponible en l'absence de cible, si votre cible n'est pas un joueur, ou s'il est déjà dans ce groupe.|r",
+	PLAYER_LIST_EMPTY = "Aucun joueur suivi",
+	PLAYER_LIST_ROW_HELP = "Décochez pour retirer ce joueur du groupe ; cochez à nouveau pour l'y réintégrer.|n|n|cnWARNING_FONT_COLOR:Note : cette liste s'actualise uniquement après avoir fermé puis rouvert le menu.|r",
+	PLAYER_LIST_OPEN_DEDICATED = "Ouvrir une fenêtre individuelle",
+	PLAYER_LIST_OPEN_DEDICATED_HELP = "Ouvre une fenêtre de suivi individuel dédiée à ce joueur.",
 
 	MINIMAP_BUTTON = "Bouton de la minicarte",
 	MINIMAP_BUTTON_HELP = "Active l'affichage du bouton de la minicarte.",
@@ -372,6 +383,7 @@ L = {
 	UNIT_POPUPS_TOGGLE_MENTIONS_HELP = "Affiche ou masque la fenêtre des mentions, qui répertorie l'ensemble des messages vous ciblant.|n|n- Détecte les mots-clés et les émotes qui vous sont destinés, même ceux manqués sur le moment.",
 
 	POPUP_EAVESDROP_GROUP = "Nom du groupe.|nAppuyez sur Entrée pour confirmer.",
+	POPUP_RESTORE_GROUP = "A group named \"%s\" with %d member(s) was closed earlier this session.|n|nRestore its members?", -- NEW
 	POPUP_RENAME_PROFILE = "Renommer le profil '%s'.|nAppuyez sur Entrée pour confirmer.",
 	POPUP_COPY_PROFILE = "Saisissez le nom du nouveau profil copié depuis '%s'.|nAppuyez sur Entrée pour confirmer.",
 	POPUP_NEW_PROFILE = "Saisissez le nom du nouveau profil.|nAppuyez sur Entrée pour confirmer.",
