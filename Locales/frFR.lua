@@ -206,14 +206,8 @@ L = {
 	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE = "Requiert Activer la souris",
 	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE_HELP = "Assujettit l'icône 'Voir le contexte' à l'option 'Activer la souris' de cette fenêtre, à l'instar des autres liens cliquables.|n|n|cnWARNING_FONT_COLOR:Note : si cette option est activée et que 'Activer la souris' est désactivée, l'icône devient inactive. Elle ne réagira ni aux clics ni au survol tant que l'option 'Activer la souris' n'est pas réactivée.|r",
 
-	DEDICATED_WINDOWS_PERSIST = "Sauvegarde des fenêtres de suivi individuel",
-	DEDICATED_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de suivi individuel après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Liste des fenêtres ouvertes|n- Position et taille de la fenêtre|n|n|cnWARNING_FONT_COLOR:Note : les filtres et la taille de la police ne sont pas sauvegardés et seront réinitialisés.|r",
-
 	GROUP_WINDOWS = "Fenêtres de groupe",
 	GROUP_WINDOWS_HELP = "Autorise la création de fenêtres séparées et indépendantes dédiées au suivi simultané de plusieurs utilisateurs (ex. : MP ou Amis).|n|n|cnWARNING_FONT_COLOR:Note : désactiver cette option fermera toutes les fenêtres de groupes.|r",
-
-	GROUP_WINDOWS_PERSIST = "Sauvegarde des groupes",
-	GROUP_WINDOWS_PERSIST_HELP = "Autorise la restauration des fenêtres de groupes et de leurs configurations après un redémarrage du jeu ou un rechargement de l'interface.|n|nDonnées conservées :|n- Nom de la fenêtre de groupe|n- Liste des joueurs inclus|n- Options du mode d'affichage des noms|n- Position et taille de la fenêtre|n|n|cnWARNING_FONT_COLOR:Note : les filtres et la taille de la police ne sont pas sauvegardés et seront réinitialisés.|r",
 
 	GROUP_HISTORY_SIZE = "Taille de l'historique",
 	GROUP_HISTORY_SIZE_HELP = "Définit le nombre maximum de messages affichés dans l'historique pour chaque fenêtre de groupe, tous joueurs suivis confondus.|n|n|cnWARNING_FONT_COLOR:Note : une valeur élevée sur une fenêtre regroupant de nombreux joueurs peut engendrer une baisse temporaire des images par seconde lors de l'actualisation de l'historique.|r",
