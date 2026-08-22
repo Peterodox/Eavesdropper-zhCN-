@@ -32,6 +32,15 @@ Toggle visibility on the fly. You can filter the history window to show only spe
 
 ![Filters Versus](Previews/Combos/Filters.png)
 
+### Clean, Recognizable Layout
+
+Each window type (Main, Dedicated, Group, Mentions) features a distinct title bar icon and a subtle scrollbar that expands on hover, thanks to [Peterodox](https://www.curseforge.com/members/peterodox/projects) for the design contribution.
+
+The chat frames are clean and focused, stripped of unnecessary visual clutter for quick, fluid navigation.
+
+[![Window Icons](Previews/WindowIcons/WindowIcons.png)](Previews/WindowIcons/WindowIcons.png)
+[![Scrollbar](Previews/Scrollbar/Scrollbar.gif)](Previews/Scrollbar/Scrollbar.gif)
+
 ## Dedicated Windows
 Create individual Eavesdropper windows for specific targets by right-clicking a unit portrait or chat name and selecting **"Eavesdrop On"**.
 
