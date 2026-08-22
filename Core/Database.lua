@@ -32,12 +32,10 @@ local Database = {};
 ---@field GroupHistorySize number?
 ---@field GroupWindows boolean?
 ---@field GroupWindowsJumpToContext boolean?
----@field GroupWindowsJumpToContextRequireEnableMouse boolean?
 ---@field GroupWindowsNewIndicator boolean?
 ---@field GroupWindowsUnitPopups boolean?
 ---@field MentionsHistory boolean?
 ---@field MentionsHistoryJumpToContext boolean?
----@field MentionsHistoryJumpToContextRequireEnableMouse boolean?
 ---@field MentionsHistoryNewIndicator boolean?
 ---@field MentionsHistoryUnitPopups boolean?
 ---@field MinimapButton EavesdropperGlobalMinimapButton?
@@ -59,13 +57,11 @@ local GLOBAL_DEFAULTS = {
 	GroupHistorySize = 100,
 	GroupWindows = true,
 	GroupWindowsJumpToContext = false,
-	GroupWindowsJumpToContextRequireEnableMouse = false,
 	GroupWindowsNewIndicator = true,
 	GroupWindowsNPCSpeechDetectionNameShown = false,
 	GroupWindowsUnitPopups = true,
 	MentionsHistory = true,
 	MentionsHistoryJumpToContext = true,
-	MentionsHistoryJumpToContextRequireEnableMouse = false,
 	MentionsHistoryNewIndicator = true,
 	MentionsHistoryUnitPopups = true,
 	MinimapButton = {
@@ -791,13 +787,11 @@ end
 ---| "GroupHistorySize"
 ---| "GroupWindows"
 ---| "GroupWindowsJumpToContext"
----| "GroupWindowsJumpToContextRequireEnableMouse"
 ---| "GroupWindowsNewIndicator"
 ---| "GroupWindowsNPCSpeechDetectionNameShown"
 ---| "GroupWindowsUnitPopups"
 ---| "MentionsHistory"
 ---| "MentionsHistoryJumpToContext"
----| "MentionsHistoryJumpToContextRequireEnableMouse"
 ---| "MentionsHistoryNewIndicator"
 ---| "MentionsHistoryUnitPopups"
 ---| "MinimapButton"
