@@ -57,7 +57,7 @@ L = {
 
 	WINDOW_OPTIONS = "Options de la fenêtre",
 	ENABLE_MOUSE = "Activer la souris",
-	ENABLE_MOUSE_HELP = "Détermine si vous pouvez interagir avec la fenêtre d'Eavesdropper avec la souris.|n|n- Activée : Permet de cliquer sur les liens d'objets, les URLs et les noms de joueurs dans l'historique.|n- Désactivée : Les clics traversent la fenêtre, évitant toute interaction accidentelle.|n|n|cnWARNING_FONT_COLOR:Note : dans les fenêtres de groupe/mentions, l'icône 'Voir le contexte' reste toujours cliquable, sauf si l'option 'Requiert Activer la souris' est activée.|r",
+	ENABLE_MOUSE_HELP = "Détermine si vous pouvez interagir avec la fenêtre d'Eavesdropper avec la souris.|n|n- Activée : Permet de cliquer sur les liens d'objets et les URLs dans l'historique.|n- Désactivée : Les clics traversent la fenêtre, évitant toute interaction accidentelle.",
 	LOCK_SCROLL = "Verrouiller le défilement",
 	LOCK_SCROLL_HELP = "Désactive le défilement dans l'historique des messages.|n|n- Utilisez cette option pour vous assurer qu'Eavesdropper reste toujours en bas de la liste afin d'afficher les derniers messages.",
 	LOCK_WINDOW = "Verrouiller la fenêtre",
@@ -201,10 +201,8 @@ L = {
 	NEW_WINDOWS_NEW_INDICATOR_HELP = "Affiche une alerte visuelle dans la fenêtre qui reçoit un nouveau message.|n|n- L'alerte disparaît automatiquement après 10 secondes ou immédiatement au survol de la fenêtre.",
 
 	JUMP_TO_CONTEXT = "Voir le contexte",
-	JUMP_TO_CONTEXT_HELP = "Ajoute une icône cliquable |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t au début de chaque message. Cliquer dessus ouvre (ou ramène au premier plan) la fenêtre individuelle de l'émetteur, directement à la ligne correspondante.|n|n|cnWARNING_FONT_COLOR:Note : nécessite l'activation des 'Fenêtres individuelles'. L'icône reste cliquable sur cette fenêtre, quel que soit le réglage de l'option 'Activer la souris', sauf si l'option ci-dessous 'Requiert Activer la souris' est activée.|r",
+	JUMP_TO_CONTEXT_HELP = "Ajoute une icône cliquable |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t au début de chaque message. Cliquer dessus ouvre (ou ramène au premier plan) la fenêtre individuelle de l'émetteur, directement à la ligne correspondante.|n|n|cnWARNING_FONT_COLOR:Note : nécessite l'activation des 'Fenêtres individuelles'.|r",
 	JUMP_TO_CONTEXT_TOOLTIP = "|cnGREEN_FONT_COLOR:Clic : Revenir à ce message dans la fenêtre individuelle de %s|r",
-	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE = "Requiert Activer la souris",
-	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE_HELP = "Assujettit l'icône 'Voir le contexte' à l'option 'Activer la souris' de cette fenêtre, à l'instar des autres liens cliquables.|n|n|cnWARNING_FONT_COLOR:Note : si cette option est activée et que 'Activer la souris' est désactivée, l'icône devient inactive. Elle ne réagira ni aux clics ni au survol tant que l'option 'Activer la souris' n'est pas réactivée.|r",
 
 	GROUP_WINDOWS = "Fenêtres de groupe",
 	GROUP_WINDOWS_HELP = "Autorise la création de fenêtres séparées et indépendantes dédiées au suivi simultané de plusieurs utilisateurs (ex. : MP ou Amis).|n|n|cnWARNING_FONT_COLOR:Note : désactiver cette option fermera toutes les fenêtres de groupes.|r",

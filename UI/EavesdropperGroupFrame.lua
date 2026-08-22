@@ -57,9 +57,18 @@ function Eavesdropper_Group_FrameMixin:IsMouseEnabled()
 	return self.mouseEnabled;
 end
 
+---Tied to Jump to Context itself, so the icon always bypasses Enable Mouse while it's on.
+---Disable Jump to Context if we want the window to fully click-through instead.
 ---@return boolean
 function Eavesdropper_Group_FrameMixin:IsJumpToContextMouseExempt()
-	return not ED.Database:GetGlobalSetting("GroupWindowsJumpToContextRequireEnableMouse");
+	return ED.Database:GetGlobalSetting("GroupWindowsJumpToContext");
+end
+
+---Hardcoded so right-click/hover on player names always bypasses Enable Mouse.
+---If we want this to not be default behavior, we can change that here.
+---@return boolean
+function Eavesdropper_Group_FrameMixin:IsPlayerLinkMouseExempt()
+	return true;
 end
 
 ---@return boolean

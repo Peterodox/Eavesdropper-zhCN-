@@ -345,19 +345,23 @@ end
 -- Hyperlink click
 -- ============================================================
 
----Handle hyperlink clicks when IsMouseEnabled() is true; edjump bypasses this when
----IsJumpToContextMouseExempt() is true, so it stays clickable in ghost mode.
+---Handle hyperlink clicks when IsMouseEnabled() is true;
+---With some exceptions for edjump and player-name right click.
 function Eavesdropper_SharedFrameMixin:OnHyperlinkClick(link, text, button)
 	local linkType, value = link:match("^(.-):(.*)$");
 
 	if not self:IsMouseEnabled() then
-		if linkType ~= "edjump" or not self:IsJumpToContextMouseExempt() then return; end
+		-- edjump bypasses mouse not enabled when IsJumpToContextMouseExempt() is true.
+		local edjumpExempt = linkType == "edjump" and self:IsJumpToContextMouseExempt();
+		-- player-name right-click bypasses mouse not enabled when IsPlayerLinkMouseExempt() is true.
+		local playerExempt = linkType == "player" and button == "RightButton" and self:IsPlayerLinkMouseExempt();
+		if not edjumpExempt and not playerExempt then return; end
 	end
 
-	-- Suppress rapid clicks when scroll position just changed
+	-- Suppress rapid clicks when scroll position just changed.
 	if GetTime() < (self.clickblock or 0) + Constants.FRAME.CLICKBLOCK_TIME then return; end
 
-	-- Open edurls directly in the chat edit box
+	-- Open edurls directly in the chat edit box.
 	if linkType == "edurl" and value then
 		local editBox = ChatFrameUtil.ChooseBoxForSend();
 		if not editBox:IsShown() then
@@ -435,7 +439,9 @@ function Eavesdropper_SharedFrameMixin:OnHyperlinkEnter(link, text, region, left
 	local linkType, value = link:match("^(.-):(.*)$");
 
 	if not self:IsMouseEnabled() then
-		if linkType ~= "edjump" or not self:IsJumpToContextMouseExempt() then return; end
+		local edjumpExempt = linkType == "edjump" and self:IsJumpToContextMouseExempt();
+		local playerExempt = linkType == "player" and self:IsPlayerLinkMouseExempt();
+		if not edjumpExempt and not playerExempt then return; end
 	end
 
 	if not value then return; end
@@ -474,6 +480,12 @@ function Eavesdropper_SharedFrameMixin:IsJumpToContextMouseExempt()
 	return false;
 end
 
+---Override in Group/Mentions to let a player-name right-click (unit popup) stay usable in ghost mode.
+---@return boolean
+function Eavesdropper_SharedFrameMixin:IsPlayerLinkMouseExempt()
+	return false;
+end
+
 ---Mouse-click propagation depends on IsMouseEnabled(), passthrough on false.
 function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 	local isEnabled = self:IsMouseEnabled();
@@ -500,9 +512,9 @@ function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 		end
 	end
 
-	-- SetHyperlinksEnabled stays true when exempt so edjump can still hit-test; OnHyperlinkClick/
+	-- SetHyperlinksEnabled stays true when exempt so edjump/player can still hit-test; OnHyperlinkClick/
 	-- OnHyperlinkEnter's per-linkType gate is what blocks every other link.
-	local hyperlinksEnabled = isEnabled or self:IsJumpToContextMouseExempt();
+	local hyperlinksEnabled = isEnabled or self:IsJumpToContextMouseExempt() or self:IsPlayerLinkMouseExempt();
 
 	-- This delay is essential otherwise it won't take effect
 	RunNextFrame(function()

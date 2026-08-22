@@ -57,7 +57,7 @@ L = {
 
 	WINDOW_OPTIONS = "Параметры окна",
 	ENABLE_MOUSE = "Взаимодействие мышью",
-	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, URLs, and player names within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.|n|n|cnWARNING_FONT_COLOR:Note: In Group/Mentions windows, the Jump to Context icon stays clickable regardless of this setting, unless its own 'Require Enable Mouse' option is turned on.|r", -- NEW
+	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links and URLs within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.", -- NEW
 	LOCK_SCROLL = "Блокировка прокрутки",
 	LOCK_SCROLL_HELP = "Отключает возможность прокрутки истории сообщений.|n|n- Используйте это, чтобы окно всегда оставалось в самом низу и показывало только свежие сообщения.",
 	LOCK_WINDOW = "Закрепить окно",
@@ -201,10 +201,8 @@ L = {
 	NEW_WINDOWS_NEW_INDICATOR_HELP = "Displays a visual alert on a window that receives a new message.|n|n- The indicator clears automatically after 10 seconds or immediately upon hovering over the window.", -- NEW
 
 	JUMP_TO_CONTEXT = "Jump to Context", -- NEW
-	JUMP_TO_CONTEXT_HELP = "Adds a small clickable icon |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t at the start of each message, opening (or focusing) that sender's Dedicated Window scrolled to that exact line.|n|n|cnWARNING_FONT_COLOR:Note: Requires Dedicated Windows to be enabled. The icon itself stays clickable regardless of 'Enable Mouse' for this window, unless 'Require Enable Mouse' below is turned on.|r", -- NEW
+	JUMP_TO_CONTEXT_HELP = "Adds a small clickable icon |TInterface\\AddOns\\Eavesdropper\\Resources\\Jump.png:0:0:0:1:32:32:0:32:0:32:204:204:204|t at the start of each message, opening (or focusing) that sender's Dedicated Window scrolled to that exact line.|n|n|cnWARNING_FONT_COLOR:Note: Requires Dedicated Windows to be enabled.|r", -- NEW
 	JUMP_TO_CONTEXT_TOOLTIP = "|cnGREEN_FONT_COLOR:Click: Jump to this message in %s's Dedicated Window|r", -- NEW
-	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE = "Require Enable Mouse", -- NEW
-	JUMP_TO_CONTEXT_REQUIRE_ENABLE_MOUSE_HELP = "Makes the Jump to Context icon follow 'Enable Mouse' for this window, just like every other clickable link.|n|n|cnWARNING_FONT_COLOR:Note: With this on and 'Enable Mouse' off, the icon stops responding entirely. It will not react to clicks or hovers until 'Enable Mouse' is turned back on.|r", -- NEW
 
 	GROUP_WINDOWS = "Group Windows", -- NEW
 	GROUP_WINDOWS_HELP = "Allows the creation of separate, independent windows to track multiple users simultaneously (e.g., DMs or Friends).|n|n|cnWARNING_FONT_COLOR:Note: Disabling this setting will close all independent group windows.|r", -- NEW

@@ -1070,6 +1070,9 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			set = function(val)
 				ED.Database:SetGlobalSetting("GroupWindowsJumpToContext", val);
 				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+				-- RefreshAllWindows only calls RefreshChat, not UpdateMouseLock, so it wouldn't
+				-- re-apply SetHyperlinksEnabled for the exemption this setting now controls.
+				ED.GroupFrame:ForEachFrame(function(f) f:UpdateMouseLock(); end);
 			end,
 		},
 		{
@@ -1193,6 +1196,11 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			set = function(val)
 				ED.Database:SetGlobalSetting("MentionsHistoryJumpToContext", val);
 				Eavesdropper_SharedFrameMixin.RefreshAllWindows();
+				-- RefreshAllWindows only calls RefreshChat, not UpdateMouseLock, so it wouldn't
+				-- re-apply SetHyperlinksEnabled for the exemption this setting now controls.
+				if ED.MentionsFrame then
+					ED.MentionsFrame:UpdateMouseLock();
+				end
 			end,
 		},
 		{
