@@ -35,28 +35,28 @@ Toggle visibility on the fly. You can filter the history window to show only spe
 ## Dedicated Windows
 Create individual Eavesdropper windows for specific targets by right-clicking a unit portrait or chat name and selecting **"Eavesdrop On"**.
 
-Each Dedicated Window has its own unique:
-- Filters
-- Font Size
-- New Message indicator
-- Notifications (Sounds & Flash)
+Each Dedicated Window features independent:  
+- **Layout & Style:** Position, Size, Font Size, and Name Display (Full/First/Original or Profile Default).  
+- **Behavior & Storage:** Filters, Notifications (Sound/Flash), and New Message Indicator (notifications and indicators only trigger for messages matching that window's specific filters).
 
-**Note:** Dedicated Windows are session-based and do not persist through UI reloads or logouts.
+> **Note:** Dedicated Windows fully persist settings across UI reloads and game restarts while open. Reopening a window mid-session restores everything from that session instead of resetting to defaults.
 
 [![Dedicated Windows Combined](Previews/Combos/DedicatedWindows.png)](Previews/Combos/DedicatedWindows.png)  
 *Click the image to view it in full size.*
 
 ## Group Windows
-Consolidate interactions from multiple specific players into a single Eavesdropper window by right-clicking a unit portrait or chat name, selecting **"Eavesdrop Group"**, and either creating a new group or adding the player to an existing one.
-Ideal for keeping track of a small party or a specific "circle" of characters within a crowded environment.
+Consolidate interactions from multiple players into a single window by right-clicking a target portrait or chat name and selecting **"Eavesdrop Group"**. Ideal for tracking a party or a specific "circle" of characters in crowded areas.
 
-Each Group Window has its own unique:  
-- Filters  
-- Font Size  
-- New Message indicator  
-- Notifications (Sounds & Flash)
+Each Group Window features independent:
+- **Layout & Style:** Position, Size, Font Size, and Name Display (Full/First/Original or Profile Default).
+- **Behavior & Storage:** Filters, Notifications (Sound/Flash), New Message Indicator, and History Size (10–1000, independent of the main window).
 
-**Note:** Group Windows offer partial persistence: **Group Name**, **Player List**, and **Display Mode** are saved through UI reloads or logouts.
+> **Note:** Group Windows fully persist settings across UI reloads and game restarts while open. Reopening a group with the same name mid-session prompts you to either restore session data (including its player list) or reset to defaults.
+
+**Interactions & Navigation:**
+- **Sender Names:** Hover to underline and right-click for the standard player context menu (Whisper, Invite, Eavesdrop On).
+- **Jump to Context:** Opens the sender's Dedicated Window scrolled directly to that message, showing the surrounding conversation.
+- **Player List Menu:** Access membership directly from the title bar (sorted by RP first name). Click **Add Target** to quickly add your current target, use checkboxes to toggle members on/off, or click the per-row button to open their Dedicated Window directly.
 
 [![Group Windows](Previews/Combos/GroupWindows.png)](Previews/Combos/GroupWindows.png)  
 *Click the image to view it in full size.*
