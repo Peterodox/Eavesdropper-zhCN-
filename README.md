@@ -89,12 +89,12 @@ The Mentions window features independent:
 *Click the image to view it in full size.*
 
 ## Keywords
-Never miss a mention. Define custom keywords to be highlighted in the main chat window and set up optional audio notifications for when they are triggered.
+Never miss a mention. Define custom keywords to highlight in the main chat window and configure optional audio notifications whenever they are triggered.
 
 ![Keywords](Previews/Keywords/Keywords.png)
 
 ## Notifications
-Eavesdropper can play a sound notification and flash the taskbar when:  
+Configure Eavesdropper to play a sound notification or flash the taskbar when:  
 - Your current target takes an action (e.g., `/say`, emotes, etc.).  
 - A Blizzard emote is directed at you (e.g., `/point` or `/wave`).  
 
@@ -116,17 +116,17 @@ While Eavesdropper is designed to be broadly compatible, the following addons ar
 
 ## Advanced RP Name Formatting
 Eavesdropper can replace standard character names with their respective RP names across the entire UI.  
-This formatting applies to **all Eavesdropper windows** (History, Dedicated, Group, and Mentions) and can optionally be enabled for the **main chat window**, with its own independent name format if you want it to differ from the rest.  
+This formatting applies to **all Eavesdropper windows** (History, Dedicated, Group, and Mentions) and can optionally be enabled for the **main chat window**, complete with its own independent name format setting.
 
 **Supported Situations:**
 - **Blizzard Emotes:** Replaces names in emotes like `/point`, `/wave`, or `/bow`.
 - **Rolls:** Shows RP names in `/roll` results.
 - **NPC Dialogue:** Replaces your name when NPCs speak to you in chat (`/say`, `/whisper`, etc.).
-- **Quest Text:** Seamlessly integrates with **Dialogue UI** to show your RP name during quest interactions.
+- **Quest Text:** Seamlessly integrates with **Dialogue UI** to display your RP name during quest interactions.
 
 > **Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
 
-**Compatibility:** If the standalone addon **Total RP 3: RP Name in Quest Text** is detected and set to modify NPC dialogue or speech, Eavesdropper defers to it and silently leaves formatting untouched, preventing both addons from renaming the same dialogue at once.
+**Compatibility:** If the standalone addon **Total RP 3: RP Name in Quest Text** is detected and configured to modify NPC dialogue or speech, Eavesdropper defers to it and leaves formatting untouched to prevent both addons from renaming the same dialogue.
 
 [![Advanced Formatting Combined](Previews/Combos/AdvancedFormatting.png)](Previews/Combos/AdvancedFormatting.png)  
 *Click the image to view it in full size.*
@@ -136,4 +136,6 @@ This formatting applies to **all Eavesdropper windows** (History, Dedicated, Gro
 *Click the image to view it in full size.*
 
 ## Localization
-Eavesdropper is fully translated into **English** and **French**, with a partial **Russian** translation also available. Translations for other languages are very welcome, if you'd like to help translate Eavesdropper, open an issue or pull request on [GitHub](https://github.com/Raenore/Eavesdropper).
+Eavesdropper is fully translated into **English** and **French**, with a partial **Russian** translation also available.
+
+Translations for other languages are always welcome. If you would like to help translate Eavesdropper, feel free to open an issue or pull request on [GitHub](https://github.com/Raenore/Eavesdropper).
