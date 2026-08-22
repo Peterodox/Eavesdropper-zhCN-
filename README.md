@@ -59,7 +59,7 @@ Each Group Window has its own unique:
 ## Keywords
 Never miss a mention. Define custom keywords to be highlighted in the main chat window and set up optional audio notifications for when they are triggered.
 
-![Keywords](Previews/Keywords/Tooltip.png)
+![Keywords](Previews/Keywords/Keywords.png)
 
 ## Notifications
 Eavesdropper can play a sound notification and flash the taskbar when:  
@@ -97,6 +97,8 @@ Eavesdropper can replace standard character names in system emotes (like `/point
 **Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
 
 [![Advanced Formatting Combined](Previews/Combos/AdvancedFormatting.png)](Previews/Combos/AdvancedFormatting.png)  
+*Click the image to view it in full size.*
+[![NPC Dialogue And QuestText Combined](Previews/Combos/NPCDialogueAndQuestText.png)](Previews/Combos/NPCDialogueAndQuestText.png)  
 *Click the image to view it in full size.*
 [![Quest Text Dialogue UI](Previews/NPCDialogueAndQuestText/DialogueUI.png)](Previews/NPCDialogueAndQuestText/DialogueUI.png)  
 *Click the image to view it in full size.*
