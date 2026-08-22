@@ -23,6 +23,13 @@ function Eavesdropper_Mentions_FrameMixin:IsJumpToContextMouseExempt()
 	return not ED.Database:GetGlobalSetting("MentionsHistoryJumpToContextRequireEnableMouse");
 end
 
+---Hardcoded so right-click/hover on player names always bypasses Enable Mouse.
+---If we want this to not be default behavior, we can change that here.
+---@return boolean
+function Eavesdropper_Mentions_FrameMixin:IsPlayerLinkMouseExempt()
+	return true;
+end
+
 ---@return boolean
 function Eavesdropper_Mentions_FrameMixin:IsWindowLocked()
 	return ED.Database:GetSetting("MentionsLockWindow");

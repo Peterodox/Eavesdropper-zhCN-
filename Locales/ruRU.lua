@@ -57,7 +57,7 @@ L = {
 
 	WINDOW_OPTIONS = "Параметры окна",
 	ENABLE_MOUSE = "Взаимодействие мышью",
-	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, URLs, and player names within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.|n|n|cnWARNING_FONT_COLOR:Note: In Group/Mentions windows, the Jump to Context icon stays clickable regardless of this setting, unless its own 'Require Enable Mouse' option is turned on.|r", -- NEW
+	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, URLs, and player names within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.|n|n|cnWARNING_FONT_COLOR:Note: Two exceptions in Group/Mentions windows ignore this setting: the Jump to Context icon (unless its own 'Require Enable Mouse' option is on), and a player name's right-click and hover underline.|r", -- NEW
 	LOCK_SCROLL = "Блокировка прокрутки",
 	LOCK_SCROLL_HELP = "Отключает возможность прокрутки истории сообщений.|n|n- Используйте это, чтобы окно всегда оставалось в самом низу и показывало только свежие сообщения.",
 	LOCK_WINDOW = "Закрепить окно",

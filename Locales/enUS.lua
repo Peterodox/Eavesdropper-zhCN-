@@ -57,7 +57,7 @@ L = {
 
 	WINDOW_OPTIONS = "Window Options",
 	ENABLE_MOUSE = "Enable Mouse",
-	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, URLs, and player names within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.|n|n|cnWARNING_FONT_COLOR:Note: In Group/Mentions windows, the Jump to Context icon stays clickable regardless of this setting, unless its own 'Require Enable Mouse' option is turned on.|r",
+	ENABLE_MOUSE_HELP = "Toggles whether you can interact with the Eavesdropper window using your mouse.|n|n- Enabled: Allows you to click on item links, URLs, and player names within the history.|n- Disabled: Clicks pass through the window to the game world behind it, preventing accidental clicks during gameplay.|n|n|cnWARNING_FONT_COLOR:Note: Two exceptions in Group/Mentions windows ignore this setting: the Jump to Context icon (unless its own 'Require Enable Mouse' option is on), and a player name's right-click and hover underline.|r",
 	LOCK_SCROLL = "Lock Scrolling",
 	LOCK_SCROLL_HELP = "Disables the ability to scroll through the message history.|n|n- Use this to ensure Eavesdropper always remains at the bottom of the list to show the latest messages.",
 	LOCK_WINDOW = "Lock Moving",

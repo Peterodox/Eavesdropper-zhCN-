@@ -57,7 +57,7 @@ L = {
 
 	WINDOW_OPTIONS = "Options de la fenêtre",
 	ENABLE_MOUSE = "Activer la souris",
-	ENABLE_MOUSE_HELP = "Détermine si vous pouvez interagir avec la fenêtre d'Eavesdropper avec la souris.|n|n- Activée : Permet de cliquer sur les liens d'objets, les URLs et les noms de joueurs dans l'historique.|n- Désactivée : Les clics traversent la fenêtre, évitant toute interaction accidentelle.|n|n|cnWARNING_FONT_COLOR:Note : dans les fenêtres de groupe/mentions, l'icône 'Voir le contexte' reste toujours cliquable, sauf si l'option 'Requiert Activer la souris' est activée.|r",
+	ENABLE_MOUSE_HELP = "Détermine si vous pouvez interagir avec la fenêtre d'Eavesdropper avec la souris.|n|n- Activée : Permet de cliquer sur les liens d'objets, les URLs et les noms de joueurs dans l'historique.|n- Désactivée : Les clics traversent la fenêtre, évitant toute interaction accidentelle.|n|n|cnWARNING_FONT_COLOR:Note : deux exceptions dans les fenêtres de groupe/mentions ignorent ce réglage : l'icône 'Voir le contexte' (sauf si l'option 'Requiert Activer la souris' est activée), ainsi que le clic droit et le soulignement au survol d'un nom de joueur.|r",
 	LOCK_SCROLL = "Verrouiller le défilement",
 	LOCK_SCROLL_HELP = "Désactive le défilement dans l'historique des messages.|n|n- Utilisez cette option pour vous assurer qu'Eavesdropper reste toujours en bas de la liste afin d'afficher les derniers messages.",
 	LOCK_WINDOW = "Verrouiller la fenêtre",
