@@ -9,6 +9,7 @@ Eavesdropper helps you stay immersed in busy RP environments by focusing on the 
 - **Keyword Highlights:** Custom keywords highlighted in chat with optional sound alerts.  
 - **Notification Support:** Play a sound and flash the taskbar when your target performs an action, a Blizzard emote is directed at you, or a Dedicated/Group Window receives a message.  
 - **Seamless Multi-Message Compatibility:** Built-in support for multi-message addons like Chattery, EmoteScribe, EmoteSplitter, and Yapper.  
+- **Advanced RP Name Formatting:** Replaces standard names with RP names in rolls, Blizzard emotes, NPC dialogue, and Quest Text (via Dialogue UI).  
 - **Keybindings:** Open the main Eavesdropper window, the settings menu, or a Dedicated Window straight from Blizzard's **Options > Keybindings** menu.  
 - **ElvUI:** optional ElvUI skinning that can be toggled.
 - **Localization:** Full English and French translations, with a partial Russian translation and more languages welcome.
@@ -104,7 +105,7 @@ While Eavesdropper is designed to be broadly compatible, the following addons ar
 
 ## Advanced RP Name Formatting
 Eavesdropper can replace standard character names with their respective RP names across the entire UI.  
-This formatting applies to **all Eavesdropper windows** (History, Dedicated, and Group) and can optionally be enabled for the **main chat window**.  
+This formatting applies to **all Eavesdropper windows** (History, Dedicated, Group, and Mentions) and can optionally be enabled for the **main chat window**, with its own independent name format if you want it to differ from the rest.  
 
 **Supported Situations:**
 - **Blizzard Emotes:** Replaces names in emotes like `/point`, `/wave`, or `/bow`.
@@ -112,9 +113,9 @@ This formatting applies to **all Eavesdropper windows** (History, Dedicated, and
 - **NPC Dialogue:** Replaces your name when NPCs speak to you in chat (`/say`, `/whisper`, etc.).
 - **Quest Text:** Seamlessly integrates with **Dialogue UI** to show your RP name during quest interactions.
 
-Eavesdropper can replace standard character names in system emotes (like `/point` or `/wave`) and `/roll` results with their respective RP names.
+> **Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
 
-**Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
+**Compatibility:** If the standalone addon **Total RP 3: RP Name in Quest Text** is detected and set to modify NPC dialogue or speech, Eavesdropper defers to it and silently leaves formatting untouched, preventing both addons from renaming the same dialogue at once.
 
 [![Advanced Formatting Combined](Previews/Combos/AdvancedFormatting.png)](Previews/Combos/AdvancedFormatting.png)  
 *Click the image to view it in full size.*
