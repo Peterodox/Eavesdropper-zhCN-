@@ -5,6 +5,7 @@ Eavesdropper helps you stay immersed in busy RP environments by focusing on the 
 - **History Window:** A focused, real-time feed for your current target or mouseover.  
 - **Dedicated Windows:** Create unique, independent windows for specific targets to track multiple conversations simultaneously.  
 - **Group Windows:** Combine multiple targets into a single shared window for party or small-group interactions.  
+- **Mentions:** A dedicated window listing every message that was aimed at you, from keyword hits to Blizzard emote (e.g. `/poke`, `/wave`).  
 - **Keyword Highlights:** Custom keywords highlighted in chat with optional sound alerts.  
 - **Notification Support:** Play a sound and flash the taskbar when your target performs an action, a Blizzard emote is directed at you, or a Dedicated/Group Window receives a message.  
 - **Seamless Multi-Message Compatibility:** Built-in support for multi-message addons like Chattery, EmoteScribe, EmoteSplitter, and Yapper.  
@@ -54,6 +55,23 @@ Each Group Window has its own unique:
 **Note:** Group Windows offer partial persistence: **Group Name**, **Player List**, and **Display Mode** are saved through UI reloads or logouts.
 
 [![Group Windows](Previews/Combos/GroupWindows.png)](Previews/Combos/GroupWindows.png)  
+*Click the image to view it in full size.*
+
+## Mentions
+A dedicated window listing every message that was aimed at you, whether it was a keyword hit or a Blizzard emote (e.g. `/poke`, `/wave`), no matter which channel it came in on.
+
+Open it via `/ed mentions`, **Shift-Right-Click** on the minimap icon, or the **"Toggle Mentions"** option on your own unit popup menu.
+
+The Mentions window has:
+- Filters, same as your other windows
+- A **Mention Types** filter to toggle keyword hits and Blizzard emotes independently of each other
+- New Message indicator
+
+Sender names are clickable and the **Jump to Context** button opens that sender's Dedicated Window scrolled to that exact message, with the surrounding conversation visible above it.
+
+> **Note:** The Mentions window only records what matched a keyword at the time each message was received, adding a keyword later doesn't retroactively pull earlier messages into it.
+
+[![Mentions](Previews/Combos/Mentions.png)](Previews/Combos/Mentions.png)  
 *Click the image to view it in full size.*
 
 ## Keywords
