@@ -23,6 +23,7 @@ Keep track of the conversation with a customizable frame that displays the recen
 - **History Size:** Change the number of stored actions displayed (default: 50).
 - **Visuals:** Full control over window styling (background colors, opacity) and typography (font, size, etc.).
 - **Name Formatting:** Choose how names appear: Full, First Name Only, or OOC.
+- **New Message Indicator:** A brief golden flash along the window's edge when a new message arrives, on by default under **Appearance > Display**.
 
 ![Eavesdropper Frame](Previews/Main/Main.png)
 
