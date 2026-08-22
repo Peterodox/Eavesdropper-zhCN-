@@ -71,18 +71,19 @@ Each Group Window features independent:
 *Click the image to view it in full size.*
 
 ## Mentions
-A dedicated window listing every message that was aimed at you, whether it was a keyword hit or a Blizzard emote (e.g. `/poke`, `/wave`), no matter which channel it came in on.
+A dedicated window listing every message aimed at you, whether through keyword hits or Blizzard emotes (e.g. `/poke`, `/wave`), across all channels.
 
-Open it via `/ed mentions`, **Shift-Right-Click** on the minimap icon, or the **"Toggle Mentions"** option on your own unit popup menu.
+Open it via `/ed mentions`, **Shift-Right-Click** on the minimap icon, or by selecting **"Toggle Mentions"** in your unit popup menu.
 
-The Mentions window has:
-- Filters, same as your other windows
-- A **Mention Types** filter to toggle keyword hits and Blizzard emotes independently of each other
-- New Message indicator
+The Mentions window features independent:
+- **Layout & Style:** Filters and New Message Indicator.
+- **Behavior & Storage:** A **Mention Types** filter to toggle keyword hits and Blizzard emotes independently.
 
-Sender names are clickable and the **Jump to Context** button opens that sender's Dedicated Window scrolled to that exact message, with the surrounding conversation visible above it.
+> **Note:** Mentions only record matches active at the time a message is received. Adding a keyword later will not retroactively import earlier messages.
 
-> **Note:** The Mentions window only records what matched a keyword at the time each message was received, adding a keyword later doesn't retroactively pull earlier messages into it.
+**Interactions & Navigation:**
+- **Sender Names:** Clickable sender names let you quickly interact with players.
+- **Jump to Context:** Opens the sender's Dedicated Window scrolled directly to that message, showing the surrounding conversation.
 
 [![Mentions](Previews/Combos/Mentions.png)](Previews/Combos/Mentions.png)  
 *Click the image to view it in full size.*
