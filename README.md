@@ -16,14 +16,14 @@ Eavesdropper helps you stay immersed in busy RP environments by focusing on the 
 
 Available on [CurseForge](https://www.curseforge.com/wow/addons/eavesdropper), [Wago.io](https://addons.wago.io/addons/eavesdropper), and [WoWInterface](https://www.wowinterface.com/downloads/info27060-Eavesdropper.html)!  
 
-## History Window
-Keep track of the conversation with a customizable frame that displays the recent action history of your target or mouseover.
+## History Window (Main)
+Track conversations easily with a customizable frame displaying recent action history for your target, mouseover, or focus unit.
 
 **Customization Options:**
-- **History Size:** Change the number of stored actions displayed (default: 50).
-- **Visuals:** Full control over window styling (background colors, opacity) and typography (font, size, etc.).
-- **Name Formatting:** Choose how names appear: Full, First Name Only, or OOC.
-- **New Message Indicator:** A brief golden flash along the window's edge when a new message arrives, on by default under **Appearance > Display**.
+- **History Size:** Adjust the number of stored actions displayed (default: 50).
+- **Visuals:** Customize window styling (background color, opacity) and typography (font, size, etc.).
+- **Name Formatting:** Choose how names are displayed: Full, First Name Only, or OOC.
+- **New Message Indicator:** Displays a brief golden flash along the window border when a new message arrives (enabled by default under **Appearance > Display**).
 
 ![Eavesdropper Frame](Previews/Main/Main.png)
 
