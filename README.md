@@ -9,7 +9,7 @@ Eavesdropper helps you stay immersed in busy RP environments by focusing on the 
 - **Keyword Highlights:** Custom keywords highlighted in chat with optional sound alerts.  
 - **Notification Support:** Play a sound and flash the taskbar when your target performs an action, a Blizzard emote is directed at you, or a Dedicated/Group Window receives a message.  
 - **Seamless Multi-Message Compatibility:** Built-in support for multi-message addons like Chattery, EmoteScribe, EmoteSplitter, and Yapper.  
-- **Advanced RP Name Formatting:** Replaces standard names with RP names in rolls, Blizzard emotes, NPC dialogue, and Quest Text (via Dialogue UI).
+- **Localization:** Full English and French translations, with a partial Russian translation and more languages welcome.
 
 Available on [CurseForge](https://www.curseforge.com/wow/addons/eavesdropper), [Wago.io](https://addons.wago.io/addons/eavesdropper), and [WoWInterface](https://www.wowinterface.com/downloads/info27060-Eavesdropper.html)!  
 
@@ -120,3 +120,6 @@ Eavesdropper can replace standard character names in system emotes (like `/point
 *Click the image to view it in full size.*
 [![Quest Text Dialogue UI](Previews/NPCDialogueAndQuestText/DialogueUI.png)](Previews/NPCDialogueAndQuestText/DialogueUI.png)  
 *Click the image to view it in full size.*
+
+## Localization
+Eavesdropper is fully translated into **English** and **French**, with a partial **Russian** translation also available. Translations for other languages are very welcome, if you'd like to help translate Eavesdropper, open an issue or pull request on [GitHub](https://github.com/Raenore/Eavesdropper).
