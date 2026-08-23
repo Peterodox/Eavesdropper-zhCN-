@@ -10,6 +10,7 @@ Eavesdropper helps you stay immersed in busy RP environments by focusing on the 
 - **Notification Support:** Play a sound and flash the taskbar when your target performs an action, a Blizzard emote is directed at you, or a Dedicated/Group Window receives a message.  
 - **Seamless Multi-Message Compatibility:** Built-in support for multi-message addons like Chattery, EmoteScribe, EmoteSplitter, and Yapper.  
 - **Advanced RP Name Formatting:** Replaces standard names with RP names in rolls, Blizzard emotes, NPC dialogue, and Quest Text (via Dialogue UI).  
+- **Profiles & Sharing:** Manage per-character profiles and export/import setups or global account settings as text strings.  
 - **Keybindings:** Open the main Eavesdropper window, the settings menu, or a Dedicated Window straight from Blizzard's **Options > Keybindings** menu.  
 - **ElvUI:** optional ElvUI skinning that can be toggled.
 - **Localization:** Full English and French translations, with a partial Russian translation and more languages welcome.
@@ -133,6 +134,19 @@ This formatting applies to **all Eavesdropper windows** (History, Dedicated, Gro
 [![NPC Dialogue And QuestText Combined](Previews/Combos/NPCDialogueAndQuestText.png)](Previews/Combos/NPCDialogueAndQuestText.png)  
 *Click the image to view it in full size.*
 [![Quest Text Dialogue UI](Previews/NPCDialogueAndQuestText/DialogueUI.png)](Previews/NPCDialogueAndQuestText/DialogueUI.png)  
+
+## Profiles & Sharing
+Every character can run its own profile, ensuring your bank alt and main RP character maintain distinct setups. Profiles are managed under **Settings > Profiles**, where you can create, copy, rename, reset, and delete them.
+
+**Import & Export:**
+Export either your **Profile** (window styling, filters, keywords, notifications) or your **Account Settings** (options shared across all profiles, such as minimap button visibility) as a shareable text string for backups or sharing.
+
+- **Readable Metadata:** Profile name, export date, and addon version sit in plain text at the top of the string so you know what you are looking at.
+- **Auto-Detection:** The importer automatically recognizes whether you pasted a Profile or Account Settings string before you click Import.
+- **Name Selection & Overwrite Protection:** Choose which profile name to import into, with a prompt warning you before overwriting an existing setup.
+- **Graceful Error Handling:** Missing fonts or sounds fall back to default assets, out-of-range values auto-correct, and unrecognized settings are skipped and reported instead of breaking the import.
+
+[![Profiles Combined](Previews/Combos/Profiles.png)](Previews/Combos/Profiles.png)  
 *Click the image to view it in full size.*
 
 ## Localization
