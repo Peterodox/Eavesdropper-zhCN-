@@ -46,7 +46,7 @@ Each Dedicated Window features independent:
 - **Layout & Style:** Position, Size, Font Size, and Name Display (Full/First/Original or Profile Default).
 - **Behavior & Storage:** Filters, Notifications (Sound/Flash), and New Message Indicator (notifications and indicators only trigger for messages matching that window's specific filters).
 
-> **Note:** Dedicated Windows fully persist settings across UI reloads and game restarts while open. Reopening a window mid-session restores everything from that session instead of resetting to defaults.
+> **Note:** As long as a Dedicated Window is open, it remembers its setup across `/reload`s and relogs. Reopening it mid-session brings back exactly how you left it.
 
 [![Dedicated Windows Combined](Previews/Combos/DedicatedWindows.png)](Previews/Combos/DedicatedWindows.png)  
 *Click the image to view it in full size.*
@@ -58,12 +58,12 @@ Each Group Window features independent:
 - **Layout & Style:** Position, Size, Font Size, and Name Display (Full/First/Original or Profile Default).
 - **Behavior & Storage:** Filters, Notifications (Sound/Flash), New Message Indicator, and History Size (10–1000, default: 100, independent of the Main Window).
 
-> **Note:** Group Windows fully persist settings across UI reloads and game restarts while open. Reopening a group with the same name mid-session prompts you to either restore session data (including its player list) or reset to defaults.
+> **Note:** As long as a Group Window is open, it remembers its setup and player list across `/reload`s and relogs. Reopening one with the same name lets you bring that back or start fresh.
 
 **Interactions & Navigation:**
 - **Sender Names:** Hover to underline and right-click for the standard player context menu (Whisper, Invite, Eavesdrop On).
 - **Jump to Context:** Opens the sender's Dedicated Window scrolled directly to that message, showing the surrounding conversation.
-- **Player List Menu:** Access membership directly from the title bar (sorted by RP first name). Click **Add Target** to quickly add your current target, use checkboxes to toggle members on/off, or click the per-row button to open their Dedicated Window directly.
+- **Player List Menu:** Access membership directly from the title bar (sorted by RP first name). Click **Add Target** to quickly add your current target, use checkboxes to toggle members on/off, or click the icon beside each member to jump straight to their Dedicated Window.
 
 [![Group Windows](Previews/Combos/GroupWindows.png)](Previews/Combos/GroupWindows.png)  
 *Click the image to view it in full size.*
@@ -76,7 +76,7 @@ Open it via `/ed mentions`, **Shift-Right-Click** on the minimap icon, or by sel
 The Mentions Window features independent:
 - **Behavior & Storage:** Filters, New Message Indicator, History Size (10–1000, default: 300), and a **Mention Types** filter to toggle keyword hits and Blizzard emotes independently.
 
-> **Note:** Mentions only record matches active at the time a message is received. Adding a keyword later will not retroactively import earlier messages.
+> **Note:** Only new messages are checked. Older messages aren't rescanned when you add a keyword afterward.
 
 **Interactions & Navigation:**
 - **Sender Names:** Clickable sender names let you quickly interact with players.
@@ -121,9 +121,9 @@ This formatting applies to **all Eavesdropper windows** (Main, Dedicated, Group,
 - **NPC Dialogue:** Replaces your name when NPCs speak to you in chat (`/say`, `/whisper`, etc.).
 - **Quest Text:** Seamlessly integrates with **Dialogue UI** to display your RP name during quest interactions.
 
-> **Note:** This feature requires your client to have the player's RP data cached (via MSP) before the replacement can occur.
+> **Note:** This only works once you've already loaded the player's RP profile, for example by having seen them before.
 
-**Compatibility:** If the standalone addon **Total RP 3: RP Name in Quest Text** is detected and configured to modify NPC dialogue or speech, Eavesdropper defers to it and leaves formatting untouched to prevent both addons from renaming the same dialogue.
+**Compatibility:** If you're using the standalone addon **Total RP 3: RP Name in Quest Text** for NPC dialogue or speech, Eavesdropper steps aside so the two addons don't rename the same text twice.
 
 [![Advanced Formatting Combined](Previews/Combos/AdvancedFormatting.png)](Previews/Combos/AdvancedFormatting.png)
 [![NPC Dialogue And Quest Text Combined](Previews/Combos/NPCDialogueAndQuestText.png)](Previews/Combos/NPCDialogueAndQuestText.png)
@@ -136,10 +136,9 @@ Every character can run its own profile, ensuring your bank alt and main RP char
 **Import & Export:**
 Export either your **Profile** (window styling, filters, keywords, notifications) or your **Account Settings** (options shared across all profiles, such as minimap button visibility) as a shareable text string for backups or sharing.
 
-- **Readable Metadata:** Profile name, export date, and addon version sit in plain text at the top of the string so you know what you are looking at.
-- **Auto-Detection:** The importer automatically recognizes whether you pasted a Profile or Account Settings string before you click Import.
+- **Clear Labels:** Exports are labeled with their profile name, date, and version, so old backups are easy to identify.
 - **Name Selection & Overwrite Protection:** Choose which profile name to import into, with a prompt warning you before overwriting an existing setup.
-- **Graceful Error Handling:** Missing fonts or sounds fall back to default assets, out-of-range values auto-correct, and unrecognized settings are skipped and reported instead of breaking the import.
+- **Error-Proof:** A broken or outdated setting won't stop an import. Eavesdropper works around it and tells you what changed.
 
 [![Profiles Combined](Previews/Combos/Profiles.png)](Previews/Combos/Profiles.png)  
 *Click the image to view it in full size.*
