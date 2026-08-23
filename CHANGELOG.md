@@ -25,9 +25,9 @@ Major feature update adding a Mentions History window, Import & Export, a Group 
 - **Dedicated and Group windows now save all their settings automatically**; the old "Save Windows"/"Save Groups" toggles are gone since this is no longer optional ([#133](https://github.com/Raenore/Eavesdropper/pull/133)).  
 - Reworked the **Profiles** settings category around a single **Manage Profiles** dropdown holding all profile management in one place ([#119](https://github.com/Raenore/Eavesdropper/pull/119)).  
   - The **Default** profile can no longer be renamed or deleted, and you can now delete your active profile; its characters switch to Default automatically.  
-- Improved overall responsiveness across every window, timestamps, RP name updates, and Group Window rendering are all faster and lighter, especially with several windows open in busy RP areas ([#126](https://github.com/Raenore/Eavesdropper/pull/126) and [#127](https://github.com/Raenore/Eavesdropper/pull/127)).  
+- Improved performance across every window: timestamps, RP names, and Group Window rendering are all faster, especially with several windows open in busy RP areas ([#126](https://github.com/Raenore/Eavesdropper/pull/126) and [#127](https://github.com/Raenore/Eavesdropper/pull/127)).  
 - **Sender names in Group Windows are now clickable**, just like the Mentions window: left-click starts a whisper, right-click opens the game's own context menu for that player ([#131](https://github.com/Raenore/Eavesdropper/pull/131) and [#148](https://github.com/Raenore/Eavesdropper/pull/148)).  
-- **Shift-Right-Click** on the minimap icon or addon compartment now opens the Mentions window instead of toggling the main Eavesdropper window, while **Shift-Left-Click** still toggles it as before ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).  
+- **Shift-Right-Click** on the minimap icon now opens Mentions instead of the main window; **Shift-Left-Click** still toggles the main window as before ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).  
 
 ### Fixed
 - Settings changes now apply instantly to open Dedicated and Group windows, no reopen or /reload needed ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).  
