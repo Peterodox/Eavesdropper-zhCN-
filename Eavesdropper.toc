@@ -1,11 +1,11 @@
 ## Interface: 120100
 ## Title: |cnFRAMESTACK_REGION_COLOR:Eavesdropper|r
-## Notes: Shows a dedicated history window for your current target or mouseover, highlights keywords, helps focus on specific players in busy RP environments, and supports advanced RP name formatting in chat.
+## Notes: Shows a Main Window for your target, mouseover, or focus, plus Dedicated, Group, and Mentions windows, keyword highlights, and advanced RP name formatting.
 ## Author: Raenore (Argent Dawn EU)
 ## Version: @project-version@
 ## IconTexture: Interface\AddOns\Eavesdropper\Resources\SmallLogo32
 
-## Notes-frFR: Affiche une fenêtre d'historique dédiée pour votre cible sélectionnée ou survolée, met en surbrillance les mots-clefs, facilite le suivi de certains joueurs dans des zones RP denses, et gère le formatage avancé des noms RP dans le chat.
+## Notes-frFR: Affiche une fenêtre principale (cible, survol ou focus), ainsi que des fenêtres de suivi individuel, de groupe et de mentions, des mots-clés en surbrillance, et une mise en forme avancée des noms RP.
 ## OptionalDeps: Chattery, DialogueUI, ElvUI, EmoteScribe, EmoteSplitter, tRP3_RPNameInQuests, totalRP3, MyRolePlay, XRP, Yapper
 ## SavedVariables: EavesdropperDB
 ## SavedVariablesPerCharacter: EavesdropperCharDB
