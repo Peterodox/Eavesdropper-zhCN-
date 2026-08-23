@@ -36,8 +36,8 @@ Each window type (Main, Dedicated, Group, and Mentions) features a distinct titl
 
 The chat frames are clean and focused, stripped of unnecessary visual clutter for quick, fluid navigation.
 
-[![Window Icons](Previews/WindowIcons/WindowIcons.png)](Previews/WindowIcons/WindowIcons.png)
-[![Scrollbar](Previews/Scrollbar/Scrollbar.gif)](Previews/Scrollbar/Scrollbar.gif)
+[![Scrollbar](Previews/Combos/Design.gif)](Previews/Combos/Design.gif)
+*Click the image to view it in full size.*
 
 ## Dedicated Windows
 Create individual Eavesdropper windows for specific targets by right-clicking a unit portrait or chat name and selecting **"Eavesdrop On"**.
