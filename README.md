@@ -113,7 +113,7 @@ While Eavesdropper is designed to be broadly compatible, the following addons ar
 
 ## Advanced RP Name Formatting
 Eavesdropper can replace standard character names with their respective RP names across the entire UI.  
-This formatting applies to **all Eavesdropper windows** (Main, Dedicated, Group, and Mentions) and can optionally be enabled for **Blizzard's chat window**, complete with its own independent name format setting.
+This formatting applies to **all Eavesdropper windows** (Main, Dedicated, Group, and Mentions) and can optionally be enabled for **Blizzard's chat window** (via the **Apply to Main Chat** setting), complete with its own independent name format setting.
 
 **Supported Situations:**
 - **Blizzard Emotes:** Replaces names in emotes like `/point`, `/wave`, or `/bow`.
