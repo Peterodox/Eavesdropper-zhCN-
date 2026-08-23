@@ -56,7 +56,7 @@ Consolidate interactions from multiple players into a single window by right-cli
 
 Each Group Window features independent:
 - **Layout & Style:** Position, Size, Font Size, and Name Display (Full/First/Original or Profile Default).
-- **Behavior & Storage:** Filters, Notifications (Sound/Flash), New Message Indicator, and History Size (10–1000, independent of the Main Window).
+- **Behavior & Storage:** Filters, Notifications (Sound/Flash), New Message Indicator, and History Size (10–1000, default: 100, independent of the Main Window).
 
 > **Note:** Group Windows fully persist settings across UI reloads and game restarts while open. Reopening a group with the same name mid-session prompts you to either restore session data (including its player list) or reset to defaults.
 
@@ -74,7 +74,7 @@ A dedicated window listing every message aimed at you, whether through keyword h
 Open it via `/ed mentions`, **Shift-Right-Click** on the minimap icon, or by selecting **"Toggle Mentions"** in your unit popup menu.
 
 The Mentions Window features independent:
-- **Behavior & Storage:** Filters, New Message Indicator, and a **Mention Types** filter to toggle keyword hits and Blizzard emotes independently.
+- **Behavior & Storage:** Filters, New Message Indicator, History Size (10–1000, default: 300), and a **Mention Types** filter to toggle keyword hits and Blizzard emotes independently.
 
 > **Note:** Mentions only record matches active at the time a message is received. Adding a keyword later will not retroactively import earlier messages.
 
