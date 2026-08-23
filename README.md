@@ -90,7 +90,7 @@ The Mentions window features independent:
 *Click the image to view it in full size.*
 
 ## Keywords
-Never miss a mention. Define custom keywords to highlight in the main chat window and configure optional audio notifications whenever they are triggered.
+Never miss a mention. Define custom keywords to highlight in Blizzard's chat window and configure optional audio notifications whenever they are triggered.
 
 ![Keywords](Previews/Keywords/Keywords.png)
 
@@ -117,7 +117,7 @@ While Eavesdropper is designed to be broadly compatible, the following addons ar
 
 ## Advanced RP Name Formatting
 Eavesdropper can replace standard character names with their respective RP names across the entire UI.  
-This formatting applies to **all Eavesdropper windows** (History, Dedicated, Group, and Mentions) and can optionally be enabled for the **main chat window**, complete with its own independent name format setting.
+This formatting applies to **all Eavesdropper windows** (History, Dedicated, Group, and Mentions) and can optionally be enabled for **Blizzard's chat window**, complete with its own independent name format setting.
 
 **Supported Situations:**
 - **Blizzard Emotes:** Replaces names in emotes like `/point`, `/wave`, or `/bow`.
