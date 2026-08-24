@@ -22,21 +22,24 @@ local function GetEmotePrefix(message)
 	end
 end
 
+-- Named so RemoveMessageEventFilter could match it later.
+local function emotePrefixFilter(_, _, ...)
+	local message = select(1, ...);
+	local lineID  = select(11, ...);
+
+	if not message or not canaccessvalue(message) or not lineID then return; end
+
+	local prefix = GetEmotePrefix(message);
+	if not prefix then return; end
+
+	pendingEmotePrefixes[lineID] = prefix;
+	C_Timer.After(5, function() pendingEmotePrefixes[lineID] = nil; end);
+end
+
 -- Registered at file load rather than in Init(), so this runs ahead of TRP3's own
 -- CHAT_MSG_EMOTE filter, which TRP3 only registers on PLAYER_LOGIN.
 if ChatFrameUtil and type(ChatFrameUtil.AddMessageEventFilter) == "function" then
-	ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_EMOTE", function(_, _, ...)
-		local message = select(1, ...);
-		local lineID  = select(11, ...);
-
-		if not message or not canaccessvalue(message) or not lineID then return; end
-
-		local prefix = GetEmotePrefix(message);
-		if not prefix then return; end
-
-		pendingEmotePrefixes[lineID] = prefix;
-		C_Timer.After(5, function() pendingEmotePrefixes[lineID] = nil; end);
-	end);
+	ChatFrameUtil.AddMessageEventFilter("CHAT_MSG_EMOTE", emotePrefixFilter);
 end
 
 ---ChatFrameFilter Core Blizzard chat message filter
