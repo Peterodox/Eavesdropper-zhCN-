@@ -69,21 +69,29 @@ function Eavesdropper_SharedFrameMixin:InitInstanceFrameState()
 end
 
 -- ============================================================
--- OnHide (instance frames)
+-- OnHide
 -- ============================================================
 
----OnHide for Dedicated and Group instance frames.
-function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
-	if not UIParent:IsShown() or self.isCombatHidden then return; end
-
-	self:StopChatTicker();
-
+---OnHide shared by every frame type.
+function Eavesdropper_SharedFrameMixin:OnHideCommon()
 	self:ResetNewIndicator();
 
 	if self.newIndicatorTimer then
 		self.newIndicatorTimer:Cancel();
 		self.newIndicatorTimer = nil;
 	end
+
+	if self.alphaChannelMode and self.SetAlphaChannelMode then
+		self:SetAlphaChannelMode(nil);
+	end
+end
+
+---OnHide for Dedicated and Group instance frames.
+function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
+	if not UIParent:IsShown() or self.isCombatHidden then return; end
+
+	self:StopChatTicker();
+	self:OnHideCommon();
 
 	self:UnregisterAllEvents();
 	self:SetScript("OnEnter", nil);
@@ -95,10 +103,6 @@ function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
 	local frameName = self:GetName();
 	if frameName and _G[frameName] == self then
 		_G[frameName] = nil;
-	end
-
-	if self.alphaChannelMode and self.SetAlphaChannelMode then
-		self:SetAlphaChannelMode(nil);
 	end
 end
 

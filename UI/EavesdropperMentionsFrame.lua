@@ -116,16 +116,7 @@ end
 
 function Eavesdropper_Mentions_FrameMixin:OnHide()
 	self:StopChatTicker();
-	self:ResetNewIndicator();
-
-	if self.newIndicatorTimer then
-		self.newIndicatorTimer:Cancel();
-		self.newIndicatorTimer = nil;
-	end
-
-	if self.alphaChannelMode and self.SetAlphaChannelMode then
-		self:SetAlphaChannelMode(nil);
-	end
+	self:OnHideCommon();
 
 	-- A combat-driven hide must not count as closing it; Events.lua sets isCombatHidden
 	-- before calling HandleVisibility so it knows to reappear once combat ends.

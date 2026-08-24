@@ -79,17 +79,7 @@ function Eavesdropper_FrameMixin:OnLoad()
 end
 
 function Eavesdropper_FrameMixin:OnHide()
-	if self.alphaChannelMode and self.SetAlphaChannelMode then
-		self:SetAlphaChannelMode(nil);
-	end
-
-	-- Instance frames get this from OnHideInstanceFrame; the main frame has to do it itself.
-	self:ResetNewIndicator();
-
-	if self.newIndicatorTimer then
-		self.newIndicatorTimer:Cancel();
-		self.newIndicatorTimer = nil;
-	end
+	self:OnHideCommon();
 end
 
 -- ============================================================
