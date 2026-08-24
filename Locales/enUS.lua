@@ -20,6 +20,7 @@ L = {
 
 	BINDING_NAME_ED_TOGGLE = "Toggle Eavesdropper",
 	BINDING_NAME_ED_SETTINGS = "Toggle Settings",
+	BINDING_NAME_ED_MENTIONS = "Toggle Mentions",
 	BINDING_NAME_ED_EAVESDROP_ON = "Eavesdrop On (Dedicated)",
 
 	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:Left-Click: Open settings|nRight-Click: Open profiles|nShift-Left-Click: Toggle Eavesdropper|nShift-Right-Click: Toggle Mentions|r",

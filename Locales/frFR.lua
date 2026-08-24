@@ -20,6 +20,7 @@ L = {
 
 	BINDING_NAME_ED_TOGGLE = "Afficher/Masquer Eavesdropper",
 	BINDING_NAME_ED_SETTINGS = "Afficher/Masquer les options",
+	BINDING_NAME_ED_MENTIONS = "Afficher/Masquer les mentions",
 	BINDING_NAME_ED_EAVESDROP_ON = "Écouter la cible (Fenêtre de suivi individuel)",
 
 	ADDON_TOOLTIP_HELP = "|cnGREEN_FONT_COLOR:Clic gauche : Ouvrir les options|nClic droit : Ouvrir les profils|nShift-Click : Afficher/Masquer Eavesdropper|r",
