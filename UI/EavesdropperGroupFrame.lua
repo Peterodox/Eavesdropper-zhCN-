@@ -502,7 +502,7 @@ function GroupFrame:SaveToCharDB()
 
 			frame:FillSavedStateFields(entry);
 
-			table.insert(saved, entry);
+			saved[#saved + 1] = entry;
 		end
 	end
 

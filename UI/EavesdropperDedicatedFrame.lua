@@ -312,7 +312,7 @@ function DedicatedFrame:SaveToCharDB()
 				entry.nameDisplayMode = frame.nameDisplayMode;
 			end
 
-			table.insert(saved, entry);
+			saved[#saved + 1] = entry;
 		end
 	end
 

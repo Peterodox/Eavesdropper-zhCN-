@@ -287,7 +287,7 @@ function ScreenshotHelper.HideDistractions(bitmask)
 
 	for index, tag in ipairs(optionalBlockedRolesets) do
 		if bit.band(1, bit.arshift(bitmask, index - 1)) == 1 then
-			table.insert(blockedRolesets, tag);
+			blockedRolesets[#blockedRolesets + 1] = tag;
 		end
 	end
 
