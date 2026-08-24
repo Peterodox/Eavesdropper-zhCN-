@@ -213,6 +213,12 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 		end
 	end);
 
+	if ED.MentionsFrame:IsVisible() then
+		ED.MentionsFrame:SetAlphaChannelMode(alphaChannelMode);
+	else
+		ED.MentionsFrame:SetAlphaChannelMode(nil);
+	end
+
 	local importExportDialog = ED.ImportExportDialog and ED.ImportExportDialog.frame;
 	if importExportDialog then
 		if importExportDialog:IsVisible() then
