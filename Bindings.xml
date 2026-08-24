@@ -7,7 +7,7 @@
 		ED.Frame:SetShown(not ED.Frame:IsShown());
 	</Binding>
 	<Binding name="ED_SETTINGS" category="BINDING_HEADER_ED">
-		ED.Settings:ShowSettings();
+		ED.Settings:ToggleSettings();
 	</Binding>
 	<Binding name="ED_EAVESDROP_ON" category="BINDING_HEADER_ED">
 		ED.DedicatedFrame:AddFrameForMagnified();
