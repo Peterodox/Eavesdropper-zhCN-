@@ -16,7 +16,7 @@ DedicatedFrame.frames = DedicatedFrame.frames or {};
 DedicatedFrame.sessionState = DedicatedFrame.sessionState or {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
----@class EavesdropperDedicatedFrameInstance
+---@class EavesdropperDedicatedFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_Dedicated_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -408,6 +408,7 @@ end
 ---@param savedEntry EavesdropperSavedDedicatedFrame? Pass explicitly from RestoreFromCharDB's pass.
 ---@return EavesdropperDedicatedFrameInstance
 function DedicatedFrame:AddFrame(sender, savedEntry)
+	---@type EavesdropperDedicatedFrameInstance?
 	local frame = _G["Eavesdropper_Dedicated_Frame_" .. sender];
 
 	if frame then

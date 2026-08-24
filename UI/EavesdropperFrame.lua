@@ -11,7 +11,7 @@ local FrameModule = {};
 local EAVESDROP_TARGET = nil;
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
----@class EavesdropperFrameInstance
+---@class EavesdropperFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================

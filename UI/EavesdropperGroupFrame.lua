@@ -45,7 +45,7 @@ GroupFrame.frames = GroupFrame.frames or {};
 GroupFrame.sessionState = GroupFrame.sessionState or {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
----@class EavesdropperGroupFrameInstance
+---@class EavesdropperGroupFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_Group_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -591,6 +591,7 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 	end
 
 	local globalName = "Eavesdropper_Group_Frame_" .. index;
+	---@type EavesdropperGroupFrameInstance
 	local frame = CreateFrame("Frame", globalName, UIParent, "Eavesdropper_Group_FrameTemplate");
 	frame:Raise();
 	frame:HandleVisibility();

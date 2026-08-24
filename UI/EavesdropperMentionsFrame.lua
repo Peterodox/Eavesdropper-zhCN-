@@ -7,6 +7,7 @@ local L = ED.Localization;
 local MentionsFrameModule = {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
+---@class EavesdropperMentionsFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_Mentions_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -278,6 +279,7 @@ end
 -- ============================================================
 
 function MentionsFrameModule:Init()
+	---@type EavesdropperMentionsFrameInstance
 	local frame = CreateFrame("Frame", "Eavesdropper_Mentions_Frame", UIParent, "Eavesdropper_Mentions_FrameTemplate");
 	ED.MentionsFrame = frame;
 	frame:Raise();

@@ -13,7 +13,7 @@ local L = ED.Localization;
 ---and Eavesdropper_Group_FrameMixin.
 ---Five getters are required on the proper mixins (as one uses DB and other uses local frame state):
 ---IsMouseEnabled(), IsWindowLocked(), IsScrollLocked(), IsTitleBarLocked(), GetNewIndicatorSettingKey()
----@class Eavesdropper_SharedFrameMixin
+---@class Eavesdropper_SharedFrameMixin : Frame
 Eavesdropper_SharedFrameMixin = {};
 
 -- ============================================================
