@@ -99,11 +99,7 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	self:ShowTitleBar();
 
 	-- Configure close button
-	local closeBtn = self.TitleBar.CloseButton;
-	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
-	closeBtn:SetScript("OnClick", function()
-		self:Hide();
-	end);
+	self:InitCloseButtonClick();
 
 	if ED.Database:GetSetting("MentionsHideCloseButton") then
 		self.TitleBar.CloseButton:Hide();
@@ -116,9 +112,7 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	end);
 	self:ResizeTitleButton();
 
-	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
-		self:OnChatboxRefresh();
-	end);
+	self:HookChatboxRefresh();
 end
 
 function Eavesdropper_Mentions_FrameMixin:OnShow()

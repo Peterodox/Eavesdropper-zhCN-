@@ -56,6 +56,17 @@ function Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn)
 	end
 end
 
+---Close button's icon and click handler.
+---@param onClose fun()? Extra behaviour to run after Hide(); the main frame uses this to also persist WindowVisible.
+function Eavesdropper_SharedFrameMixin:InitCloseButtonClick(onClose)
+	local closeBtn = self.TitleBar.CloseButton;
+	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
+	closeBtn:SetScript("OnClick", function()
+		self:Hide();
+		if onClose then onClose(); end
+	end);
+end
+
 ---Initialise local frame state shared by Dedicated and Group instance frames.
 ---Call from OnLoad before any method that reads these fields.
 function Eavesdropper_SharedFrameMixin:InitInstanceFrameState()
@@ -266,6 +277,13 @@ end
 function Eavesdropper_SharedFrameMixin:OnScrollMarkerMouseUp()
 	self.ChatBox:ScrollToBottom();
 	self:OnChatboxRefresh();
+end
+
+---Hook the ChatBox's RefreshDisplay so the scroll marker stays in sync with scroll position.
+function Eavesdropper_SharedFrameMixin:HookChatboxRefresh()
+	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
+		self:OnChatboxRefresh();
+	end);
 end
 
 -- ============================================================

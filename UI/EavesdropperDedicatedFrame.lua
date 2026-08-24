@@ -95,11 +95,7 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	self:ShowTitleBar();
 
 	-- Configure close button
-	local closeBtn = self.TitleBar.CloseButton;
-	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
-	closeBtn:SetScript("OnClick", function()
-		self:Hide();
-	end);
+	self:InitCloseButtonClick();
 
 	if self.hideCloseButton then
 		self.TitleBar.CloseButton:Hide();
@@ -112,9 +108,7 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 		ED.Config.ShowConfigMenu(self, "dedicated");
 	end);
 
-	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
-		self:OnChatboxRefresh();
-	end);
+	self:HookChatboxRefresh();
 end
 
 function Eavesdropper_Dedicated_FrameMixin:OnShow()

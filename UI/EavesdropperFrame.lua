@@ -64,10 +64,7 @@ function Eavesdropper_FrameMixin:OnLoad()
 	self:ShowTitleBar();
 
 	-- Configure close button
-	local closeBtn = self.TitleBar.CloseButton;
-	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
-	closeBtn:SetScript("OnClick", function()
-		self:Hide();
+	self:InitCloseButtonClick(function()
 		ED.Database:SetCharSetting("WindowVisible", false);
 	end);
 
@@ -78,9 +75,7 @@ function Eavesdropper_FrameMixin:OnLoad()
 	-- Configure title button
 	self:UpdateTitleBar();
 
-	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
-		self:OnChatboxRefresh();
-	end);
+	self:HookChatboxRefresh();
 end
 
 function Eavesdropper_FrameMixin:OnHide()
