@@ -57,20 +57,12 @@ function Eavesdropper_FrameMixin:OnLoad()
 
 	Eavesdropper_SharedFrameMixin.InitChatBox(self, Constants.CHAT_BOX.MAX_HISTORY);
 
-	if ED.Database and not ED.Database:GetSetting("LockWindow") then
-		self.ResizeHandle:Show();
-	end
-
 	self:ShowTitleBar();
 
-	-- Configure close button
+	-- RestoreLayout sets ResizeHandle/CloseButton visibility right after this runs.
 	self:InitCloseButtonClick(function()
 		ED.Database:SetCharSetting("WindowVisible", false);
 	end);
-
-	if ED.Database and ED.Database:GetSetting("HideCloseButton") then
-		self.TitleBar.CloseButton:Hide();
-	end
 
 	-- Configure title button
 	self:UpdateTitleBar();

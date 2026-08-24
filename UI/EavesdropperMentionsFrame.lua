@@ -93,18 +93,10 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	Eavesdropper_SharedFrameMixin.InitChatBox(self, ED.Database:GetSetting("MentionsHistorySize"));
 	self.EmptyLabel.Text:SetText(L.MENTIONS_EMPTYLABEL_TEXT);
 
-	if not self:IsWindowLocked() then
-		self.ResizeHandle:Show();
-	end
-
 	self:ShowTitleBar();
 
-	-- Configure close button
+	-- RestoreLayout sets ResizeHandle/CloseButton visibility right after this runs.
 	self:InitCloseButtonClick();
-
-	if ED.Database:GetSetting("MentionsHideCloseButton") then
-		self.TitleBar.CloseButton:Hide();
-	end
 
 	local titleBtn = self.TitleBar.TitleButton;
 	titleBtn.Text:SetText(L.MENTIONS_WINDOW_TITLE);

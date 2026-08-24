@@ -130,18 +130,10 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	-- Inherit font size from the main frame settings
 	self.FontSize = ED.Database:GetSetting("FontSize");
 
-	if not self.lockWindow then
-		self.ResizeHandle:Show();
-	end
-
 	self:ShowTitleBar();
 
-	-- Configure close button
+	-- RestoreLayout sets ResizeHandle/CloseButton visibility right after this runs.
 	self:InitCloseButtonClick();
-
-	if self.hideCloseButton then
-		self.TitleBar.CloseButton:Hide();
-	end
 
 	-- Configure title button; triggers the group config menu
 	local titleBtn = self.TitleBar.TitleButton;
