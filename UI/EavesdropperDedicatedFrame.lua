@@ -59,6 +59,11 @@ function Eavesdropper_Dedicated_FrameMixin:SetNameDisplayMode(mode)
 	DedicatedFrame:SaveToCharDB();
 end
 
+---@return string
+function Eavesdropper_Dedicated_FrameMixin:GetNewIndicatorSettingKey()
+	return "DedicatedWindowsNewIndicator";
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================
@@ -292,22 +297,6 @@ function Eavesdropper_Dedicated_FrameMixin:AddMessage(entry, fromHistory)
 
 	-- Only track lines (to keep frame awake) when they are actually inserted.
 	self:TrackNewestEntry(entry);
-end
-
----Override of the base TryAddMessage to handle the new-message indicator
----@param entry EavesdropperChatEntry
-function Eavesdropper_Dedicated_FrameMixin:TryAddMessage(entry)
-	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
-
-	if not entry.p
-		and ED.ChatFilters:HasEvent(entry.e, self)
-		and ED.Database:GetGlobalSetting("DedicatedWindowsNewIndicator")
-		and self.NewIndicator
-		and not self.isMouseOver
-	then
-		self:FadeInNewIndicator();
-		self:ScheduleNewIndicatorFadeOut();
-	end
 end
 
 -- ============================================================

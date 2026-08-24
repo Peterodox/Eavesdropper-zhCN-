@@ -11,8 +11,8 @@ local L = ED.Localization;
 
 ---Shared mixin inherited by Eavesdropper_FrameMixin, Eavesdropper_Dedicated_FrameMixin,
 ---and Eavesdropper_Group_FrameMixin.
----Four getters are required on the proper mixins (as one uses DB and other uses local frame state):
----IsMouseEnabled(), IsWindowLocked(), IsScrollLocked(), IsTitleBarLocked()
+---Five getters are required on the proper mixins (as one uses DB and other uses local frame state):
+---IsMouseEnabled(), IsWindowLocked(), IsScrollLocked(), IsTitleBarLocked(), GetNewIndicatorSettingKey()
 ---@class Eavesdropper_SharedFrameMixin
 Eavesdropper_SharedFrameMixin = {};
 
@@ -789,8 +789,15 @@ function Eavesdropper_SharedFrameMixin:TrackNewestEntry(entry)
 	end
 end
 
----Record the clickblock timestamp then delegate to AddMessage.
----Dedicated and Group frames override this to also handle the new-message indicator.
+---Override to add extra eligibility conditions for the new-message indicator.
+---Mentions overrides this to also require a matching mention reason.
+---@param entry EavesdropperChatEntry
+---@return boolean
+function Eavesdropper_SharedFrameMixin:IsNewIndicatorEligible(entry) -- luacheck: no unused (entry)
+	return true;
+end
+
+---Record the clickblock timestamp, delegate to AddMessage, and handle the new-message indicator.
 ---@param entry EavesdropperChatEntry
 function Eavesdropper_SharedFrameMixin:TryAddMessage(entry)
 	if self.ChatBox:GetScrollOffset() == 0 then
@@ -802,6 +809,18 @@ function Eavesdropper_SharedFrameMixin:TryAddMessage(entry)
 	-- A new message un-freezes the window; the flag skips the Magnifier-driven main frame.
 	if self.usesChatTicker then
 		self:StartChatTicker();
+	end
+
+	-- GetNewIndicatorSettingKey() and IsNewIndicatorEligible() are overridden by their respective mixins.
+	if not entry.p
+		and ED.ChatFilters:HasEvent(entry.e, self)
+		and ED.Database:GetGlobalSetting(self:GetNewIndicatorSettingKey())
+		and self.NewIndicator
+		and not self.isMouseOver
+		and self:IsNewIndicatorEligible(entry)
+	then
+		self:FadeInNewIndicator();
+		self:ScheduleNewIndicatorFadeOut();
 	end
 end
 

@@ -64,6 +64,18 @@ function Eavesdropper_Mentions_FrameMixin:SetNameDisplayMode(mode)
 	self:RefreshChat();
 end
 
+---@return string
+function Eavesdropper_Mentions_FrameMixin:GetNewIndicatorSettingKey()
+	return "MentionsHistoryNewIndicator";
+end
+
+---Mentions additionally requires the entry's reason to match the active mention-reason filters.
+---@param entry EavesdropperChatEntry
+---@return boolean
+function Eavesdropper_Mentions_FrameMixin:IsNewIndicatorEligible(entry)
+	return ED.ChatFilters:HasMentionReason(entry.mn);
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================
@@ -265,23 +277,6 @@ function Eavesdropper_Mentions_FrameMixin:AddMessage(entry, fromHistory)
 	end
 
 	self:TrackNewestEntry(entry);
-end
-
----Override of the base TryAddMessage to handle the new-message indicator.
----@param entry EavesdropperChatEntry
-function Eavesdropper_Mentions_FrameMixin:TryAddMessage(entry)
-	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
-
-	if not entry.p
-		and ED.Database:GetGlobalSetting("MentionsHistoryNewIndicator")
-		and ED.ChatFilters:HasEvent(entry.e, self)
-		and ED.ChatFilters:HasMentionReason(entry.mn)
-		and self.NewIndicator
-		and not self.isMouseOver
-	then
-		self:FadeInNewIndicator();
-		self:ScheduleNewIndicatorFadeOut();
-	end
 end
 
 -- ============================================================

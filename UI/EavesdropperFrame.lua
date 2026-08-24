@@ -39,6 +39,11 @@ function Eavesdropper_FrameMixin:IsTitleBarLocked()
 	return ED.Database ~= nil and ED.Database:GetSetting("LockTitleBar") or false;
 end
 
+---@return string
+function Eavesdropper_FrameMixin:GetNewIndicatorSettingKey()
+	return "WindowNewIndicator";
+end
+
 -- ============================================================
 -- OnLoad / OnHide
 -- ============================================================
@@ -310,23 +315,6 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 
 	-- Only track lines (to keep frame awake) when they are actually inserted.
 	self:TrackNewestEntry(entry);
-end
-
----Override of the base TryAddMessage to handle the new-message indicator.
----Only live messages reach TryAddMessage, so a target change never flashes the indicator.
----@param entry EavesdropperChatEntry
-function Eavesdropper_FrameMixin:TryAddMessage(entry)
-	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
-
-	if not entry.p
-		and ED.ChatFilters:HasEvent(entry.e, self)
-		and ED.Database:GetGlobalSetting("WindowNewIndicator")
-		and self.NewIndicator
-		and not self.isMouseOver
-	then
-		self:FadeInNewIndicator();
-		self:ScheduleNewIndicatorFadeOut();
-	end
 end
 
 ---Apply all profile settings and refresh the settings UI.
