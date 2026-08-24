@@ -115,19 +115,9 @@ end
 ---Remove self from the DedicatedFrame manager on hide and update saved data.
 ---Saves to sessionState so we can re-use it in the same session still.
 function Eavesdropper_Dedicated_FrameMixin:OnUnregisterFrame()
-	DedicatedFrame.sessionState[self.eavesdropped_player] = {
-		sender = self.eavesdropped_player,
-		nameDisplayMode = self.nameDisplayMode,
-		pos = self.savedPos,
-		size = self.savedSize,
-		filters = self.filters,
-		mouseEnabled = self.mouseEnabled,
-		lockWindow = self.lockWindow,
-		lockScroll = self.lockScroll,
-		lockTitleBar = self.lockTitleBar,
-		hideCloseButton = self.hideCloseButton,
-		fontSize = self.FontSize,
-	};
+	local entry = { sender = self.eavesdropped_player, nameDisplayMode = self.nameDisplayMode };
+	self:FillSavedStateFields(entry);
+	DedicatedFrame.sessionState[self.eavesdropped_player] = entry;
 
 	DedicatedFrame.frames[self.eavesdropped_player] = nil;
 	DedicatedFrame:SaveToCharDB();
@@ -308,18 +298,8 @@ function DedicatedFrame:SaveToCharDB()
 
 	for sender, frame in pairs(self.frames) do
 		if frame then
-			local entry = {
-				sender = sender,
-				pos = frame.savedPos,
-				size = frame.savedSize,
-				filters = frame.filters,
-				mouseEnabled = frame.mouseEnabled,
-				lockWindow = frame.lockWindow,
-				lockScroll = frame.lockScroll,
-				lockTitleBar = frame.lockTitleBar,
-				hideCloseButton = frame.hideCloseButton,
-				fontSize = frame.FontSize,
-			};
+			local entry = { sender = sender };
+			frame:FillSavedStateFields(entry);
 
 			---Only persist nameDisplayMode when it differs from the profile default.
 			if frame.nameDisplayMode and frame.nameDisplayMode ~= profileMode then

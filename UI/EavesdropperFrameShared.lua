@@ -654,6 +654,20 @@ end
 function Eavesdropper_SharedFrameMixin:SaveInstanceState()
 end
 
+---Callers add their own identifying fields (sender/name, players, nameDisplayMode) on top.
+---@param entry table
+function Eavesdropper_SharedFrameMixin:FillSavedStateFields(entry)
+	entry.pos = self.savedPos;
+	entry.size = self.savedSize;
+	entry.filters = self.filters;
+	entry.mouseEnabled = self.mouseEnabled;
+	entry.lockWindow = self.lockWindow;
+	entry.lockScroll = self.lockScroll;
+	entry.lockTitleBar = self.lockTitleBar;
+	entry.hideCloseButton = self.hideCloseButton;
+	entry.fontSize = self.FontSize;
+end
+
 ---Restore resize handle and close-button visibility from local frame state.
 ---Overridden by Eavesdropper_FrameMixin to also restore position and size from the DB.
 function Eavesdropper_SharedFrameMixin:RestoreLayout()

@@ -157,20 +157,13 @@ end
 ---Saves to sessionState so we can re-use it in the same session still (if using same group name).
 function Eavesdropper_Group_FrameMixin:OnUnregisterFrame()
 	if self.displayName then
-		GroupFrame.sessionState[self.displayName:lower()] = {
+		local entry = {
 			name = self.displayName,
-			pos = self.savedPos,
-			size = self.savedSize,
-			filters = self.filters,
 			nameDisplayMode = self.nameDisplayMode,
-			mouseEnabled = self.mouseEnabled,
-			lockWindow = self.lockWindow,
-			lockScroll = self.lockScroll,
-			lockTitleBar = self.lockTitleBar,
-			hideCloseButton = self.hideCloseButton,
-			fontSize = self.FontSize,
 			players = ED.Utils.ShallowCopy(self.players),
 		};
+		self:FillSavedStateFields(entry);
+		GroupFrame.sessionState[self.displayName:lower()] = entry;
 
 		GroupFrame.frames[self.displayName] = nil;
 		GroupFrame:SaveToCharDB();
@@ -501,15 +494,7 @@ function GroupFrame:SaveToCharDB()
 				entry.nameDisplayMode = frame.nameDisplayMode;
 			end
 
-			entry.pos = frame.savedPos;
-			entry.size = frame.savedSize;
-			entry.filters = frame.filters;
-			entry.mouseEnabled = frame.mouseEnabled;
-			entry.lockWindow = frame.lockWindow;
-			entry.lockScroll = frame.lockScroll;
-			entry.lockTitleBar = frame.lockTitleBar;
-			entry.hideCloseButton = frame.hideCloseButton;
-			entry.fontSize = frame.FontSize;
+			frame:FillSavedStateFields(entry);
 
 			table.insert(saved, entry);
 		end
