@@ -52,7 +52,7 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 				else
 					r, g, b = 255, 255, 255;
 				end
-				sequence = string.gsub(sequence, "%-", "%%-");
+				sequence = ED.Utils.EscapePattern(sequence);
 				text = string.gsub(text, "|A:"..sequence.."|a", string.format("|AA:%s:%s:%s:%s:%s:%s:%s:%s|a", atlas, height or 0, width or 0, offsetX or 0, offsetY or 0, r or 255, g or 255, b or 255), 1);
 				sequence = string.match(text, "|A:([^|]+)|a");
 				textureFound = true;
@@ -68,7 +68,7 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 				else
 					r, g, b = 255, 255, 255;
 				end
-				sequence = string.gsub(sequence, "%-", "%%-");
+				sequence = ED.Utils.EscapePattern(sequence);
 				text = string.gsub(text, "|T"..sequence.."|t", string.format("|Z%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s:%s|z", path, height or 0, width or 0, offsetX or 0, offsetY or 0, textureWidth or 16, textureHeight or 16, leftTexel or 0, rightTexel or 16, topTexel or 0, bottomTexel or 16, r or 255, g or 255, b or 255), 1);
 				sequence = string.match(text, "|T([^|]+)|t");
 				textureFound = true;
