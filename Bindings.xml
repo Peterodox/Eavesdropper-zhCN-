@@ -6,6 +6,9 @@
 	<Binding name="ED_TOGGLE" category="BINDING_HEADER_ED">
 		ED.Frame:SetShown(not ED.Frame:IsShown());
 	</Binding>
+	<Binding name="ED_MENTIONS" category="BINDING_HEADER_ED">
+		ED.MentionsFrame:SetShown(not ED.MentionsFrame:IsShown());
+	</Binding>
 	<Binding name="ED_SETTINGS" category="BINDING_HEADER_ED">
 		ED.Settings:ToggleSettings();
 	</Binding>
