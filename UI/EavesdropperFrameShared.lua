@@ -50,8 +50,8 @@ function Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn)
 			end
 		end
 
-		closeBtn:SetScript("OnEnter", UpdateVisual);
-		closeBtn:SetScript("OnLeave", UpdateVisual);
+		closeBtn:HookScript("OnEnter", UpdateVisual);
+		closeBtn:HookScript("OnLeave", UpdateVisual);
 		UpdateVisual();
 	end
 end
