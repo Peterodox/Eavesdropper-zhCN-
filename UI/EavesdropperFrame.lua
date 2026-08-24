@@ -44,6 +44,11 @@ function Eavesdropper_FrameMixin:GetNewIndicatorSettingKey()
 	return "WindowNewIndicator";
 end
 
+---@return string
+function Eavesdropper_FrameMixin:GetProfileFontSizeKey()
+	return "FontSize";
+end
+
 -- ============================================================
 -- OnLoad / OnHide
 -- ============================================================

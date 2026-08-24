@@ -64,6 +64,12 @@ function Eavesdropper_Dedicated_FrameMixin:GetNewIndicatorSettingKey()
 	return "DedicatedWindowsNewIndicator";
 end
 
+---Font size is per-instance (self.FontSize via CharDB), not profile-scoped.
+---@return string?
+function Eavesdropper_Dedicated_FrameMixin:GetProfileFontSizeKey()
+	return nil;
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================

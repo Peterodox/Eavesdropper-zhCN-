@@ -105,6 +105,12 @@ function Eavesdropper_Group_FrameMixin:GetNewIndicatorSettingKey()
 	return "GroupWindowsNewIndicator";
 end
 
+---Font size is per-instance (self.FontSize via CharDB), not profile-scoped.
+---@return string?
+function Eavesdropper_Group_FrameMixin:GetProfileFontSizeKey()
+	return nil;
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================
