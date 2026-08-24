@@ -5,7 +5,7 @@
 local ScreenshotHelper = {};
 
 ---Frames rendering above the fullscreen backdrop, which have to be hidden manually
-local externalFrames = {
+local ExternalFrames = {
 	"PTR_IssueReporter",
 };
 
@@ -162,7 +162,7 @@ end
 ---@param hide boolean
 function ScreenshotHelper.SetExternalFramesHidden(hide)
 	if hide then
-		for _, frameName in ipairs(externalFrames) do
+		for _, frameName in ipairs(ExternalFrames) do
 			local frame = _G[frameName];
 			if frame and frame.IsShown and frame:IsShown() then
 				hiddenFrames[#hiddenFrames + 1] = frame;
