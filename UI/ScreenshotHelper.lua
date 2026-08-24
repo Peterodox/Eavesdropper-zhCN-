@@ -191,33 +191,13 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 		ED.SettingsFrame:SetAlphaChannelMode(alphaChannelMode);
 	end
 
-	if ED.Frame:IsVisible() then
-		ED.Frame:SetAlphaChannelMode(alphaChannelMode);
-	else
-		ED.Frame:SetAlphaChannelMode(nil);
-	end
-
-	ED.DedicatedFrame:ForEachFrame(function(frame)
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame)
 		if frame:IsVisible() then
 			frame:SetAlphaChannelMode(alphaChannelMode);
 		else
 			frame:SetAlphaChannelMode(nil);
 		end
 	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		if frame:IsVisible() then
-			frame:SetAlphaChannelMode(alphaChannelMode);
-		else
-			frame:SetAlphaChannelMode(nil);
-		end
-	end);
-
-	if ED.MentionsFrame:IsVisible() then
-		ED.MentionsFrame:SetAlphaChannelMode(alphaChannelMode);
-	else
-		ED.MentionsFrame:SetAlphaChannelMode(nil);
-	end
 
 	local importExportDialog = ED.ImportExportDialog and ED.ImportExportDialog.frame;
 	if importExportDialog then

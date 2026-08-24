@@ -304,15 +304,13 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 	self:TrackNewestEntry(entry);
 end
 
----Apply all profile settings and refresh the settings UI.
----Calls ApplyWindowSettings (shared), then additionally refreshes the settings panel.
+---Keywords are parsed first so every window's refresh below highlights against the new profile.
 function Eavesdropper_FrameMixin:ApplyProfileSettings()
-	self:ApplyWindowSettings();
 	ED.Keywords:ParseList();
 
-	if ED.MentionsFrame then
-		ED.MentionsFrame:ApplyWindowSettings();
-	end
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame)
+		frame:ApplyWindowSettings();
+	end);
 
 	if ED.SettingsFrame then
 		ED.SettingsFrame:RefreshWidgets();

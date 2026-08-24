@@ -171,6 +171,36 @@ function Eavesdropper_SharedFrameMixin:StopChatTicker()
 end
 
 -- ============================================================
+-- Frame registry
+-- ============================================================
+
+---@alias EavesdropperFrameFamily
+---| "main"
+---| "mentions"
+---| "dedicated"
+---| "group"
+
+---Centralises the frame-type enumeration; a new frame family only needs to be registered here.
+---@param func fun(frame: Eavesdropper_SharedFrameMixin, family: EavesdropperFrameFamily)
+function Eavesdropper_SharedFrameMixin.ForEachManagedFrame(func)
+	if ED.Frame then
+		func(ED.Frame, "main");
+	end
+
+	if ED.MentionsFrame then
+		func(ED.MentionsFrame, "mentions");
+	end
+
+	ED.DedicatedFrame:ForEachFrame(function(frame)
+		func(frame, "dedicated");
+	end);
+
+	ED.GroupFrame:ForEachFrame(function(frame)
+		func(frame, "group");
+	end);
+end
+
+-- ============================================================
 -- Data-driven refresh (MSP invalidation)
 -- ============================================================
 
@@ -180,43 +210,32 @@ local dataRefreshOnCooldown = false;
 ---True if an invalidation arrived during the cooldown and still needs a redraw.
 local dataRefreshPending = false;
 
----Redraw every open dedicated and group window.
----mentions and the main window are only redrawn if they are shown.
+---Dedicated and Group windows only exist in the registry while shown, so they always redraw;
+---Main and Mentions are checked for IsShown() first.
 function Eavesdropper_SharedFrameMixin.RefreshAllWindows()
-	ED.DedicatedFrame:ForEachFrame(function(frame)
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame, family)
+		if family == "main" or family == "mentions" then
+			if frame:IsShown() then
+				frame:RefreshChat(true);
+			end
+			return;
+		end
+
+		if family == "group" then
+			frame.playerListDirty = true;
+		end
+
 		frame:RefreshChat(true);
 	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		frame.playerListDirty = true;
-		frame:RefreshChat(true);
-	end);
-
-	if ED.Frame and ED.Frame:IsShown() then
-		ED.Frame:RefreshChat(true);
-	end
-
-	if ED.MentionsFrame and ED.MentionsFrame:IsShown() then
-		ED.MentionsFrame:RefreshChat(true);
-	end
 end
 
----Applies combat-hidden state to all four frame types and re-evaluates their visibility.
----Main frame's HandleVisibility ignores isCombatHidden, as it handles things differently.
+---Main is skipped: its OnHide never reads isCombatHidden, unlike Dedicated/Group/Mentions.
 ---@param combatHidden boolean
 function Eavesdropper_SharedFrameMixin.ApplyCombatHidden(combatHidden)
-	ED.Frame:HandleVisibility();
-
-	ED.MentionsFrame.isCombatHidden = combatHidden;
-	ED.MentionsFrame:HandleVisibility();
-
-	ED.DedicatedFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = combatHidden;
-		frame:HandleVisibility();
-	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = combatHidden;
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame, family)
+		if family ~= "main" then
+			frame.isCombatHidden = combatHidden;
+		end
 		frame:HandleVisibility();
 	end);
 end
