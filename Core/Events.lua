@@ -22,6 +22,7 @@ Events:RegisterEvent("PLAYER_FOCUS_CHANGED");
 Events:RegisterEvent("PLAYER_TARGET_CHANGED");
 Events:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 Events:RegisterEvent("GROUP_ROSTER_UPDATE");
+Events:RegisterEvent("NAME_PLATE_UNIT_ADDED");
 
 ---Fired when combat begins (regen disabled). Handles frame visibility if HideInCombat is set.
 function Events:PLAYER_REGEN_DISABLED()
@@ -83,6 +84,11 @@ function Events:GUILD_ROSTER_UPDATE()
 			Events:UnregisterEvent("GUILD_ROSTER_UPDATE");
 		end
 	end);
+end
+
+---Fired when a nameplate appears; caches the unit's identity for later resolution.
+function Events:NAME_PLATE_UNIT_ADDED(_, unitToken)
+	ED.PlayerCache:CacheNameplateUnit(unitToken);
 end
 
 ED.Events = Events;
