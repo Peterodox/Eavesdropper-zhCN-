@@ -247,16 +247,25 @@ function PlayerCache:GetSenderDataFromGUID(guid)
 end
 
 ---Returns true if bareName appears in message as a standalone whole word.
+---Checks every occurrence, since an earlier one can be a substring of a longer name (e.g. "Ann" in "Annabelle").
 ---@param message string
 ---@param bareName string
 ---@return boolean
 local function IsWholeWordMatch(message, bareName)
-	local s, e = message:find(bareName, 1, true);
-	if not s then return false; end
+	local searchFrom = 1;
 
-	local before = message:sub(s - 1, s - 1);
-	local after  = message:sub(e + 1, e + 1);
-	return (before == "" or before:match("[%s%p]") ~= nil) and (after == "" or after:match("[%s%p]") ~= nil);
+	while true do
+		local s, e = message:find(bareName, searchFrom, true);
+		if not s then return false; end
+
+		local before = message:sub(s - 1, s - 1);
+		local after  = message:sub(e + 1, e + 1);
+		if (before == "" or before:match("[%s%p]") ~= nil) and (after == "" or after:match("[%s%p]") ~= nil) then
+			return true;
+		end
+
+		searchFrom = e + 1;
+	end
 end
 
 ---Unit tokens checked, alongside the current group roster, when a target has no PlayerCache entry.
