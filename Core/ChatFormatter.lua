@@ -387,7 +387,9 @@ function ChatFormatter:GetFormattedName(entry, forceDisplayMode)
 		applyRPName = useRPName and useRPNameForTargets;
 	end
 
-	if not firstName or not useRPName then
+	-- applyRPName (not useRPName): a per-event toggle (rolls/targets) being off must still
+	-- fall back to the bare name to mirror Blizzard not showing realms.
+	if not firstName or not applyRPName then
 		name = ED.Utils.StripRealmSuffix(name);
 	end
 
