@@ -95,7 +95,7 @@ function Debug:InjectTestEntry(groupName, event, class, senderName, message)
 
 	---Directly insert into the player list to avoid triggering SaveToCharDB.
 	if not frame:HasPlayer(coloredName) then
-		table.insert(frame.players, coloredName);
+		frame.players[#frame.players + 1] = coloredName;
 		frame.playerListDirty = true;
 		frame:RefreshEmptyState();
 	end

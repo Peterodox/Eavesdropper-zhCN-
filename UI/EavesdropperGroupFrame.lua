@@ -588,7 +588,7 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 
 	if playerList and #playerList > 0 then
 		for _, player in ipairs(playerList) do
-			table.insert(frame.players, player);
+			frame.players[#frame.players + 1] = player;
 		end
 		frame:RefreshEmptyState();
 	elseif sender then
@@ -633,12 +633,12 @@ function GroupFrame:GetGroupWindows(sender)
 
 	for _, frame in pairs(self.frames) do
 		if frame then
-			table.insert(result, {
+			result[#result + 1] = {
 				displayName = frame.displayName,
 				globalName = frame:GetName(),
 				players = frame.players,
 				hasSender = sender ~= nil and frame:HasPlayer(sender) or false,
-			});
+			};
 		end
 	end
 
@@ -806,7 +806,7 @@ function Eavesdropper_Group_FrameMixin:AddPlayer(sender)
 	for _, existing in ipairs(self.players) do
 		if existing == sender then return; end
 	end
-	table.insert(self.players, sender);
+	self.players[#self.players + 1] = sender;
 	self.playerListDirty = true;
 	self:RefreshEmptyState();
 	self:RefreshChat();

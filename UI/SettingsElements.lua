@@ -481,13 +481,13 @@ local function CreateDropDown(parent, data)
 			if #sorting > 0 then
 				for _, key in ipairs(sorting) do
 					if values[key] then
-						table.insert(entries, { values[key], key });
+						entries[#entries + 1] = { values[key], key };
 					end
 				end
 			else
 				local temp = {};
 				for key, text in pairs(values) do
-					table.insert(temp, { key = key, label = text });
+					temp[#temp + 1] = { key = key, label = text };
 				end
 				table.sort(temp, function(a, b)
 					-- Pin the default entry above the alphabetical run.
@@ -500,7 +500,7 @@ local function CreateDropDown(parent, data)
 					return a.label:lower() < b.label:lower();
 				end);
 				for _, item in ipairs(temp) do
-					table.insert(entries, { item.label, item.key });
+					entries[#entries + 1] = { item.label, item.key };
 				end
 			end
 

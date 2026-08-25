@@ -40,7 +40,7 @@ UpdateElvUICaches();
 ---@param skinType ElvUISkinType Type of UI element.
 ---@param applyImmediately boolean If true, skinning is triggered immediately.
 function ED.ElvUI.RegisterSkinnableElement(element, skinType, applyImmediately)
-	table.insert(skinnableElements, { element = element, type = skinType });
+	skinnableElements[#skinnableElements + 1] = { element = element, type = skinType };
 	if applyImmediately then
 		ED.ElvUI.SkinRegisteredElements();
 	end
