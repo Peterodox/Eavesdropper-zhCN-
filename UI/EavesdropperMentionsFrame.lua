@@ -58,6 +58,7 @@ end
 
 ---@param mode number? nil clears the override, reverting this window to follow the profile setting.
 function Eavesdropper_Mentions_FrameMixin:SetNameDisplayMode(mode)
+	if self:GetNameDisplayMode() == mode then return; end
 	ED.Database:SetSetting("MentionsNameDisplayModeOverride", mode ~= nil);
 	if mode ~= nil then
 		ED.Database:SetSetting("MentionsNameDisplayMode", mode);
