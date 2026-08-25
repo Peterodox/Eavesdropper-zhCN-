@@ -101,6 +101,11 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		msgSender, _, _, _ = ED.Utils.GetRollData(msgText);
 		if msgSender then
 			event = "ROLL";
+			-- Rolls carry no GUID from Blizzard, but a roll from another player is only ever visible
+			-- while grouped with them, so the roster can resolve their full identity.
+			local resolvedSender, rollGuid = ED.PlayerCache:ResolveLiveUnitByName(msgSender);
+			msgSender = resolvedSender or msgSender;
+			guid = guid or rollGuid;
 		else
 			return;
 		end

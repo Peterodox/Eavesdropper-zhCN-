@@ -283,6 +283,20 @@ local function GetLiveTargetUnits()
 	return units;
 end
 
+---Resolves a bare character name to a live Name-Realm/GUID via target/mouseover/focus/group.
+---@param bareName string
+---@return string? sender
+---@return string? guid
+function PlayerCache:ResolveLiveUnitByName(bareName)
+	if not bareName or bareName == "" then return; end
+
+	for _, unitData in ipairs(GetLiveTargetUnits()) do
+		if unitData.sender:match("^" .. bareName .. "%-") then
+			return unitData.sender, unitData.guid;
+		end
+	end
+end
+
 ---Resolves an emote's target to a sender by bare-name match, falling back to live units when
 ---PlayerCache has no entry (i.e. the target never spoke).
 ---@param message string
