@@ -730,7 +730,7 @@ function Eavesdropper_SharedFrameMixin:ApplyThemeColors()
 	end
 end
 
----Close button (12px) + right offset (2px) + gap (2px).
+---Close button is 15px, flush-mounted; +1px margin.
 local CloseButtonReserved = 16;
 ---Internal padding added to measured text width so the label stays visually centered.
 local TitleButtonPadding = 24;
