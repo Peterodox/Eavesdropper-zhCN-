@@ -238,7 +238,53 @@ function PlayerCache:GetSenderDataFromGUID(guid)
 	return sender;
 end
 
----Scans byTime entries to find a sender whose bare name appears as a whole word in the message.
+---Returns true if bareName appears in message as a standalone whole word.
+---@param message string
+---@param bareName string
+---@return boolean
+local function IsWholeWordMatch(message, bareName)
+	local s, e = message:find(bareName, 1, true);
+	if not s then return false; end
+
+	local before = message:sub(s - 1, s - 1);
+	local after  = message:sub(e + 1, e + 1);
+	return (before == "" or before:match("[%s%p]") ~= nil) and (after == "" or after:match("[%s%p]") ~= nil);
+end
+
+---Unit tokens checked, alongside the current group roster, when a target has no PlayerCache entry.
+---@type string[]
+local LIVE_TARGET_UNITS = { "target", "mouseover", "focus" };
+
+---Covers emote targets that were never cached from chat activity but are still visible in-world.
+---@return {sender:string, guid:string?}[]
+local function GetLiveTargetUnits()
+	local units = {};
+
+	for _, unit in ipairs(LIVE_TARGET_UNITS) do
+		if UnitExists(unit) and UnitIsPlayer(unit) then
+			local sender = Utils.GetUnitName(unit);
+			if sender then
+				units[#units + 1] = { sender = sender, guid = UnitGUID(unit) };
+			end
+		end
+	end
+
+	local groupPrefix = IsInRaid() and "raid" or "party";
+	for i = 1, GetNumGroupMembers() do
+		local unit = groupPrefix .. i;
+		if UnitExists(unit) and UnitIsPlayer(unit) then
+			local sender = Utils.GetUnitName(unit);
+			if sender then
+				units[#units + 1] = { sender = sender, guid = UnitGUID(unit) };
+			end
+		end
+	end
+
+	return units;
+end
+
+---Resolves an emote's target to a sender by bare-name match, falling back to live units when
+---PlayerCache has no entry (i.e. the target never spoke).
 ---@param message string
 ---@param sourceSender string? Full sender name or Name-Realm
 ---@return string? bareName
@@ -258,19 +304,20 @@ function PlayerCache:ResolveEmoteSender(message, sourceSender)
 			local bareName = sender:match("^([^%-]+)");
 
 			-- Skip the emote's own sender (both bare and full comparison).
-			if bareName and sender ~= sourceSender and bareName ~= sourceBare then
-				local s, e = message:find(bareName, 1, true);
-				if s then
-					local before = message:sub(s - 1, s - 1);
-					local after  = message:sub(e + 1, e + 1);
-
-					-- Ensure full word match.
-					if (before == "" or before:match("[%s%p]"))
-					and (after == "" or after:match("[%s%p]")) then
-						return bareName, sender, data;
-					end
-				end
+			if bareName and sender ~= sourceSender and bareName ~= sourceBare and IsWholeWordMatch(message, bareName) then
+				return bareName, sender, data;
 			end
+		end
+	end
+
+	for _, unitData in ipairs(GetLiveTargetUnits()) do
+		local sender = unitData.sender;
+		local bareName = sender:match("^([^%-]+)");
+
+		if bareName and sender ~= sourceSender and bareName ~= sourceBare and IsWholeWordMatch(message, bareName) then
+			-- Persist so a later reformat (e.g. reopening a dedicated window) hits byTime directly.
+			local resolvedSender, resolvedGuid = self:InsertAndRetrieve(sender, unitData.guid);
+			return bareName, resolvedSender, { sender = resolvedSender, guid = resolvedGuid };
 		end
 	end
 end

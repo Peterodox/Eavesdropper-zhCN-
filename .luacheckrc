@@ -603,6 +603,7 @@ stds.wow = {
 		"GetMouseFoci",
 		"GetMouseFocus",
 		"GetNormalizedRealmName",
+		"GetNumGroupMembers",
 		"GetNumLanguages",
 		"GetPlayerInfoByGUID",
 		"GetRealmName",
