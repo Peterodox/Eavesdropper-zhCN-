@@ -94,6 +94,20 @@ function PlayerCache:LoadFromSaved(cache, ttl)
 	self:PruneOldEntries(ttl);
 end
 
+---Removes a byTime slot and its sortedTimes entry, if any.
+---@param time number?
+local function RemoveByTimeSlot(time)
+	if not time then return; end
+
+	PlayerCache.byTime[time] = nil;
+	for i = #sortedTimes, 1, -1 do
+		if sortedTimes[i] == time then
+			tremove(sortedTimes, i);
+			break;
+		end
+	end
+end
+
 ---Inserts or updates a sender  <-> GUID mapping across all three indices and persists to CharDB.
 ---@param sender string
 ---@param guid string?
@@ -139,15 +153,7 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 
 	-- Remove the old byTime slot for this sender before reinserting.
 	local oldEntry = self.bySender[sender];
-	if oldEntry and oldEntry.time then
-		self.byTime[oldEntry.time] = nil;
-		for i = #sortedTimes, 1, -1 do
-			if sortedTimes[i] == oldEntry.time then
-				tremove(sortedTimes, i);
-				break;
-			end
-		end
-	end
+	RemoveByTimeSlot(oldEntry and oldEntry.time);
 
 	-- Inherit guid from existing entry if none was passed in
 	if not guid and oldEntry then
@@ -157,6 +163,8 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 	-- Evict any bare-name entry now that we have the full Name-Realm.
 	if Utils.HasRealmSuffix(sender) then
 		local bareName = Utils.StripRealmSuffix(sender);
+		local bareEntry = self.bySender[bareName];
+		RemoveByTimeSlot(bareEntry and bareEntry.time);
 		self.bySender[bareName] = nil;
 	end
 
