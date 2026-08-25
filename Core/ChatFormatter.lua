@@ -310,10 +310,23 @@ end
 ---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
 ---@return string
 local function FormatTextEmoteTargetWithRPName(entry, msgText, forceDisplayMode)
-	local bareName, sender, senderEntry = ED.PlayerCache:ResolveEmoteSender(entry.m, entry.s);
-	if not bareName or not sender then return msgText; end
+	local sender, guid = entry.tn, entry.tg;
 
-	local targetFullName, targetFirstName, targetNameColor = ED.MSP.TryGetMSPData(sender, senderEntry.guid);
+	if not sender or not guid then
+		local _, liveSender, senderEntry = ED.PlayerCache:ResolveEmoteSender(entry.m, entry.s);
+		sender = sender or liveSender;
+		guid = guid or (senderEntry and senderEntry.guid);
+
+		if liveSender then
+			entry.tn = entry.tn or liveSender;
+			entry.tg = guid;
+		end
+	end
+
+	if not sender then return msgText; end
+	local bareName = sender:match("^([^%-]+)");
+
+	local targetFullName, targetFirstName, targetNameColor = ED.MSP.TryGetMSPData(sender, guid);
 	if not targetFullName then return msgText; end
 
 	local nameDisplayMode = forceDisplayMode or ED.Database:GetSetting("NameDisplayMode");
