@@ -58,8 +58,8 @@ function ChatHandler:ChatFrameFilter(chatFrame, event, ...) -- luacheck: no unus
 		if ED.Constants.IGNORED_CHANNELS[lower] then return; end
 	end
 
+	-- Debug in case the ChatFrame arguments ever change.
 	--[[
-	Debug in case the ChatFrame arguments ever change.
 	local args = {...};
 	print("Event:", event);
 	for i, v in ipairs(args) do

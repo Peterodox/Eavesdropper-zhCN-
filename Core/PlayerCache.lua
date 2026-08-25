@@ -255,32 +255,58 @@ end
 ---@type string[]
 local LIVE_TARGET_UNITS = { "target", "mouseover", "focus" };
 
+---Returns a unit's Name-Realm/GUID, or nil if it isn't a resolvable player.
+---Rejects GetUnitName's own-name fallback (fires pre-sync) so it isn't paired with a different unit's GUID.
+---@param unit string
+---@param ownName string?
+---@return string? sender
+---@return string? guid
+local function ResolveUnitSenderGuid(unit, ownName)
+	if not UnitExists(unit) or not UnitIsPlayer(unit) then return; end
+
+	local guid = UnitGUID(unit);
+	local sender = Utils.GetUnitName(unit);
+	if not sender then return; end
+	if guid ~= ED.Globals.player_guid and sender == ownName then return; end
+
+	return sender, guid;
+end
+
 ---Covers emote targets that were never cached from chat activity but are still visible in-world.
 ---@return {sender:string, guid:string?}[]
 local function GetLiveTargetUnits()
 	local units = {};
+	local ownName = Utils.GetUnitName();
 
 	for _, unit in ipairs(LIVE_TARGET_UNITS) do
-		if UnitExists(unit) and UnitIsPlayer(unit) then
-			local sender = Utils.GetUnitName(unit);
-			if sender then
-				units[#units + 1] = { sender = sender, guid = UnitGUID(unit) };
-			end
+		local sender, guid = ResolveUnitSenderGuid(unit, ownName);
+		if sender then
+			units[#units + 1] = { sender = sender, guid = guid };
 		end
 	end
 
 	local groupPrefix = IsInRaid() and "raid" or "party";
 	for i = 1, GetNumGroupMembers() do
-		local unit = groupPrefix .. i;
-		if UnitExists(unit) and UnitIsPlayer(unit) then
-			local sender = Utils.GetUnitName(unit);
-			if sender then
-				units[#units + 1] = { sender = sender, guid = UnitGUID(unit) };
-			end
+		local sender, guid = ResolveUnitSenderGuid(groupPrefix .. i, ownName);
+		if sender then
+			units[#units + 1] = { sender = sender, guid = guid };
 		end
 	end
 
 	return units;
+end
+
+---Finds a live unit whose bare name matches, from a precomputed unit list.
+---@param units {sender:string, guid:string?}[]
+---@param bareName string
+---@return string? sender
+---@return string? guid
+local function FindUnitByName(units, bareName)
+	for _, unitData in ipairs(units) do
+		if unitData.sender:match("^" .. bareName .. "%-") then
+			return unitData.sender, unitData.guid;
+		end
+	end
 end
 
 ---Resolves a bare character name to a live Name-Realm/GUID via target/mouseover/focus/group.
@@ -289,12 +315,7 @@ end
 ---@return string? guid
 function PlayerCache:ResolveLiveUnitByName(bareName)
 	if not bareName or bareName == "" then return; end
-
-	for _, unitData in ipairs(GetLiveTargetUnits()) do
-		if unitData.sender:match("^" .. bareName .. "%-") then
-			return unitData.sender, unitData.guid;
-		end
-	end
+	return FindUnitByName(GetLiveTargetUnits(), bareName);
 end
 
 ---Upgrades any bare-name bySender entries that match a current group member, instead of waiting
@@ -306,9 +327,11 @@ function PlayerCache:BackfillFromGroupRoster()
 			bareNames[#bareNames + 1] = sender;
 		end
 	end
+	if #bareNames == 0 then return; end
 
+	local liveUnits = GetLiveTargetUnits();
 	for _, bareName in ipairs(bareNames) do
-		local sender, guid = self:ResolveLiveUnitByName(bareName);
+		local sender, guid = FindUnitByName(liveUnits, bareName);
 		if sender then
 			self:InsertAndRetrieve(sender, guid);
 		end

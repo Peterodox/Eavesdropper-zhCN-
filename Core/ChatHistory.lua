@@ -395,11 +395,14 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
 	end
 
-	-- InsertAndRetrieve returns nil for secret players; guard against that.
+	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
+	-- rejected value around.
 	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
 	if newSender then
 		sender = newSender;
 		guid = newGuid;
+	else
+		guid = nil;
 	end
 
 	self.history[sender] = self.history[sender] or {};

@@ -125,10 +125,14 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		msgSender = ED.PlayerCache:GetSenderDataFromGUID(guid) or msgSender;
 	end
 
+	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
+	-- rejected value around.
 	local newMsgSender, newGuid = ED.PlayerCache:InsertAndRetrieve(msgSender, guid);
 	if newMsgSender then
 		msgSender = newMsgSender;
 		guid = newGuid;
+	else
+		guid = nil;
 	end
 
 	local entry = {

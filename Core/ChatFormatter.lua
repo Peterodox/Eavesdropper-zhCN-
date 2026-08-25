@@ -312,13 +312,15 @@ end
 local function FormatTextEmoteTargetWithRPName(entry, msgText, forceDisplayMode)
 	local sender, guid = entry.tn, entry.tg;
 
-	if not sender or not guid then
+	if not guid then
 		local _, liveSender, senderEntry = ED.PlayerCache:ResolveEmoteSender(entry.m, entry.s);
-		sender = sender or liveSender;
-		guid = guid or (senderEntry and senderEntry.guid);
 
-		if liveSender then
-			entry.tn = entry.tn or liveSender;
+		-- Only trust a freshly resolved GUID for the same target already frozen (or nothing
+		-- frozen yet); a different name isn't safe to pair with the frozen one.
+		if liveSender and (not sender or liveSender == sender) then
+			sender = liveSender;
+			guid = senderEntry and senderEntry.guid;
+			entry.tn = sender;
 			entry.tg = guid;
 		end
 	end
