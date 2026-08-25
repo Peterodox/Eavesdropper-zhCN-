@@ -346,8 +346,8 @@ function PlayerCache:BackfillFromGroupRoster()
 	end
 end
 
----Resolves an emote's target to a sender by bare-name match, falling back to live units when
----PlayerCache has no entry (i.e. the target never spoke).
+---Resolves an emote's target to a sender by bare-name match, preferring the most recently seen
+---match, and falling back to live units when PlayerCache has no entry (i.e. the target never spoke).
 ---@param message string
 ---@param sourceSender string? Full sender name or Name-Realm
 ---@return string? bareName
@@ -361,9 +361,10 @@ function PlayerCache:ResolveEmoteSender(message, sourceSender)
 		sourceBare = sourceSender:match("^([^%-]+)");
 	end
 
-	for _, data in pairs(self.byTime) do
-		local sender = data.sender;
-		if sender then
+	for _, t in ipairs(sortedTimes) do
+		local data = self.byTime[t];
+		if data and data.sender then
+			local sender = data.sender;
 			local bareName = sender:match("^([^%-]+)");
 
 			-- Skip the emote's own sender (both bare and full comparison).
