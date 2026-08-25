@@ -24,6 +24,13 @@ function Eavesdropper_FrameMixin:IsMouseEnabled()
 	return ED.Database:GetSetting("EnableMouse");
 end
 
+---Hardcoded so right-click/hover on player names always bypasses Enable Mouse.
+---If we want this to not be default behavior, we can change that here.
+---@return boolean
+function Eavesdropper_FrameMixin:IsPlayerLinkMouseExempt()
+	return true;
+end
+
 ---@return boolean
 function Eavesdropper_FrameMixin:IsWindowLocked()
 	return not ED.Database or ED.Database:GetSetting("LockWindow") or false;

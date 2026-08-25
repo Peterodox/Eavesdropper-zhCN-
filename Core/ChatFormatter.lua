@@ -328,6 +328,7 @@ local function FormatTextEmoteTargetWithRPName(entry, msgText, forceDisplayMode)
 	end
 
 	if targetName and entry.s ~= bareName and entry.s ~= sender then
+		targetName = ED.Utils.PlayerHyperlink(sender, targetName);
 		local escapedSender = ED.Utils.EscapePattern(sender);
 		local newText, count = msgText:gsub(escapedSender, targetName, 1);
 		if count == 0 and bareName then
@@ -442,10 +443,8 @@ function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode, showJump
 	-- Name handling
 	local name, applyRPName, firstName = ChatFormatter:GetFormattedName(entry, forceDisplayMode);
 
-	-- Only group-style windows (Group, Mentions) get a clickable name.
-	if forGroup then
-		name = ED.Utils.PlayerHyperlink(entry.s, name);
-	end
+	-- Does nothing for formats that never embed name (e.g. plain SAY).
+	name = ED.Utils.PlayerHyperlink(entry.s, name);
 
 	-- Format message
 	local eventType = NormalizeEventType(entry.e);
