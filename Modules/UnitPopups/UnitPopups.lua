@@ -151,37 +151,57 @@ local function CreateOpenCharacterEavesdropButton(menuDescription, contextData)
 		return;
 	end
 
-	local function OnClick(contextData) -- luacheck: no redefined
-		local sender, guid = resolveCharacterData(contextData);
+	local sender, guid = resolveCharacterData(contextData);
+	local elementDescription = UnitPopups.CreateEavesdropOnButton(menuDescription, sender, guid);
+	elementDescription:SetData(contextData);
+	return elementDescription;
+end
+
+---Shared by the unit popup menu and Config.lua's window menu.
+---@param menuDescription table
+---@param sender string?
+---@param guid string?
+---@return table elementDescription
+function UnitPopups.CreateEavesdropOnButton(menuDescription, sender, guid)
+	local elementDescription = menuDescription:CreateButton(L.UNIT_POPUPS_EAVESDROP_ON);
+	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_EAVESDROP_ON_HELP);
+	elementDescription:SetResponder(function()
 		if sender then
 			ED.PlayerCache:InsertAndRetrieve(sender, guid);
 			ED.DedicatedFrame:AddFrame(sender);
 		end
-	end
-
-	-- Resolve sender once for existing dedicated window check
-	local sender = resolveCharacterData(contextData);
-
-	local elementDescription = menuDescription:CreateButton(L.UNIT_POPUPS_EAVESDROP_ON);
-	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_EAVESDROP_ON_HELP);
-	elementDescription:SetResponder(OnClick);
-	elementDescription:SetData(contextData);
-	if ED.DedicatedFrame:FrameExists(sender) then
+	end);
+	if not sender or ED.DedicatedFrame:FrameExists(sender) then
 		elementDescription:SetEnabled(false);
 	end
 	return elementDescription;
 end
 
----Shared UI construction for group menu buttons; called by both group menu factories.
+---Shared by the unit popup menu and Config.lua's window menu.
 ---@param menuDescription table
----@param contextData table
 ---@param sender string?
----@param OnClick function
+---@param guid string?
 ---@return table elementDescription
-local function BuildGroupMenu(menuDescription, contextData, sender, OnClick)
+function UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid)
 	local elementDescription = menuDescription:CreateButton(L.UNIT_POPUPS_EAVESDROP_GROUP);
 	elementDescription:CreateTitle(L.UNIT_POPUPS_EAVESDROP_GROUP .. " " .. MAIN_MENU);
 	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_EAVESDROP_GROUP_HELP);
+
+	if not sender then
+		elementDescription:SetEnabled(false);
+		return elementDescription;
+	end
+
+	local function OnClick(targetFrame, hasSender)
+		ED.PlayerCache:InsertAndRetrieve(sender, guid);
+		if targetFrame and hasSender then
+			targetFrame:RemovePlayer(sender);
+		elseif targetFrame and not hasSender then
+			targetFrame:AddPlayer(sender);
+		else
+			ED.GroupFrame:AddFrame(sender);
+		end
+	end
 
 	local groupWindows = ED.GroupFrame:GetGroupWindows(sender);
 	if groupWindows then
@@ -204,7 +224,6 @@ local function BuildGroupMenu(menuDescription, contextData, sender, OnClick)
 		OnClick();
 	end);
 
-	elementDescription:SetData(contextData);
 	return elementDescription;
 end
 
@@ -217,41 +236,19 @@ local function CreateBattleNetEavesdropGroupMenu(menuDescription, contextData)
 		return;
 	end
 
-	local function OnClick(targetFrame, hasSender) -- luacheck: no redefined
-		local sender, guid = GetBattleNetCharacterFullName(gameAccountInfo);
-		if sender then
-			ED.PlayerCache:InsertAndRetrieve(sender, guid);
-			if targetFrame and hasSender then
-				targetFrame:RemovePlayer(sender);
-			elseif targetFrame and not hasSender then
-				targetFrame:AddPlayer(sender);
-			else
-				ED.GroupFrame:AddFrame(sender);
-			end
-		end
-	end
-
-	return BuildGroupMenu(menuDescription, contextData, GetBattleNetCharacterFullName(gameAccountInfo), OnClick);
+	local sender, guid = GetBattleNetCharacterFullName(gameAccountInfo);
+	local elementDescription = UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid);
+	elementDescription:SetData(contextData);
+	return elementDescription;
 end
 
 local function CreateEavesdropGroupMenu(menuDescription, contextData)
 	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
-	local function OnClick(targetFrame, hasSender) -- luacheck: no redefined
-		local sender, guid = resolveCharacterData(contextData);
-		if sender then
-			ED.PlayerCache:InsertAndRetrieve(sender, guid);
-			if targetFrame and hasSender then
-				targetFrame:RemovePlayer(sender);
-			elseif targetFrame and not hasSender then
-				targetFrame:AddPlayer(sender);
-			else
-				ED.GroupFrame:AddFrame(sender);
-			end
-		end
-	end
-
-	return BuildGroupMenu(menuDescription, contextData, resolveCharacterData(contextData), OnClick);
+	local sender, guid = resolveCharacterData(contextData);
+	local elementDescription = UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid);
+	elementDescription:SetData(contextData);
+	return elementDescription;
 end
 
 ---Find the native Copy Character Name button already inserted into rootDescription

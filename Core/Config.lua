@@ -108,6 +108,20 @@ function Config.ShowConfigMenu(frame, mode)
 		filter:CreateTitle(L.FILTER .. " " .. MAIN_MENU);
 		ED.ChatFilters:GenerateFilterListMenu(frame, filter);
 
+		-- Eavesdrop on / Eavesdrop Group: always shown, disabled without an eavesdropped target.
+		-- A dedicated window always has one, so it only gets Eavesdrop Group.
+		if (mode == nil or mode == "dedicated") and ED.UnitPopups then
+			local sender = frame.eavesdropped_player;
+			local guid = frame.eavesdropped_player_guid;
+
+			if mode == nil and ED.Database:GetGlobalSetting("DedicatedWindows") then
+				ED.UnitPopups.CreateEavesdropOnButton(rootDescription, sender, guid);
+			end
+			if ED.Database:GetGlobalSetting("GroupWindows") then
+				ED.UnitPopups.CreateEavesdropGroupButton(rootDescription, sender, guid);
+			end
+		end
+
 		-- No other frame ever displays entry.mn, so this is Mentions-only.
 		if mode == "mentions" then
 			local mentionTypes = rootDescription:CreateButton(L.MENTIONS_REASON_FILTER);
