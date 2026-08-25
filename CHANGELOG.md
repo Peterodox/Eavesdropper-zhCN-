@@ -11,6 +11,7 @@ Major feature update adding a Mentions History window, Import & Export, a Group 
 - Added **Import & Export** to move your setup (profile & global settings) in and out of the game as a shareable text string ([#119](https://github.com/Raenore/Eavesdropper/pull/119)).  
   - Export either your current profile or your global settings separately to a string, then import one back under a new name or overwrite an existing profile.
 - Added a **Player List** to Group Windows' title-bar dropdown, including a quick way to add your current target ([#143](https://github.com/Raenore/Eavesdropper/pull/143)).  
+- Added **quick Eavesdrop actions to the title-bar menu** of Main and Dedicated windows, so you can open a Dedicated Window or add someone to a Group Window right from the menu ([#157](https://github.com/Raenore/Eavesdropper/pull/157)).  
 - Added a **Jump to Context** icon to Mentions and Group Windows, on by default for both, which opens (or focuses) that sender's Dedicated Window and scrolls straight to that message ([#131](https://github.com/Raenore/Eavesdropper/pull/131) and [#138](https://github.com/Raenore/Eavesdropper/pull/138)).  
 - **Dedicated Windows** now have their own per-window **Name Display** override, matching Group Windows, and all three (Mentions included) now also support **"Follow Profile Setting"** ([#131](https://github.com/Raenore/Eavesdropper/pull/131) and [#133](https://github.com/Raenore/Eavesdropper/pull/133)).  
 - Advanced Formatting can now use its own name format in Blizzard's chat window, via a new "Main Chat" section in its settings ([#115](https://github.com/Raenore/Eavesdropper/pull/115)).  
@@ -26,7 +27,7 @@ Major feature update adding a Mentions History window, Import & Export, a Group 
 - Reworked the **Profiles** settings category around a single **Manage Profiles** dropdown holding all profile management in one place ([#119](https://github.com/Raenore/Eavesdropper/pull/119)).  
   - The **Default** profile can no longer be renamed or deleted, and you can now delete your active profile; its characters switch to Default automatically.  
 - Improved performance across every window: timestamps, RP names, and Group Window rendering are all faster, especially with several windows open in busy RP areas ([#126](https://github.com/Raenore/Eavesdropper/pull/126) and [#127](https://github.com/Raenore/Eavesdropper/pull/127)).  
-- **Sender names in Group Windows are now clickable**, just like the Mentions window: left-click starts a whisper, right-click opens the game's own context menu for that player ([#131](https://github.com/Raenore/Eavesdropper/pull/131) and [#148](https://github.com/Raenore/Eavesdropper/pull/148)).  
+- **Sender and emote-target names are now clickable in every window** (Main, Dedicated, Group, and Mentions): left-click starts a whisper, right-click opens the game's own context menu for that player ([#131](https://github.com/Raenore/Eavesdropper/pull/131), [#148](https://github.com/Raenore/Eavesdropper/pull/148), and [#155](https://github.com/Raenore/Eavesdropper/pull/155)).  
 - **Shift-Right-Click** on the minimap icon now opens Mentions instead of the main window; **Shift-Left-Click** still toggles the main window as before ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).  
 
 ### Fixed

@@ -24,6 +24,10 @@ The Main Window features:
 - **Layout & Style:** Visuals (background color, opacity, font, size, etc.) and Name Formatting (Full, First Name Only, or OOC).
 - **Behavior & Storage:** History Size (10–300, default: 50) and New Message Indicator (enabled by default under **Appearance > Display**).
 
+**Interactions & Navigation:**
+- **Sender Names:** Clickable sender names let you quickly interact with players. The target of a Blizzard emote is clickable too.
+- **Quick Eavesdrop Actions:** Open a Dedicated Window or add to a Group Window for your current target, mouseover, or focus, right from the window's own menu.
+
 ![Eavesdropper Frame](Previews/Main/Main.png)
 
 ### Filters
@@ -47,6 +51,10 @@ Each Dedicated Window features independent:
 - **Behavior & Storage:** Filters, Notifications (Sound/Flash), and New Message Indicator (notifications and indicators only trigger for messages matching that window's specific filters).
 
 > **Note:** As long as a Dedicated Window is open, it remembers its setup across `/reload`s and relogs. Reopening it mid-session brings back exactly how you left it.
+
+**Interactions & Navigation:**
+- **Sender Names:** Clickable sender names let you quickly interact with players. The target of a Blizzard emote is clickable too.
+- **Quick Group Actions:** Add this window's target to a Group Window directly from the window's own menu.
 
 [![Dedicated Windows Combined](Previews/Combos/DedicatedWindows.png)](Previews/Combos/DedicatedWindows.png)  
 *Click the image to view it in full size.*
