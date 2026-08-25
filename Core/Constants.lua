@@ -153,6 +153,15 @@ Constants.CHAT_HISTORY = {
 		"hiss at everyone around you",
 		"are jealous of everyone around you",
 		"pout at everyone around you",
+		"know you'll be right back",
+		"you mourn the death of",
+		"know that you are tired",
+		"know that you are cold",
+		"know that you were just kidding",
+		"know that you are hopelessly lost",
+		"know that you are ready",
+		"know you are thirsty",
+		"that you must be going",
 	},
 };
 
