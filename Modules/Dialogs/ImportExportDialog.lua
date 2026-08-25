@@ -193,13 +193,7 @@ function Eavesdropper_ImportExportDialogMixin:SetAlphaChannelMode(mode)
 		self.alphaChannelTitle = nil;
 	end
 
-	if mode == 1 then
-		self.Background.BackgroundColor:SetColorTexture(0, 0, 0, 0.95);
-	elseif mode == 2 then
-		self.Background.BackgroundColor:SetColorTexture(0.12, 0.12, 0.12, 1);
-	else
-		self.Background.BackgroundColor:SetColorTexture(0.12, 0.12, 0.12, 0.95);
-	end
+	self.Background.BackgroundColor:SetColorTexture(ED.ScreenshotHelper.GetBackgroundColorByMode(mode));
 end
 
 ---Builds the instructions, paste box, name row, status line and action button

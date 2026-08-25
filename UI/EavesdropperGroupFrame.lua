@@ -45,7 +45,7 @@ GroupFrame.frames = GroupFrame.frames or {};
 GroupFrame.sessionState = GroupFrame.sessionState or {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
----@class EavesdropperGroupFrameInstance
+---@class EavesdropperGroupFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_Group_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -100,6 +100,17 @@ function Eavesdropper_Group_FrameMixin:SetNameDisplayMode(mode)
 	GroupFrame:SaveToCharDB();
 end
 
+---@return string
+function Eavesdropper_Group_FrameMixin:GetNewIndicatorSettingKey()
+	return "GroupWindowsNewIndicator";
+end
+
+---Font size is per-instance (self.FontSize via CharDB), not profile-scoped.
+---@return string?
+function Eavesdropper_Group_FrameMixin:GetProfileFontSizeKey()
+	return nil;
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================
@@ -125,22 +136,10 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 	-- Inherit font size from the main frame settings
 	self.FontSize = ED.Database:GetSetting("FontSize");
 
-	if not self.lockWindow then
-		self.ResizeHandle:Show();
-	end
-
 	self:ShowTitleBar();
 
-	-- Configure close button
-	local closeBtn = self.TitleBar.CloseButton;
-	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
-	closeBtn:SetScript("OnClick", function()
-		self:Hide();
-	end);
-
-	if self.hideCloseButton then
-		self.TitleBar.CloseButton:Hide();
-	end
+	-- RestoreLayout sets ResizeHandle/CloseButton visibility right after this runs.
+	self:InitCloseButtonClick();
 
 	-- Configure title button; triggers the group config menu
 	local titleBtn = self.TitleBar.TitleButton;
@@ -148,9 +147,7 @@ function Eavesdropper_Group_FrameMixin:OnLoad()
 		ED.Config.ShowConfigMenu(self, "group");
 	end);
 
-	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
-		self:OnChatboxRefresh();
-	end);
+	self:HookChatboxRefresh();
 end
 
 function Eavesdropper_Group_FrameMixin:OnShow()
@@ -166,20 +163,13 @@ end
 ---Saves to sessionState so we can re-use it in the same session still (if using same group name).
 function Eavesdropper_Group_FrameMixin:OnUnregisterFrame()
 	if self.displayName then
-		GroupFrame.sessionState[self.displayName:lower()] = {
+		local entry = {
 			name = self.displayName,
-			pos = self.savedPos,
-			size = self.savedSize,
-			filters = self.filters,
 			nameDisplayMode = self.nameDisplayMode,
-			mouseEnabled = self.mouseEnabled,
-			lockWindow = self.lockWindow,
-			lockScroll = self.lockScroll,
-			lockTitleBar = self.lockTitleBar,
-			hideCloseButton = self.hideCloseButton,
-			fontSize = self.FontSize,
 			players = ED.Utils.ShallowCopy(self.players),
 		};
+		self:FillSavedStateFields(entry);
+		GroupFrame.sessionState[self.displayName:lower()] = entry;
 
 		GroupFrame.frames[self.displayName] = nil;
 		GroupFrame:SaveToCharDB();
@@ -435,22 +425,6 @@ function Eavesdropper_Group_FrameMixin:AddMessage(entry, fromHistory)
 	self:TrackNewestEntry(entry);
 end
 
----Override of the base TryAddMessage to handle the new-message indicator.
----@param entry EavesdropperChatEntry
-function Eavesdropper_Group_FrameMixin:TryAddMessage(entry)
-	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
-
-	if not entry.p
-		and ED.Database:GetGlobalSetting("GroupWindowsNewIndicator")
-		and ED.ChatFilters:HasEvent(entry.e, self)
-		and self.NewIndicator
-		and not self.isMouseOver
-	then
-		self:FadeInNewIndicator();
-		self:ScheduleNewIndicatorFadeOut();
-	end
-end
-
 -- ============================================================
 -- Group manager
 -- ============================================================
@@ -526,17 +500,9 @@ function GroupFrame:SaveToCharDB()
 				entry.nameDisplayMode = frame.nameDisplayMode;
 			end
 
-			entry.pos = frame.savedPos;
-			entry.size = frame.savedSize;
-			entry.filters = frame.filters;
-			entry.mouseEnabled = frame.mouseEnabled;
-			entry.lockWindow = frame.lockWindow;
-			entry.lockScroll = frame.lockScroll;
-			entry.lockTitleBar = frame.lockTitleBar;
-			entry.hideCloseButton = frame.hideCloseButton;
-			entry.fontSize = frame.FontSize;
+			frame:FillSavedStateFields(entry);
 
-			table.insert(saved, entry);
+			saved[#saved + 1] = entry;
 		end
 	end
 
@@ -608,6 +574,7 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 	end
 
 	local globalName = "Eavesdropper_Group_Frame_" .. index;
+	---@type EavesdropperGroupFrameInstance
 	local frame = CreateFrame("Frame", globalName, UIParent, "Eavesdropper_Group_FrameTemplate");
 	frame:Raise();
 	frame:HandleVisibility();
@@ -621,7 +588,7 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 
 	if playerList and #playerList > 0 then
 		for _, player in ipairs(playerList) do
-			table.insert(frame.players, player);
+			frame.players[#frame.players + 1] = player;
 		end
 		frame:RefreshEmptyState();
 	elseif sender then
@@ -666,12 +633,12 @@ function GroupFrame:GetGroupWindows(sender)
 
 	for _, frame in pairs(self.frames) do
 		if frame then
-			table.insert(result, {
+			result[#result + 1] = {
 				displayName = frame.displayName,
 				globalName = frame:GetName(),
 				players = frame.players,
 				hasSender = sender ~= nil and frame:HasPlayer(sender) or false,
-			});
+			};
 		end
 	end
 
@@ -839,7 +806,7 @@ function Eavesdropper_Group_FrameMixin:AddPlayer(sender)
 	for _, existing in ipairs(self.players) do
 		if existing == sender then return; end
 	end
-	table.insert(self.players, sender);
+	self.players[#self.players + 1] = sender;
 	self.playerListDirty = true;
 	self:RefreshEmptyState();
 	self:RefreshChat();

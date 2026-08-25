@@ -11,9 +11,9 @@ local L = ED.Localization;
 
 ---Shared mixin inherited by Eavesdropper_FrameMixin, Eavesdropper_Dedicated_FrameMixin,
 ---and Eavesdropper_Group_FrameMixin.
----Four getters are required on the proper mixins (as one uses DB and other uses local frame state):
----IsMouseEnabled(), IsWindowLocked(), IsScrollLocked(), IsTitleBarLocked()
----@class Eavesdropper_SharedFrameMixin
+---Five getters are required on the proper mixins (as one uses DB and other uses local frame state):
+---IsMouseEnabled(), IsWindowLocked(), IsScrollLocked(), IsTitleBarLocked(), GetNewIndicatorSettingKey()
+---@class Eavesdropper_SharedFrameMixin : Frame
 Eavesdropper_SharedFrameMixin = {};
 
 -- ============================================================
@@ -56,6 +56,17 @@ function Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn)
 	end
 end
 
+---Close button's icon and click handler.
+---@param onClose fun()? Extra behaviour to run after Hide(); the main frame uses this to also persist WindowVisible.
+function Eavesdropper_SharedFrameMixin:InitCloseButtonClick(onClose)
+	local closeBtn = self.TitleBar.CloseButton;
+	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
+	closeBtn:SetScript("OnClick", function()
+		self:Hide();
+		if onClose then onClose(); end
+	end);
+end
+
 ---Initialise local frame state shared by Dedicated and Group instance frames.
 ---Call from OnLoad before any method that reads these fields.
 function Eavesdropper_SharedFrameMixin:InitInstanceFrameState()
@@ -69,21 +80,29 @@ function Eavesdropper_SharedFrameMixin:InitInstanceFrameState()
 end
 
 -- ============================================================
--- OnHide (instance frames)
+-- OnHide
 -- ============================================================
 
----OnHide for Dedicated and Group instance frames.
-function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
-	if not UIParent:IsShown() or self.isCombatHidden then return; end
-
-	self:StopChatTicker();
-
+---OnHide shared by every frame type.
+function Eavesdropper_SharedFrameMixin:OnHideCommon()
 	self:ResetNewIndicator();
 
 	if self.newIndicatorTimer then
 		self.newIndicatorTimer:Cancel();
 		self.newIndicatorTimer = nil;
 	end
+
+	if self.alphaChannelMode and self.SetAlphaChannelMode then
+		self:SetAlphaChannelMode(nil);
+	end
+end
+
+---OnHide for Dedicated and Group instance frames.
+function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
+	if not UIParent:IsShown() or self.isCombatHidden then return; end
+
+	self:StopChatTicker();
+	self:OnHideCommon();
 
 	self:UnregisterAllEvents();
 	self:SetScript("OnEnter", nil);
@@ -95,10 +114,6 @@ function Eavesdropper_SharedFrameMixin:OnHideInstanceFrame()
 	local frameName = self:GetName();
 	if frameName and _G[frameName] == self then
 		_G[frameName] = nil;
-	end
-
-	if self.alphaChannelMode and self.SetAlphaChannelMode then
-		self:SetAlphaChannelMode(nil);
 	end
 end
 
@@ -156,6 +171,36 @@ function Eavesdropper_SharedFrameMixin:StopChatTicker()
 end
 
 -- ============================================================
+-- Frame registry
+-- ============================================================
+
+---@alias EavesdropperFrameFamily
+---| "main"
+---| "mentions"
+---| "dedicated"
+---| "group"
+
+---Centralises the frame-type enumeration; a new frame family only needs to be registered here.
+---@param func fun(frame: Eavesdropper_SharedFrameMixin, family: EavesdropperFrameFamily)
+function Eavesdropper_SharedFrameMixin.ForEachManagedFrame(func)
+	if ED.Frame then
+		func(ED.Frame, "main");
+	end
+
+	if ED.MentionsFrame then
+		func(ED.MentionsFrame, "mentions");
+	end
+
+	ED.DedicatedFrame:ForEachFrame(function(frame)
+		func(frame, "dedicated");
+	end);
+
+	ED.GroupFrame:ForEachFrame(function(frame)
+		func(frame, "group");
+	end);
+end
+
+-- ============================================================
 -- Data-driven refresh (MSP invalidation)
 -- ============================================================
 
@@ -165,43 +210,32 @@ local dataRefreshOnCooldown = false;
 ---True if an invalidation arrived during the cooldown and still needs a redraw.
 local dataRefreshPending = false;
 
----Redraw every open dedicated and group window.
----mentions and the main window are only redrawn if they are shown.
+---Dedicated and Group windows only exist in the registry while shown, so they always redraw;
+---Main and Mentions are checked for IsShown() first.
 function Eavesdropper_SharedFrameMixin.RefreshAllWindows()
-	ED.DedicatedFrame:ForEachFrame(function(frame)
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame, family)
+		if family == "main" or family == "mentions" then
+			if frame:IsShown() then
+				frame:RefreshChat(true);
+			end
+			return;
+		end
+
+		if family == "group" then
+			frame.playerListDirty = true;
+		end
+
 		frame:RefreshChat(true);
 	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		frame.playerListDirty = true;
-		frame:RefreshChat(true);
-	end);
-
-	if ED.Frame and ED.Frame:IsShown() then
-		ED.Frame:RefreshChat(true);
-	end
-
-	if ED.MentionsFrame and ED.MentionsFrame:IsShown() then
-		ED.MentionsFrame:RefreshChat(true);
-	end
 end
 
----Applies combat-hidden state to all four frame types and re-evaluates their visibility.
----Main frame's HandleVisibility ignores isCombatHidden, as it handles things differently.
+---Main is skipped: its OnHide never reads isCombatHidden, unlike Dedicated/Group/Mentions.
 ---@param combatHidden boolean
 function Eavesdropper_SharedFrameMixin.ApplyCombatHidden(combatHidden)
-	ED.Frame:HandleVisibility();
-
-	ED.MentionsFrame.isCombatHidden = combatHidden;
-	ED.MentionsFrame:HandleVisibility();
-
-	ED.DedicatedFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = combatHidden;
-		frame:HandleVisibility();
-	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		frame.isCombatHidden = combatHidden;
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame, family)
+		if family ~= "main" then
+			frame.isCombatHidden = combatHidden;
+		end
 		frame:HandleVisibility();
 	end);
 end
@@ -262,6 +296,13 @@ end
 function Eavesdropper_SharedFrameMixin:OnScrollMarkerMouseUp()
 	self.ChatBox:ScrollToBottom();
 	self:OnChatboxRefresh();
+end
+
+---Hook the ChatBox's RefreshDisplay so the scroll marker stays in sync with scroll position.
+function Eavesdropper_SharedFrameMixin:HookChatboxRefresh()
+	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
+		self:OnChatboxRefresh();
+	end);
 end
 
 -- ============================================================
@@ -613,6 +654,20 @@ end
 function Eavesdropper_SharedFrameMixin:SaveInstanceState()
 end
 
+---Callers add their own identifying fields (sender/name, players, nameDisplayMode) on top.
+---@param entry table
+function Eavesdropper_SharedFrameMixin:FillSavedStateFields(entry)
+	entry.pos = self.savedPos;
+	entry.size = self.savedSize;
+	entry.filters = self.filters;
+	entry.mouseEnabled = self.mouseEnabled;
+	entry.lockWindow = self.lockWindow;
+	entry.lockScroll = self.lockScroll;
+	entry.lockTitleBar = self.lockTitleBar;
+	entry.hideCloseButton = self.hideCloseButton;
+	entry.fontSize = self.FontSize;
+end
+
 ---Restore resize handle and close-button visibility from local frame state.
 ---Overridden by Eavesdropper_FrameMixin to also restore position and size from the DB.
 function Eavesdropper_SharedFrameMixin:RestoreLayout()
@@ -675,7 +730,7 @@ function Eavesdropper_SharedFrameMixin:ApplyThemeColors()
 	end
 end
 
----Close button (12px) + right offset (2px) + gap (2px).
+---Close button is 15px, flush-mounted; +1px margin.
 local CloseButtonReserved = 16;
 ---Internal padding added to measured text width so the label stays visually centered.
 local TitleButtonPadding = 24;
@@ -785,8 +840,15 @@ function Eavesdropper_SharedFrameMixin:TrackNewestEntry(entry)
 	end
 end
 
----Record the clickblock timestamp then delegate to AddMessage.
----Dedicated and Group frames override this to also handle the new-message indicator.
+---Override to add extra eligibility conditions for the new-message indicator.
+---Mentions overrides this to also require a matching mention reason.
+---@param entry EavesdropperChatEntry
+---@return boolean
+function Eavesdropper_SharedFrameMixin:IsNewIndicatorEligible(entry) -- luacheck: no unused (entry)
+	return true;
+end
+
+---Record the clickblock timestamp, delegate to AddMessage, and handle the new-message indicator.
 ---@param entry EavesdropperChatEntry
 function Eavesdropper_SharedFrameMixin:TryAddMessage(entry)
 	if self.ChatBox:GetScrollOffset() == 0 then
@@ -798,6 +860,18 @@ function Eavesdropper_SharedFrameMixin:TryAddMessage(entry)
 	-- A new message un-freezes the window; the flag skips the Magnifier-driven main frame.
 	if self.usesChatTicker then
 		self:StartChatTicker();
+	end
+
+	-- GetNewIndicatorSettingKey() and IsNewIndicatorEligible() are overridden by their respective mixins.
+	if not entry.p
+		and ED.ChatFilters:HasEvent(entry.e, self)
+		and ED.Database:GetGlobalSetting(self:GetNewIndicatorSettingKey())
+		and self.NewIndicator
+		and not self.isMouseOver
+		and self:IsNewIndicatorEligible(entry)
+	then
+		self:FadeInNewIndicator();
+		self:ScheduleNewIndicatorFadeOut();
 	end
 end
 

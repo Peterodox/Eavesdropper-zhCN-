@@ -11,7 +11,7 @@ local FrameModule = {};
 local EAVESDROP_TARGET = nil;
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
----@class EavesdropperFrameInstance
+---@class EavesdropperFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -46,6 +46,16 @@ function Eavesdropper_FrameMixin:IsTitleBarLocked()
 	return ED.Database ~= nil and ED.Database:GetSetting("LockTitleBar") or false;
 end
 
+---@return string
+function Eavesdropper_FrameMixin:GetNewIndicatorSettingKey()
+	return "WindowNewIndicator";
+end
+
+---@return string
+function Eavesdropper_FrameMixin:GetProfileFontSizeKey()
+	return "FontSize";
+end
+
 -- ============================================================
 -- OnLoad / OnHide
 -- ============================================================
@@ -59,44 +69,21 @@ function Eavesdropper_FrameMixin:OnLoad()
 
 	Eavesdropper_SharedFrameMixin.InitChatBox(self, Constants.CHAT_BOX.MAX_HISTORY);
 
-	if ED.Database and not ED.Database:GetSetting("LockWindow") then
-		self.ResizeHandle:Show();
-	end
-
 	self:ShowTitleBar();
 
-	-- Configure close button
-	local closeBtn = self.TitleBar.CloseButton;
-	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
-	closeBtn:SetScript("OnClick", function()
-		self:Hide();
+	-- RestoreLayout sets ResizeHandle/CloseButton visibility right after this runs.
+	self:InitCloseButtonClick(function()
 		ED.Database:SetCharSetting("WindowVisible", false);
 	end);
-
-	if ED.Database and ED.Database:GetSetting("HideCloseButton") then
-		self.TitleBar.CloseButton:Hide();
-	end
 
 	-- Configure title button
 	self:UpdateTitleBar();
 
-	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
-		self:OnChatboxRefresh();
-	end);
+	self:HookChatboxRefresh();
 end
 
 function Eavesdropper_FrameMixin:OnHide()
-	if self.alphaChannelMode and self.SetAlphaChannelMode then
-		self:SetAlphaChannelMode(nil);
-	end
-
-	-- Instance frames get this from OnHideInstanceFrame; the main frame has to do it itself.
-	self:ResetNewIndicator();
-
-	if self.newIndicatorTimer then
-		self.newIndicatorTimer:Cancel();
-		self.newIndicatorTimer = nil;
-	end
+	self:OnHideCommon();
 end
 
 -- ============================================================
@@ -329,32 +316,13 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 	self:TrackNewestEntry(entry);
 end
 
----Override of the base TryAddMessage to handle the new-message indicator.
----Only live messages reach TryAddMessage, so a target change never flashes the indicator.
----@param entry EavesdropperChatEntry
-function Eavesdropper_FrameMixin:TryAddMessage(entry)
-	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
-
-	if not entry.p
-		and ED.ChatFilters:HasEvent(entry.e, self)
-		and ED.Database:GetGlobalSetting("WindowNewIndicator")
-		and self.NewIndicator
-		and not self.isMouseOver
-	then
-		self:FadeInNewIndicator();
-		self:ScheduleNewIndicatorFadeOut();
-	end
-end
-
----Apply all profile settings and refresh the settings UI.
----Calls ApplyWindowSettings (shared), then additionally refreshes the settings panel.
+---Keywords are parsed first so every window's refresh below highlights against the new profile.
 function Eavesdropper_FrameMixin:ApplyProfileSettings()
-	self:ApplyWindowSettings();
 	ED.Keywords:ParseList();
 
-	if ED.MentionsFrame then
-		ED.MentionsFrame:ApplyWindowSettings();
-	end
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame)
+		frame:ApplyWindowSettings();
+	end);
 
 	if ED.SettingsFrame then
 		ED.SettingsFrame:RefreshWidgets();

@@ -21,7 +21,7 @@ function GroupDialog:CreateOrRestore(name, sender)
 		ED.ConfirmDialog:Show(message, function()
 			local playerList = ED.Utils.ShallowCopy(closed.players);
 			if sender and not tContains(playerList, sender) then
-				table.insert(playerList, sender);
+				playerList[#playerList + 1] = sender;
 			end
 			ED.GroupFrame:CreateNamedFrame(name, nil, playerList, closed);
 		end, function()

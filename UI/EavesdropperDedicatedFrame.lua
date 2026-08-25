@@ -16,7 +16,7 @@ DedicatedFrame.frames = DedicatedFrame.frames or {};
 DedicatedFrame.sessionState = DedicatedFrame.sessionState or {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
----@class EavesdropperDedicatedFrameInstance
+---@class EavesdropperDedicatedFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_Dedicated_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -66,6 +66,17 @@ function Eavesdropper_Dedicated_FrameMixin:SetNameDisplayMode(mode)
 	DedicatedFrame:SaveToCharDB();
 end
 
+---@return string
+function Eavesdropper_Dedicated_FrameMixin:GetNewIndicatorSettingKey()
+	return "DedicatedWindowsNewIndicator";
+end
+
+---Font size is per-instance (self.FontSize via CharDB), not profile-scoped.
+---@return string?
+function Eavesdropper_Dedicated_FrameMixin:GetProfileFontSizeKey()
+	return nil;
+end
+
 -- ============================================================
 -- OnLoad / OnShow / OnHide
 -- ============================================================
@@ -90,22 +101,10 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 	-- Inherit font size from the main frame settings
 	self.FontSize = ED.Database:GetSetting("FontSize");
 
-	if not self.lockWindow then
-		self.ResizeHandle:Show();
-	end
-
 	self:ShowTitleBar();
 
-	-- Configure close button
-	local closeBtn = self.TitleBar.CloseButton;
-	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
-	closeBtn:SetScript("OnClick", function()
-		self:Hide();
-	end);
-
-	if self.hideCloseButton then
-		self.TitleBar.CloseButton:Hide();
-	end
+	-- RestoreLayout sets ResizeHandle/CloseButton visibility right after this runs.
+	self:InitCloseButtonClick();
 
 	-- Configure title button; prefer MSP display name, fall back to bare player name
 	local titleBtn = self.TitleBar.TitleButton;
@@ -114,9 +113,7 @@ function Eavesdropper_Dedicated_FrameMixin:OnLoad()
 		ED.Config.ShowConfigMenu(self, "dedicated");
 	end);
 
-	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
-		self:OnChatboxRefresh();
-	end);
+	self:HookChatboxRefresh();
 end
 
 function Eavesdropper_Dedicated_FrameMixin:OnShow()
@@ -131,19 +128,9 @@ end
 ---Remove self from the DedicatedFrame manager on hide and update saved data.
 ---Saves to sessionState so we can re-use it in the same session still.
 function Eavesdropper_Dedicated_FrameMixin:OnUnregisterFrame()
-	DedicatedFrame.sessionState[self.eavesdropped_player] = {
-		sender = self.eavesdropped_player,
-		nameDisplayMode = self.nameDisplayMode,
-		pos = self.savedPos,
-		size = self.savedSize,
-		filters = self.filters,
-		mouseEnabled = self.mouseEnabled,
-		lockWindow = self.lockWindow,
-		lockScroll = self.lockScroll,
-		lockTitleBar = self.lockTitleBar,
-		hideCloseButton = self.hideCloseButton,
-		fontSize = self.FontSize,
-	};
+	local entry = { sender = self.eavesdropped_player, nameDisplayMode = self.nameDisplayMode };
+	self:FillSavedStateFields(entry);
+	DedicatedFrame.sessionState[self.eavesdropped_player] = entry;
 
 	DedicatedFrame.frames[self.eavesdropped_player] = nil;
 	DedicatedFrame:SaveToCharDB();
@@ -301,22 +288,6 @@ function Eavesdropper_Dedicated_FrameMixin:AddMessage(entry, fromHistory)
 	self:TrackNewestEntry(entry);
 end
 
----Override of the base TryAddMessage to handle the new-message indicator
----@param entry EavesdropperChatEntry
-function Eavesdropper_Dedicated_FrameMixin:TryAddMessage(entry)
-	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
-
-	if not entry.p
-		and ED.ChatFilters:HasEvent(entry.e, self)
-		and ED.Database:GetGlobalSetting("DedicatedWindowsNewIndicator")
-		and self.NewIndicator
-		and not self.isMouseOver
-	then
-		self:FadeInNewIndicator();
-		self:ScheduleNewIndicatorFadeOut();
-	end
-end
-
 -- ============================================================
 -- DedicatedFrame manager
 -- ============================================================
@@ -340,25 +311,15 @@ function DedicatedFrame:SaveToCharDB()
 
 	for sender, frame in pairs(self.frames) do
 		if frame then
-			local entry = {
-				sender = sender,
-				pos = frame.savedPos,
-				size = frame.savedSize,
-				filters = frame.filters,
-				mouseEnabled = frame.mouseEnabled,
-				lockWindow = frame.lockWindow,
-				lockScroll = frame.lockScroll,
-				lockTitleBar = frame.lockTitleBar,
-				hideCloseButton = frame.hideCloseButton,
-				fontSize = frame.FontSize,
-			};
+			local entry = { sender = sender };
+			frame:FillSavedStateFields(entry);
 
 			---Only persist nameDisplayMode when it differs from the profile default.
 			if frame.nameDisplayMode and frame.nameDisplayMode ~= profileMode then
 				entry.nameDisplayMode = frame.nameDisplayMode;
 			end
 
-			table.insert(saved, entry);
+			saved[#saved + 1] = entry;
 		end
 	end
 
@@ -432,6 +393,7 @@ end
 ---@param savedEntry EavesdropperSavedDedicatedFrame? Pass explicitly from RestoreFromCharDB's pass.
 ---@return EavesdropperDedicatedFrameInstance
 function DedicatedFrame:AddFrame(sender, savedEntry)
+	---@type EavesdropperDedicatedFrameInstance?
 	local frame = _G["Eavesdropper_Dedicated_Frame_" .. sender];
 
 	if frame then

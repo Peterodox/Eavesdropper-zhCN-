@@ -5,7 +5,7 @@
 local ScreenshotHelper = {};
 
 ---Frames rendering above the fullscreen backdrop, which have to be hidden manually
-local externalFrames = {
+local ExternalFrames = {
 	"PTR_IssueReporter",
 };
 
@@ -158,11 +158,24 @@ function ScreenshotHelper.SetupObjectColorByMode(object, alphaChannelMode)
 	ScreenshotHelper.SetupObjectColor(object, colorize, colorValue);
 end
 
+---Background color mirrors the alphaChannelMode meaning documented in SetupObjectColorByMode.
+---@param alphaChannelMode number?
+---@return number r, number g, number b, number a
+function ScreenshotHelper.GetBackgroundColorByMode(alphaChannelMode)
+	if alphaChannelMode == 1 then
+		return 0, 0, 0, 0.95;
+	elseif alphaChannelMode == 2 then
+		return 0.12, 0.12, 0.12, 1;
+	else
+		return 0.12, 0.12, 0.12, 0.95;
+	end
+end
+
 ---Hide frames the fullscreen backdrop cannot cover, or restore the ones we hid
 ---@param hide boolean
 function ScreenshotHelper.SetExternalFramesHidden(hide)
 	if hide then
-		for _, frameName in ipairs(externalFrames) do
+		for _, frameName in ipairs(ExternalFrames) do
 			local frame = _G[frameName];
 			if frame and frame.IsShown and frame:IsShown() then
 				hiddenFrames[#hiddenFrames + 1] = frame;
@@ -191,33 +204,13 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 		ED.SettingsFrame:SetAlphaChannelMode(alphaChannelMode);
 	end
 
-	if ED.Frame:IsVisible() then
-		ED.Frame:SetAlphaChannelMode(alphaChannelMode);
-	else
-		ED.Frame:SetAlphaChannelMode(nil);
-	end
-
-	ED.DedicatedFrame:ForEachFrame(function(frame)
+	Eavesdropper_SharedFrameMixin.ForEachManagedFrame(function(frame)
 		if frame:IsVisible() then
 			frame:SetAlphaChannelMode(alphaChannelMode);
 		else
 			frame:SetAlphaChannelMode(nil);
 		end
 	end);
-
-	ED.GroupFrame:ForEachFrame(function(frame)
-		if frame:IsVisible() then
-			frame:SetAlphaChannelMode(alphaChannelMode);
-		else
-			frame:SetAlphaChannelMode(nil);
-		end
-	end);
-
-	if ED.MentionsFrame:IsVisible() then
-		ED.MentionsFrame:SetAlphaChannelMode(alphaChannelMode);
-	else
-		ED.MentionsFrame:SetAlphaChannelMode(nil);
-	end
 
 	local importExportDialog = ED.ImportExportDialog and ED.ImportExportDialog.frame;
 	if importExportDialog then
@@ -307,7 +300,7 @@ function ScreenshotHelper.HideDistractions(bitmask)
 
 	for index, tag in ipairs(optionalBlockedRolesets) do
 		if bit.band(1, bit.arshift(bitmask, index - 1)) == 1 then
-			table.insert(blockedRolesets, tag);
+			blockedRolesets[#blockedRolesets + 1] = tag;
 		end
 	end
 

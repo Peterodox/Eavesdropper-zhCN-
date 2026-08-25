@@ -119,7 +119,7 @@ function Utils.HandleLinks(message)
 	local links = {};
 
 	local function storeLink(a, url, b)
-		table.insert(links, url);
+		links[#links + 1] = url;
 		return a .. "\001" .. #links .. "\001" .. b;
 	end
 
@@ -143,7 +143,7 @@ function Utils.SanitizeKeywordInput(text)
 	for word in text:gmatch("([^,]*)") do
 		word = word:match("^%s*(.-)%s*$");
 		if word ~= "" then
-			table.insert(words, word);
+			words[#words + 1] = word;
 		end
 	end
 

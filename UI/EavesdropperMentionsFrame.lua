@@ -7,6 +7,7 @@ local L = ED.Localization;
 local MentionsFrameModule = {};
 
 ---Inherit all shared frame behaviour; frame-specific methods are defined below
+---@class EavesdropperMentionsFrameInstance : Eavesdropper_SharedFrameMixin
 Eavesdropper_Mentions_FrameMixin = CreateFromMixins(Eavesdropper_SharedFrameMixin);
 
 -- ============================================================
@@ -57,11 +58,29 @@ end
 
 ---@param mode number? nil clears the override, reverting this window to follow the profile setting.
 function Eavesdropper_Mentions_FrameMixin:SetNameDisplayMode(mode)
+	if self:GetNameDisplayMode() == mode then return; end
 	ED.Database:SetSetting("MentionsNameDisplayModeOverride", mode ~= nil);
 	if mode ~= nil then
 		ED.Database:SetSetting("MentionsNameDisplayMode", mode);
 	end
 	self:RefreshChat();
+end
+
+---@return string
+function Eavesdropper_Mentions_FrameMixin:GetNewIndicatorSettingKey()
+	return "MentionsHistoryNewIndicator";
+end
+
+---@return string
+function Eavesdropper_Mentions_FrameMixin:GetProfileFontSizeKey()
+	return "MentionsFontSize";
+end
+
+---Mentions additionally requires the entry's reason to match the active mention-reason filters.
+---@param entry EavesdropperChatEntry
+---@return boolean
+function Eavesdropper_Mentions_FrameMixin:IsNewIndicatorEligible(entry)
+	return ED.ChatFilters:HasMentionReason(entry.mn);
 end
 
 -- ============================================================
@@ -80,22 +99,10 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	Eavesdropper_SharedFrameMixin.InitChatBox(self, ED.Database:GetSetting("MentionsHistorySize"));
 	self.EmptyLabel.Text:SetText(L.MENTIONS_EMPTYLABEL_TEXT);
 
-	if not self:IsWindowLocked() then
-		self.ResizeHandle:Show();
-	end
-
 	self:ShowTitleBar();
 
-	-- Configure close button
-	local closeBtn = self.TitleBar.CloseButton;
-	Eavesdropper_SharedFrameMixin.InitCloseButton(closeBtn);
-	closeBtn:SetScript("OnClick", function()
-		self:Hide();
-	end);
-
-	if ED.Database:GetSetting("MentionsHideCloseButton") then
-		self.TitleBar.CloseButton:Hide();
-	end
+	-- RestoreLayout sets ResizeHandle/CloseButton visibility right after this runs.
+	self:InitCloseButtonClick();
 
 	local titleBtn = self.TitleBar.TitleButton;
 	titleBtn.Text:SetText(L.MENTIONS_WINDOW_TITLE);
@@ -104,9 +111,7 @@ function Eavesdropper_Mentions_FrameMixin:OnLoad()
 	end);
 	self:ResizeTitleButton();
 
-	hooksecurefunc(self.ChatBox, "RefreshDisplay", function()
-		self:OnChatboxRefresh();
-	end);
+	self:HookChatboxRefresh();
 end
 
 function Eavesdropper_Mentions_FrameMixin:OnShow()
@@ -116,16 +121,7 @@ end
 
 function Eavesdropper_Mentions_FrameMixin:OnHide()
 	self:StopChatTicker();
-	self:ResetNewIndicator();
-
-	if self.newIndicatorTimer then
-		self.newIndicatorTimer:Cancel();
-		self.newIndicatorTimer = nil;
-	end
-
-	if self.alphaChannelMode and self.SetAlphaChannelMode then
-		self:SetAlphaChannelMode(nil);
-	end
+	self:OnHideCommon();
 
 	-- A combat-driven hide must not count as closing it; Events.lua sets isCombatHidden
 	-- before calling HandleVisibility so it knows to reappear once combat ends.
@@ -276,28 +272,12 @@ function Eavesdropper_Mentions_FrameMixin:AddMessage(entry, fromHistory)
 	self:TrackNewestEntry(entry);
 end
 
----Override of the base TryAddMessage to handle the new-message indicator.
----@param entry EavesdropperChatEntry
-function Eavesdropper_Mentions_FrameMixin:TryAddMessage(entry)
-	Eavesdropper_SharedFrameMixin.TryAddMessage(self, entry);
-
-	if not entry.p
-		and ED.Database:GetGlobalSetting("MentionsHistoryNewIndicator")
-		and ED.ChatFilters:HasEvent(entry.e, self)
-		and ED.ChatFilters:HasMentionReason(entry.mn)
-		and self.NewIndicator
-		and not self.isMouseOver
-	then
-		self:FadeInNewIndicator();
-		self:ScheduleNewIndicatorFadeOut();
-	end
-end
-
 -- ============================================================
 -- MentionsFrameModule
 -- ============================================================
 
 function MentionsFrameModule:Init()
+	---@type EavesdropperMentionsFrameInstance
 	local frame = CreateFrame("Frame", "Eavesdropper_Mentions_Frame", UIParent, "Eavesdropper_Mentions_FrameTemplate");
 	ED.MentionsFrame = frame;
 	frame:Raise();
