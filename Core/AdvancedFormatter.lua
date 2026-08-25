@@ -40,11 +40,14 @@ local function CreateChatName(event, _, _, sender, _, _, _, _, _, _, _, _, _, gu
 		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
 	end
 
-	-- nil if secrets, guard against that
+	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
+	-- rejected value around.
 	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
 	if newSender then
 		sender = newSender;
 		guid = newGuid;
+	else
+		guid = nil;
 	end
 
 	local entry = {
