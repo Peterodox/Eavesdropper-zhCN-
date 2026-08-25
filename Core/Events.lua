@@ -21,6 +21,7 @@ Events:RegisterEvent("PLAYER_REGEN_ENABLED");
 Events:RegisterEvent("PLAYER_FOCUS_CHANGED");
 Events:RegisterEvent("PLAYER_TARGET_CHANGED");
 Events:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
+Events:RegisterEvent("GROUP_ROSTER_UPDATE");
 
 ---Fired when combat begins (regen disabled). Handles frame visibility if HideInCombat is set.
 function Events:PLAYER_REGEN_DISABLED()
@@ -59,6 +60,11 @@ function Events:UPDATE_MOUSEOVER_UNIT()
 	or targetPriority == Enums.TARGET_PRIORITY.FOCUS_ONLY then return; end
 
 	ED.Magnifier:StartUpdateCheck();
+end
+
+---Fired when group composition changes.
+function Events:GROUP_ROSTER_UPDATE()
+	ED.PlayerCache:BackfillFromGroupRoster();
 end
 
 ED.Events = Events;

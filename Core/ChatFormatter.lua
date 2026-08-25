@@ -310,10 +310,25 @@ end
 ---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
 ---@return string
 local function FormatTextEmoteTargetWithRPName(entry, msgText, forceDisplayMode)
-	local bareName, sender, senderEntry = ED.PlayerCache:ResolveEmoteSender(entry.m, entry.s);
-	if not bareName or not sender then return msgText; end
+	local sender, guid = entry.tn, entry.tg;
 
-	local targetFullName, targetFirstName, targetNameColor = ED.MSP.TryGetMSPData(sender, senderEntry.guid);
+	if not guid then
+		local _, liveSender, senderEntry = ED.PlayerCache:ResolveEmoteSender(entry.m, entry.s);
+
+		-- Only trust a freshly resolved GUID for the same target already frozen (or nothing
+		-- frozen yet); a different name isn't safe to pair with the frozen one.
+		if liveSender and (not sender or liveSender == sender) then
+			sender = liveSender;
+			guid = senderEntry and senderEntry.guid;
+			entry.tn = sender;
+			entry.tg = guid;
+		end
+	end
+
+	if not sender then return msgText; end
+	local bareName = sender:match("^([^%-]+)");
+
+	local targetFullName, targetFirstName, targetNameColor = ED.MSP.TryGetMSPData(sender, guid);
 	if not targetFullName then return msgText; end
 
 	local nameDisplayMode = forceDisplayMode or ED.Database:GetSetting("NameDisplayMode");
@@ -372,7 +387,9 @@ function ChatFormatter:GetFormattedName(entry, forceDisplayMode)
 		applyRPName = useRPName and useRPNameForTargets;
 	end
 
-	if not firstName or not useRPName then
+	-- applyRPName (not useRPName): a per-event toggle (rolls/targets) being off must still
+	-- fall back to the bare name to mirror Blizzard not showing realms.
+	if not firstName or not applyRPName then
 		name = ED.Utils.StripRealmSuffix(name);
 	end
 

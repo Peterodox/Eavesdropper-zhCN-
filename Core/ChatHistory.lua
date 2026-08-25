@@ -13,6 +13,8 @@
 ---@field sm string? Split Marker (so old messages don't break on changing them).
 ---@field mn EavesdropperMentionReason? Mention reason (stored as a bitmask); nil when the message was not aimed at the player.
 ---@field test boolean? For debug messages, true for test and generally nil otherwise.
+---@field tn string? Emote target's Name-Realm, frozen once resolved.
+---@field tg string? Emote target's GUID, frozen alongside tn.
 
 ---@class EavesdropperChatHistory
 ---@field history table<string, EavesdropperChatEntry[]> Per-sender chat history
@@ -393,11 +395,14 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
 	end
 
-	-- InsertAndRetrieve returns nil for secret players; guard against that.
+	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
+	-- rejected value around.
 	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
 	if newSender then
 		sender = newSender;
 		guid = newGuid;
+	else
+		guid = nil;
 	end
 
 	self.history[sender] = self.history[sender] or {};
@@ -419,6 +424,15 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 		g = guid, -- Can be tied to Companion Information.
 		sm = false,
 	};
+
+	-- Freeze the target's identity while it's still live.
+	if event == "CHAT_MSG_TEXT_EMOTE" then
+		local _, targetSender, targetEntry = ED.PlayerCache:ResolveEmoteSender(entry.m, entry.s);
+		if targetSender then
+			entry.tn = targetSender;
+			entry.tg = targetEntry and targetEntry.guid;
+		end
+	end
 
 	if channel then
 		local c = channel:match("^%S+");

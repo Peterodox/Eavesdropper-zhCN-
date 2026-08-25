@@ -40,11 +40,14 @@ local function CreateChatName(event, _, _, sender, _, _, _, _, _, _, _, _, _, gu
 		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
 	end
 
-	-- nil if secrets, guard against that
+	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
+	-- rejected value around.
 	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
 	if newSender then
 		sender = newSender;
 		guid = newGuid;
+	else
+		guid = nil;
 	end
 
 	local entry = {
@@ -101,6 +104,11 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		msgSender, _, _, _ = ED.Utils.GetRollData(msgText);
 		if msgSender then
 			event = "ROLL";
+			-- Rolls carry no GUID from Blizzard, but a roll from another player is only ever visible
+			-- while grouped with them, so the roster can resolve their full identity.
+			local resolvedSender, rollGuid = ED.PlayerCache:ResolveLiveUnitByName(msgSender);
+			msgSender = resolvedSender or msgSender;
+			guid = guid or rollGuid;
 		else
 			return;
 		end
@@ -120,10 +128,14 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		msgSender = ED.PlayerCache:GetSenderDataFromGUID(guid) or msgSender;
 	end
 
+	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
+	-- rejected value around.
 	local newMsgSender, newGuid = ED.PlayerCache:InsertAndRetrieve(msgSender, guid);
 	if newMsgSender then
 		msgSender = newMsgSender;
 		guid = newGuid;
+	else
+		guid = nil;
 	end
 
 	local entry = {

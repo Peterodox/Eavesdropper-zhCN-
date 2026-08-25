@@ -58,8 +58,8 @@ function ChatHandler:ChatFrameFilter(chatFrame, event, ...) -- luacheck: no unus
 		if ED.Constants.IGNORED_CHANNELS[lower] then return; end
 	end
 
+	-- Debug in case the ChatFrame arguments ever change.
 	--[[
-	Debug in case the ChatFrame arguments ever change.
 	local args = {...};
 	print("Event:", event);
 	for i, v in ipairs(args) do
@@ -80,7 +80,10 @@ function ChatHandler:ChatFrameFilter(chatFrame, event, ...) -- luacheck: no unus
 	if event == "CHAT_MSG_SYSTEM" then
 		local rollSender = ED.Utils.GetRollData(message);
 		if rollSender then
-			ED.ChatHistory:AddEntry("ROLL", rollSender, message);
+			-- Rolls carry no GUID from Blizzard, but a roll from another player is only ever visible
+			-- while grouped with them, so the roster can resolve their full identity.
+			local resolvedSender, rollGuid = ED.PlayerCache:ResolveLiveUnitByName(rollSender);
+			ED.ChatHistory:AddEntry("ROLL", resolvedSender or rollSender, message, nil, rollGuid);
 		end
 	else
 		ED.ChatHistory:AddEntry(event, sender, message, language, guid, channel);
