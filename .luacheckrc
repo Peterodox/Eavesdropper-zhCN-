@@ -237,6 +237,12 @@ stds.wow = {
 			},
 		},
 
+		C_GuildInfo = {
+			fields = {
+				"GuildRoster",
+			},
+		},
+
 		C_Item = {
 			fields = {
 				"DoesItemExistByID",
@@ -593,6 +599,7 @@ stds.wow = {
 		"GetFileIDFromPath",
 		"GetFrameMetatable",
 		"GetGuildInfo",
+		"GetGuildRosterInfo",
 		"GetInventoryItemTexture",
 		"GetInventorySlotInfo",
 		"GetKeysArray",
@@ -604,6 +611,7 @@ stds.wow = {
 		"GetMouseFocus",
 		"GetNormalizedRealmName",
 		"GetNumGroupMembers",
+		"GetNumGuildMembers",
 		"GetNumLanguages",
 		"GetPlayerInfoByGUID",
 		"GetRealmName",

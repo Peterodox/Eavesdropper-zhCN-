@@ -108,7 +108,7 @@ local function RemoveByTimeSlot(time)
 	end
 end
 
----Inserts or updates a sender  <-> GUID mapping across all three indices and persists to CharDB.
+---Inserts or updates a sender <-> GUID mapping across all three indices and persists to CharDB.
 ---@param sender string
 ---@param guid string?
 ---@return string sender Full sender name with realm
@@ -349,6 +349,44 @@ function PlayerCache:BackfillFromGroupRoster()
 	local liveUnits = GetLiveTargetUnits();
 	for _, bareName in ipairs(bareNames) do
 		local sender, guid = FindUnitByName(liveUnits, bareName);
+		if sender then
+			self:InsertAndRetrieve(sender, guid);
+		end
+	end
+end
+
+---GetGuildRosterInfo returns sender and guid directly, without needing a live unit token
+---like GetLiveTargetUnits does.
+---@return {sender:string, guid:string?}[]
+local function GetGuildRosterUnits()
+	local units = {};
+
+	for i = 1, GetNumGuildMembers() do
+		local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i);
+		if name then
+			units[#units + 1] = { sender = name, guid = guid };
+		end
+	end
+
+	return units;
+end
+
+---Upgrades any bare-name bySender entries that match a guild roster member, instead of waiting
+---for their next chat message. Run on login and guild roster changes.
+function PlayerCache:BackfillFromGuildRoster()
+	if not IsInGuild() then return; end
+
+	local bareNames = {};
+	for sender in pairs(self.bySender) do
+		if not Utils.HasRealmSuffix(sender) then
+			bareNames[#bareNames + 1] = sender;
+		end
+	end
+	if #bareNames == 0 then return; end
+
+	local guildUnits = GetGuildRosterUnits();
+	for _, bareName in ipairs(bareNames) do
+		local sender, guid = FindUnitByName(guildUnits, bareName);
 		if sender then
 			self:InsertAndRetrieve(sender, guid);
 		end

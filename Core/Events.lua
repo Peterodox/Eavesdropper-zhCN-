@@ -22,6 +22,7 @@ Events:RegisterEvent("PLAYER_FOCUS_CHANGED");
 Events:RegisterEvent("PLAYER_TARGET_CHANGED");
 Events:RegisterEvent("UPDATE_MOUSEOVER_UNIT");
 Events:RegisterEvent("GROUP_ROSTER_UPDATE");
+Events:RegisterEvent("GUILD_ROSTER_UPDATE");
 
 ---Fired when combat begins (regen disabled). Handles frame visibility if HideInCombat is set.
 function Events:PLAYER_REGEN_DISABLED()
@@ -65,6 +66,21 @@ end
 ---Fired when group composition changes.
 function Events:GROUP_ROSTER_UPDATE()
 	ED.PlayerCache:BackfillFromGroupRoster();
+end
+
+---Guild/communities panel re-fires this repeatedly while open; debounced so a burst
+---collapses into one backfill pass instead of re-scanning the whole roster each time.
+local guildRosterUpdatePending = false;
+
+---Also fires after our own GuildRoster() request completes, not just on external roster changes.
+function Events:GUILD_ROSTER_UPDATE()
+	if guildRosterUpdatePending then return; end
+	guildRosterUpdatePending = true;
+
+	C_Timer.After(1, function()
+		guildRosterUpdatePending = false;
+		ED.PlayerCache:BackfillFromGuildRoster();
+	end);
 end
 
 ED.Events = Events;

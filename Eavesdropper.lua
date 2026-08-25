@@ -55,6 +55,7 @@ function ED.Init()
 		ED.Database:Init();
 		ED.Flyway.ApplyPatches();
 		ED.PlayerCache:BackfillFromGroupRoster();
+		if IsInGuild() then C_GuildInfo.GuildRoster(); end
 
 		ED.QuestText.Init();
 		ED.MSP.Init();
