@@ -158,6 +158,19 @@ function ScreenshotHelper.SetupObjectColorByMode(object, alphaChannelMode)
 	ScreenshotHelper.SetupObjectColor(object, colorize, colorValue);
 end
 
+---Background color mirrors the alphaChannelMode meaning documented in SetupObjectColorByMode.
+---@param alphaChannelMode number?
+---@return number r, number g, number b, number a
+function ScreenshotHelper.GetBackgroundColorByMode(alphaChannelMode)
+	if alphaChannelMode == 1 then
+		return 0, 0, 0, 0.95;
+	elseif alphaChannelMode == 2 then
+		return 0.12, 0.12, 0.12, 1;
+	else
+		return 0.12, 0.12, 0.12, 0.95;
+	end
+end
+
 ---Hide frames the fullscreen backdrop cannot cover, or restore the ones we hid
 ---@param hide boolean
 function ScreenshotHelper.SetExternalFramesHidden(hide)
