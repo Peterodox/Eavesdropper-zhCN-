@@ -297,6 +297,24 @@ function PlayerCache:ResolveLiveUnitByName(bareName)
 	end
 end
 
+---Upgrades any bare-name bySender entries that match a current group member, instead of waiting
+---for their next chat message. Run on login and roster changes.
+function PlayerCache:BackfillFromGroupRoster()
+	local bareNames = {};
+	for sender in pairs(self.bySender) do
+		if not Utils.HasRealmSuffix(sender) then
+			bareNames[#bareNames + 1] = sender;
+		end
+	end
+
+	for _, bareName in ipairs(bareNames) do
+		local sender, guid = self:ResolveLiveUnitByName(bareName);
+		if sender then
+			self:InsertAndRetrieve(sender, guid);
+		end
+	end
+end
+
 ---Resolves an emote's target to a sender by bare-name match, falling back to live units when
 ---PlayerCache has no entry (i.e. the target never spoke).
 ---@param message string
