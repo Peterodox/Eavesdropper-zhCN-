@@ -161,11 +161,19 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 	end
 
 	-- Evict any bare-name entry now that we have the full Name-Realm.
+	-- Carry its guid forward (or drop the stale mapping) so byGUID never points at a bare name.
 	if Utils.HasRealmSuffix(sender) then
 		local bareName = Utils.StripRealmSuffix(sender);
 		local bareEntry = self.bySender[bareName];
-		RemoveByTimeSlot(bareEntry and bareEntry.time);
-		self.bySender[bareName] = nil;
+		if bareEntry then
+			RemoveByTimeSlot(bareEntry.time);
+			self.bySender[bareName] = nil;
+			if not guid and bareEntry.guid then
+				guid = bareEntry.guid;
+			elseif bareEntry.guid and bareEntry.guid ~= guid then
+				self.byGUID[bareEntry.guid] = nil;
+			end
+		end
 	end
 
 	local cacheTime = self:getUniqueTime();
