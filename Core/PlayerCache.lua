@@ -108,7 +108,7 @@ local function RemoveByTimeSlot(time)
 	end
 end
 
----Inserts or updates a sender  <-> GUID mapping across all three indices and persists to CharDB.
+---Inserts or updates a sender <-> GUID mapping across all three indices and persists to CharDB.
 ---@param sender string
 ---@param guid string?
 ---@return string sender Full sender name with realm
@@ -176,6 +176,11 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 	end
 	self.byTime[cacheTime] = { sender = sender, guid = guid };
 	tinsert(sortedTimes, 1, cacheTime); -- Newest first.
+
+	-- A bare name just landed in the cache; resume listening for a guild match.
+	if not Utils.HasRealmSuffix(sender) and IsInGuild() then
+		ED.Events:RegisterEvent("GUILD_ROSTER_UPDATE");
+	end
 
 	-- Persist immediately to CharDB.
 	if EavesdropperCharDB then
@@ -353,6 +358,58 @@ function PlayerCache:BackfillFromGroupRoster()
 			self:InsertAndRetrieve(sender, guid);
 		end
 	end
+end
+
+---GetGuildRosterInfo returns sender and guid directly, without needing a live unit token
+---like GetLiveTargetUnits does.
+---@return {sender:string, guid:string?}[]
+local function GetGuildRosterUnits()
+	local units = {};
+
+	for i = 1, GetNumGuildMembers() do
+		local name, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, guid = GetGuildRosterInfo(i);
+		if name then
+			units[#units + 1] = { sender = name, guid = guid };
+		end
+	end
+
+	return units;
+end
+
+---Returns true if any bySender entry is still keyed under a bare (no-realm) name.
+---@return boolean
+function PlayerCache:HasBareNames()
+	for sender in pairs(self.bySender) do
+		if not Utils.HasRealmSuffix(sender) then return true; end
+	end
+	return false;
+end
+
+---Upgrades any bare-name bySender entries that match a guild roster member, instead of waiting
+---for their next chat message. Run on login and guild roster changes.
+---@return boolean madeProgress False once nothing more can resolve against the current roster.
+function PlayerCache:BackfillFromGuildRoster()
+	if not IsInGuild() then return false; end
+
+	local bareNames = {};
+	for sender in pairs(self.bySender) do
+		if not Utils.HasRealmSuffix(sender) then
+			bareNames[#bareNames + 1] = sender;
+		end
+	end
+	if #bareNames == 0 then return false; end
+
+	local guildUnits = GetGuildRosterUnits();
+	local resolved = 0;
+	for _, bareName in ipairs(bareNames) do
+		local sender, guid = FindUnitByName(guildUnits, bareName);
+		if sender then
+			self:InsertAndRetrieve(sender, guid);
+			resolved = resolved + 1;
+		end
+	end
+
+	return resolved > 0;
 end
 
 ---Resolves an emote's target to a sender by bare-name match, preferring the most recently seen
