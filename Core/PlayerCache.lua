@@ -318,6 +318,16 @@ local function GetLiveTargetUnits()
 	return units;
 end
 
+---Resolves and caches a nameplate's player identity as soon as it appears, so they stay
+---resolvable through the normal PlayerCache TTL even after their nameplate disappears again.
+---@param unitToken string
+function PlayerCache:CacheNameplateUnit(unitToken)
+	local sender, guid = ResolveUnitSenderGuid(unitToken, Utils.GetUnitName()); -- No arg: own name, for the fallback check.
+	if sender then
+		self:InsertAndRetrieve(sender, guid);
+	end
+end
+
 ---Finds a live unit whose bare name matches, from a precomputed unit list.
 ---@param units {sender:string, guid:string?}[]
 ---@param bareName string
