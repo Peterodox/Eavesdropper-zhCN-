@@ -33,22 +33,13 @@ local function ResolveSenderAndGuid(sender, guid)
 	return sender, nil;
 end
 
+---Builds the replacement sender name for the AddSenderNameFilter callback.
 ---@param event string
----@param _ any
----@param _ any
----@param sender string
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param guid string?
+---@param ... any
 ---@return string? senderFormatted
-local function CreateChatName(event, _, _, sender, _, _, _, _, _, _, _, _, _, guid)
+local function CreateChatName(event, ...)
+	local _, _, sender, _, _, _, _, _, _, _, _, _, guid = ...;
+
 	-- Own player remains "you" or whichever the locale sets.
 	if not ED.Database:GetSetting("ApplyOnMainChat") or ED.Utils.IsOwnPlayer(sender, event) or event == "CHAT_MSG_SYSTEM" then
 		return;
