@@ -14,6 +14,25 @@ local function ResolveMainChatDisplayMode()
 	return ED.Database:GetSetting("AdvNameDisplayMode");
 end
 
+---Resolves Name-Realm from guid, then normalizes through the player cache.
+---A secret sender or guid is rejected by either call, so the guid is dropped rather than kept mismatched.
+---@param sender string
+---@param guid string?
+---@return string sender
+---@return string? guid
+local function ResolveSenderAndGuid(sender, guid)
+	if guid then
+		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
+	end
+
+	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
+	if newSender then
+		return newSender, newGuid;
+	end
+
+	return sender, nil;
+end
+
 ---@param event string
 ---@param _ any
 ---@param _ any
@@ -35,20 +54,7 @@ local function CreateChatName(event, _, _, sender, _, _, _, _, _, _, _, _, _, gu
 		return;
 	end
 
-	-- Resolve Name-Realm if GUID exists (can be nil and secret will also return nil)
-	if guid then
-		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
-	end
-
-	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
-	-- rejected value around.
-	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
-	if newSender then
-		sender = newSender;
-		guid = newGuid;
-	else
-		guid = nil;
-	end
+	sender, guid = ResolveSenderAndGuid(sender, guid);
 
 	local entry = {
 		t = time(),
@@ -101,7 +107,7 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 
 	-- System roll messages
 	if event == "CHAT_MSG_SYSTEM" then
-		msgSender, _, _, _ = ED.Utils.GetRollData(msgText);
+		msgSender = ED.Utils.GetRollData(msgText);
 		if msgSender then
 			event = "ROLL";
 			-- Rolls carry no GUID from Blizzard, but a roll from another player is only ever visible
@@ -123,20 +129,7 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		guid = ED.Globals.player_guid;
 	end
 
-	-- Resolve Name-Realm if GUID exists
-	if guid then
-		msgSender = ED.PlayerCache:GetSenderDataFromGUID(guid) or msgSender;
-	end
-
-	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
-	-- rejected value around.
-	local newMsgSender, newGuid = ED.PlayerCache:InsertAndRetrieve(msgSender, guid);
-	if newMsgSender then
-		msgSender = newMsgSender;
-		guid = newGuid;
-	else
-		guid = nil;
-	end
+	msgSender, guid = ResolveSenderAndGuid(msgSender, guid);
 
 	local entry = {
 		t = time(),
