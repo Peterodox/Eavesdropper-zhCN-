@@ -125,7 +125,8 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 		for fullName, entry in pairs(self.bySender) do
 			if fullName:match("^" .. sender .. "%-") then
 				sender = fullName;
-				guid = entry.guid or guid;
+				-- The cached guid may belong to a deleted-and-recreated character; this call's is fresher.
+				guid = guid or entry.guid;
 				break;
 			end
 		end
@@ -155,17 +156,28 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 	local oldEntry = self.bySender[sender];
 	RemoveByTimeSlot(oldEntry and oldEntry.time);
 
-	-- Inherit guid from existing entry if none was passed in
-	if not guid and oldEntry then
-		guid = oldEntry.guid;
+	-- A changed guid leaves its old byGUID entry stale forever otherwise (pruning only walks byTime).
+	if oldEntry then
+		if not guid and oldEntry.guid then
+			guid = oldEntry.guid;
+		elseif oldEntry.guid and oldEntry.guid ~= guid then
+			self.byGUID[oldEntry.guid] = nil;
+		end
 	end
 
-	-- Evict any bare-name entry now that we have the full Name-Realm.
+	-- Same stale-byGUID risk as above, now for the bare-name entry being replaced.
 	if Utils.HasRealmSuffix(sender) then
 		local bareName = Utils.StripRealmSuffix(sender);
 		local bareEntry = self.bySender[bareName];
-		RemoveByTimeSlot(bareEntry and bareEntry.time);
-		self.bySender[bareName] = nil;
+		if bareEntry then
+			RemoveByTimeSlot(bareEntry.time);
+			self.bySender[bareName] = nil;
+			if not guid and bareEntry.guid then
+				guid = bareEntry.guid;
+			elseif bareEntry.guid and bareEntry.guid ~= guid then
+				self.byGUID[bareEntry.guid] = nil;
+			end
+		end
 	end
 
 	local cacheTime = self:getUniqueTime();
