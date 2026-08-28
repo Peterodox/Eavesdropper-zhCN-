@@ -93,12 +93,11 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 	if not ED.Database:GetSetting("ApplyOnMainChat") then return; end
 
 	local guid = select(10, ...); -- SYSTEM may not have a GUID
-	local msgText = message;
 	local msgSender = sender;
 
 	-- System roll messages
 	if event == "CHAT_MSG_SYSTEM" then
-		msgSender = ED.Utils.GetRollData(msgText);
+		msgSender = ED.Utils.GetRollData(message);
 		if msgSender then
 			event = "ROLL";
 			-- Rolls carry no GUID from Blizzard, but a roll from another player is only ever visible
@@ -125,7 +124,7 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 	local entry = {
 		t = time(),
 		e = event,
-		m = msgText,
+		m = message,
 		s = msgSender,
 		g = guid, -- Can be tied to Companion Information
 		sm = false,
