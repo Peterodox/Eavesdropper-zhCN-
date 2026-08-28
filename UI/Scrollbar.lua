@@ -134,7 +134,7 @@ end
 ---@param percentage number
 function Eavesdropper_SimpleSliderMixin:SetMessageFrameScrollPercentage(percentage)
 	percentage = Clamp(percentage, 0, 1);
-	self.messageFrame:SetScrollOffset(math.floor(self.maxScrollRange * (1 - percentage) + 0.5));
+	self.messageFrame:SetScrollOffset(Round(self.maxScrollRange * (1 - percentage)));
 end
 
 ---@param instant boolean?
