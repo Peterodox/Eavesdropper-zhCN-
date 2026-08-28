@@ -5,15 +5,15 @@
 local ScreenshotHelper = {};
 
 ---Frames rendering above the fullscreen backdrop, which have to be hidden manually
-local ExternalFrames = {
+local EXTERNAL_FRAMES = {
 	"PTR_IssueReporter",
 };
 
 ---Frames hidden on entering a mode, restored when it is exited
 local hiddenFrames = {};
 
----Store FontStyle/FontObject original color
-local FontStyles = {
+---Global FontObjects whose color is captured/restored around screenshot mode
+local FONT_STYLES = {
 	"UserScaledFontGameNormal",
 	"UserScaledFontGameDisable",
 	"UserScaledFontGameHighlight",
@@ -22,12 +22,13 @@ local FontStyles = {
 	"GameFontHighlight",
 };
 
-local FontStyleColorBackup = {};
+---FontObject -> original {r, g, b}, captured once at load
+local FONT_STYLE_COLOR_BACKUP = {};
 
-for _, fontStyleName in ipairs(FontStyles) do
+for _, fontStyleName in ipairs(FONT_STYLES) do
 	local object = _G[fontStyleName];
 	if object then
-		FontStyleColorBackup[object] = {object:GetTextColor()};
+		FONT_STYLE_COLOR_BACKUP[object] = {object:GetTextColor()};
 	end
 end
 
@@ -103,8 +104,8 @@ function ScreenshotHelper.SetupObjectColor(object, colorize, colorValue)
 			local parent = object:GetParent();
 			if parent and parent.GetFontString and parent:GetFontString() == object then
 				local fontObject = object:GetFontObject();
-				if FontStyleColorBackup[fontObject] then
-					object:SetTextColor(unpack(FontStyleColorBackup[fontObject]));
+				if FONT_STYLE_COLOR_BACKUP[fontObject] then
+					object:SetTextColor(unpack(FONT_STYLE_COLOR_BACKUP[fontObject]));
 				end
 			end
 		end
@@ -175,7 +176,7 @@ end
 ---@param hide boolean
 function ScreenshotHelper.SetExternalFramesHidden(hide)
 	if hide then
-		for _, frameName in ipairs(ExternalFrames) do
+		for _, frameName in ipairs(EXTERNAL_FRAMES) do
 			local frame = _G[frameName];
 			if frame and frame.IsShown and frame:IsShown() then
 				hiddenFrames[#hiddenFrames + 1] = frame;

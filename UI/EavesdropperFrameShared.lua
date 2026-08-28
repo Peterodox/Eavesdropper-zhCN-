@@ -731,19 +731,19 @@ function Eavesdropper_SharedFrameMixin:ApplyThemeColors()
 end
 
 ---Close button is 15px, flush-mounted; +1px margin.
-local CloseButtonReserved = 16;
+local CLOSE_BUTTON_RESERVED = 16;
 ---Internal padding added to measured text width so the label stays visually centered.
-local TitleButtonPadding = 24;
-local MinTitleButtonWidth = 110;
+local TITLE_BUTTON_PADDING = 24;
+local MIN_TITLE_BUTTON_WIDTH = 110;
 
 ---Resize the TitleButton to fit its text, clamped between the minimum width and available TitleBar width.
 function Eavesdropper_SharedFrameMixin:ResizeTitleButton()
 	local titleButton = self.TitleBar and self.TitleBar.TitleButton;
 	if not titleButton or not titleButton.Text then return; end
 
-	local textWidth = titleButton.Text:GetStringWidth() + TitleButtonPadding;
-	local maxWidth = self.TitleBar:GetWidth() - CloseButtonReserved;
-	local width = Clamp(textWidth, MinTitleButtonWidth, maxWidth);
+	local textWidth = titleButton.Text:GetStringWidth() + TITLE_BUTTON_PADDING;
+	local maxWidth = self.TitleBar:GetWidth() - CLOSE_BUTTON_RESERVED;
+	local width = Clamp(textWidth, MIN_TITLE_BUTTON_WIDTH, maxWidth);
 
 	titleButton:SetWidth(width);
 end

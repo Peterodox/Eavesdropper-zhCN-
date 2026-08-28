@@ -7,7 +7,7 @@ local L = ED.Localization;
 local GroupDialog = {};
 
 ---Maximum character length for a user-defined group window name
-local MaxGroupNameLength = 32;
+local MAX_GROUP_NAME_LENGTH = 32;
 
 ---Creates a new group under chosen name. If it existed before (case-insensitive) this session
 ---Then we prompt the user to restore it, re-using the old settings, old player list, etc.
@@ -42,7 +42,7 @@ StaticPopupDialogs["EAVESDROPPER_NAME_GROUP"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	maxLetters = MaxGroupNameLength,
+	maxLetters = MAX_GROUP_NAME_LENGTH,
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
@@ -94,7 +94,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_GROUP"] = {
 	button1 = ACCEPT,
 	button2 = CANCEL,
 	hasEditBox = true,
-	maxLetters = MaxGroupNameLength,
+	maxLetters = MAX_GROUP_NAME_LENGTH,
 	whileDead = true,
 	hideOnEscape = true,
 	preferredIndex = 3,
