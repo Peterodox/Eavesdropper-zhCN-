@@ -15,7 +15,7 @@ Config.soundList = {};
 ---Maps DB setting keys to their camelCase field names on dedicated frames.
 ---Required to avoid shadowing WoW Frame API methods (e.g. EnableMouse, LockScroll).
 ---@type table<string, string>
-local DedicatedFrameFieldMap = {
+local DEDICATED_FRAME_FIELD_MAP = {
 	EnableMouse = "mouseEnabled",
 	LockScroll = "lockScroll",
 	LockWindow = "lockWindow",
@@ -62,7 +62,7 @@ function Config.ShowConfigMenu(frame, mode)
 	---@return any
 	local function getSetting(key)
 		if useFrameState then
-			local field = DedicatedFrameFieldMap[key] or key;
+			local field = DEDICATED_FRAME_FIELD_MAP[key] or key;
 			return frame[field];
 		end
 		return ED.Database:GetSetting(keyPrefix .. key);
@@ -73,7 +73,7 @@ function Config.ShowConfigMenu(frame, mode)
 	---@param postUpdate function?
 	local function toggleSetting(key, postUpdate)
 		if useFrameState then
-			local field = DedicatedFrameFieldMap[key] or key;
+			local field = DEDICATED_FRAME_FIELD_MAP[key] or key;
 			frame[field] = not frame[field];
 			frame:SaveInstanceState();
 		else
