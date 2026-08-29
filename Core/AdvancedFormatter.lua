@@ -14,41 +14,38 @@ local function ResolveMainChatDisplayMode()
 	return ED.Database:GetSetting("AdvNameDisplayMode");
 end
 
----@param event string
----@param _ any
----@param _ any
+---Resolves Name-Realm from guid, then normalizes through the player cache.
+---A secret sender or guid is rejected by either call, so the guid is dropped rather than kept mismatched.
 ---@param sender string
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
----@param _ any
 ---@param guid string?
+---@return string sender
+---@return string? guid
+local function ResolveSenderAndGuid(sender, guid)
+	if guid then
+		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
+	end
+
+	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
+	if newSender then
+		return newSender, newGuid;
+	end
+
+	return sender, nil;
+end
+
+---Builds the replacement sender name for the AddSenderNameFilter callback.
+---@param event string
+---@param ... any
 ---@return string? senderFormatted
-local function CreateChatName(event, _, _, sender, _, _, _, _, _, _, _, _, _, guid)
+local function CreateChatName(event, ...)
+	local _, _, sender, _, _, _, _, _, _, _, _, _, guid = ...;
+
 	-- Own player remains "you" or whichever the locale sets.
 	if not ED.Database:GetSetting("ApplyOnMainChat") or ED.Utils.IsOwnPlayer(sender, event) or event == "CHAT_MSG_SYSTEM" then
 		return;
 	end
 
-	-- Resolve Name-Realm if GUID exists (can be nil and secret will also return nil)
-	if guid then
-		sender = ED.PlayerCache:GetSenderDataFromGUID(guid) or sender;
-	end
-
-	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
-	-- rejected value around.
-	local newSender, newGuid = ED.PlayerCache:InsertAndRetrieve(sender, guid);
-	if newSender then
-		sender = newSender;
-		guid = newGuid;
-	else
-		guid = nil;
-	end
+	sender, guid = ResolveSenderAndGuid(sender, guid);
 
 	local entry = {
 		t = time(),
@@ -96,12 +93,11 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 	if not ED.Database:GetSetting("ApplyOnMainChat") then return; end
 
 	local guid = select(10, ...); -- SYSTEM may not have a GUID
-	local msgText = message;
 	local msgSender = sender;
 
 	-- System roll messages
 	if event == "CHAT_MSG_SYSTEM" then
-		msgSender, _, _, _ = ED.Utils.GetRollData(msgText);
+		msgSender = ED.Utils.GetRollData(message);
 		if msgSender then
 			event = "ROLL";
 			-- Rolls carry no GUID from Blizzard, but a roll from another player is only ever visible
@@ -123,25 +119,12 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		guid = ED.Globals.player_guid;
 	end
 
-	-- Resolve Name-Realm if GUID exists
-	if guid then
-		msgSender = ED.PlayerCache:GetSenderDataFromGUID(guid) or msgSender;
-	end
-
-	-- InsertAndRetrieve returns nil for secret players; drop guid too rather than keep the
-	-- rejected value around.
-	local newMsgSender, newGuid = ED.PlayerCache:InsertAndRetrieve(msgSender, guid);
-	if newMsgSender then
-		msgSender = newMsgSender;
-		guid = newGuid;
-	else
-		guid = nil;
-	end
+	msgSender, guid = ResolveSenderAndGuid(msgSender, guid);
 
 	local entry = {
 		t = time(),
 		e = event,
-		m = msgText,
+		m = message,
 		s = msgSender,
 		g = guid, -- Can be tied to Companion Information
 		sm = false,
