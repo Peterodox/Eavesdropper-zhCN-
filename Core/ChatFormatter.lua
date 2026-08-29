@@ -366,7 +366,7 @@ ChatFormatter.GetEntryColor = GetEntryColor;
 ---@param entry EavesdropperChatEntry
 ---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
 ---@return string name, boolean applyRPName, string? firstName
-function ChatFormatter:GetFormattedName(entry, forceDisplayMode)
+function ChatFormatter.GetFormattedName(entry, forceDisplayMode)
 	local name = entry.s;
 
 	local fullName, firstName, nameColor = ED.MSP.TryGetMSPData(name, entry.g);
@@ -418,7 +418,7 @@ end
 ---@param showJumpLink boolean? If true (and forGroup), prepends a Jump to Context link before the timestamp.
 ---@return string formattedMsg
 ---@return string? firstName
-function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode, showJumpLink)
+function ChatFormatter.FormatMessage(entry, forGroup, forceDisplayMode, showJumpLink)
 	if not entry or not entry.m then return ""; end
 
 	-- Timestamp
@@ -458,7 +458,7 @@ function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode, showJump
 	end
 
 	-- Name handling
-	local name, applyRPName, firstName = ChatFormatter:GetFormattedName(entry, forceDisplayMode);
+	local name, applyRPName, firstName = ChatFormatter.GetFormattedName(entry, forceDisplayMode);
 
 	-- Does nothing for formats that never embed name (e.g. plain SAY).
 	name = ED.Utils.PlayerHyperlink(entry.s, name);

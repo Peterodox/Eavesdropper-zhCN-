@@ -173,7 +173,7 @@ Constants.CHAT_NEW_INDICATOR_FADE_OUT = 10;
 Constants.WINDOW_REFRESH_INTERVAL = 60;
 
 ---Age in seconds at which a message stops changing appearance entirely.
----Shared by ChatFormatter:FormatMessage and the refresh ticker; they must not drift apart.
+---Shared by ChatFormatter.FormatMessage and the refresh ticker; they must not drift apart.
 ---@type number
 Constants.TIMESTAMP_FREEZE_AGE = 30 * 60;
 

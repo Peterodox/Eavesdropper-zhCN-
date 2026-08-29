@@ -55,7 +55,7 @@ local function CreateChatName(event, ...)
 		sm = false,
 	};
 
-	local senderFormatted, _ = ED.ChatFormatter:GetFormattedName(entry, ResolveMainChatDisplayMode());
+	local senderFormatted, _ = ED.ChatFormatter.GetFormattedName(entry, ResolveMainChatDisplayMode());
 	if senderFormatted then
 		sender = senderFormatted;
 	end
@@ -130,7 +130,7 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		sm = false,
 	};
 
-	local name, applyRPName = ED.ChatFormatter:GetFormattedName(entry, ResolveMainChatDisplayMode());
+	local name, applyRPName = ED.ChatFormatter.GetFormattedName(entry, ResolveMainChatDisplayMode());
 	local msgFinalText;
 
 	if ED.Utils.IsOwnPlayer(sender, event) then

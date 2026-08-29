@@ -148,7 +148,7 @@ function Config.ShowConfigMenu(frame, mode)
 		end
 
 		rootDescription:CreateButton(SETTINGS, function()
-			ED.Settings:OpenSettings(settingsView);
+			ED.Settings.OpenSettings(settingsView);
 		end);
 
 		rootDescription:CreateDivider();

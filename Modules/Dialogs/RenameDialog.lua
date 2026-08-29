@@ -60,7 +60,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 
 ---Prompts for a new name for a profile, replacing any other open profile name prompt.
 ---@param profileName string The profile being renamed.
-function RenameDialog:Show(profileName)
+function RenameDialog.Show(profileName)
 	ED.Utils.HideProfileNamePopups();
 
 	StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"].text = L.POPUP_RENAME_PROFILE:format(profileName);

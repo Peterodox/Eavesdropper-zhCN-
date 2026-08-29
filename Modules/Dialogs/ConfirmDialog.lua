@@ -31,7 +31,7 @@ StaticPopupDialogs["EAVESDROPPER_CONFIRM_DIALOG"] = {
 ---@param message string The confirmation message shown to the player.
 ---@param onAccept function Callback invoked when the player clicks ACCEPT or presses Enter.
 ---@param onCancel function Callback invoked when the player clicks CANCEL or presses Escape.
-function ConfirmDialog:Show(message, onAccept, onCancel)
+function ConfirmDialog.Show(message, onAccept, onCancel)
 	StaticPopupDialogs["EAVESDROPPER_CONFIRM_DIALOG"].text = message;
 	StaticPopupDialogs["EAVESDROPPER_CONFIRM_DIALOG"].onAccept = onAccept;
 	StaticPopupDialogs["EAVESDROPPER_CONFIRM_DIALOG"].onCancel = onCancel;

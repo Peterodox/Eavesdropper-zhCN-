@@ -195,7 +195,7 @@ function ScreenshotHelper.SetAlphaChannelMode(alphaChannelMode)
 	ScreenshotHelper.SetExternalFramesHidden(alphaChannelMode == 1 or alphaChannelMode == 2);
 
 	if not ED.SettingsFrame then
-		ED.Settings:Init();
+		ED.Settings.Init();
 	end
 
 	if ED.SettingsFrame then

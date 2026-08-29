@@ -555,7 +555,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 			get = function() return ED.Database:GetGlobalSetting("ElvUITheme"); end,
 			set = function(val, widget)
 				widget:SetEnabled(false);
-				ED.ConfirmDialog:Show(L.THEMES_SETTINGS_ELVUI_CONFIRM, function()
+				ED.ConfirmDialog.Show(L.THEMES_SETTINGS_ELVUI_CONFIRM, function()
 					ED.Database:SetGlobalSetting("ElvUITheme", val);
 					ReloadUI();
 				end, function() widget:Refresh(); end);
@@ -1359,14 +1359,14 @@ function Eavesdropper_SettingsMixin:OnLoad()
 					label = L.PROFILES_NEWPROFILE,
 					atlas = "editmode-new-layout-plus",
 					disabledAtlas = "editmode-new-layout-plus-disabled",
-					func = function() ED.NewProfileDialog:Show(); end,
+					func = function() ED.NewProfileDialog.Show(); end,
 				},
 				{
 					label = L.PROFILES_RESETBUTTON,
 					tooltip = L.PROFILES_RESETBUTTON_HELP,
 					texture = "Interface\\AddOns\\Eavesdropper\\Resources\\Reset",
 					func = function()
-						ED.ConfirmDialog:Show(L.PROFILES_CONFIRM_RESET, function()
+						ED.ConfirmDialog.Show(L.PROFILES_CONFIRM_RESET, function()
 							ED.Database:ResetProfile();
 							self:RefreshWidgets();
 						end);
@@ -1644,9 +1644,9 @@ end
 -- ============================================================
 
 ---Opens the settings window if closed, closes it if open. Never targets a specific tab.
-function Settings:ToggleSettings()
+function Settings.ToggleSettings()
 	if not ED.SettingsFrame then
-		Settings:Init();
+		Settings.Init();
 	end
 
 	ED.SettingsFrame:SetShown(not ED.SettingsFrame:IsShown());
@@ -1655,9 +1655,9 @@ end
 
 ---Ensures the settings window is shown and switches to view if given (does not hide).
 ---@param view number|string|nil A category's display name (preferred), a tab index, or nil which reopens the last selected tab (or first).
-function Settings:OpenSettings(view)
+function Settings.OpenSettings(view)
 	if not ED.SettingsFrame then
-		Settings:Init();
+		Settings.Init();
 	end
 
 	ED.SettingsFrame:Show();
@@ -1668,7 +1668,7 @@ function Settings:OpenSettings(view)
 	end
 end
 
-function Settings:Init()
+function Settings.Init()
 	local frame = CreateFrame("Frame", "Eavesdropper_Settings", UIParent, "Eavesdropper_SettingsMenuTemplate");
 	ED.SettingsFrame = frame;
 end
