@@ -12,7 +12,7 @@ local NewProfileDialog = {};
 ---Attempts to create a profile named after the trimmed text in the edit box.
 ---@param profileName string
 ---@return boolean success
-local function tryCreate(profileName)
+local function TryCreate(profileName)
 	if not ED.Database:IsValidNewProfileName(profileName) then return false; end
 	return ED.Database:CreateProfile(string.trim(profileName));
 end
@@ -26,7 +26,7 @@ StaticPopupDialogs["EAVESDROPPER_NEW_PROFILE"] = {
 	hideOnEscape = true,
 	preferredIndex = 3,
 	OnAccept = function(self)
-		tryCreate(self.EditBox:GetText());
+		TryCreate(self.EditBox:GetText());
 	end,
 	OnShow = function(self)
 		local button1 = _G[self:GetName() .. "Button1"];
@@ -47,7 +47,7 @@ StaticPopupDialogs["EAVESDROPPER_NEW_PROFILE"] = {
 		StaticPopup_Hide("EAVESDROPPER_NEW_PROFILE");
 	end,
 	EditBoxOnEnterPressed = function(self)
-		if tryCreate(self:GetText()) then
+		if TryCreate(self:GetText()) then
 			StaticPopup_Hide("EAVESDROPPER_NEW_PROFILE");
 		end
 	end,

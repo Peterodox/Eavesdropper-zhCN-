@@ -60,7 +60,7 @@ function Config.ShowConfigMenu(frame, mode)
 	---Reads a setting from frame state or the DB
 	---@param key string
 	---@return any
-	local function getSetting(key)
+	local function GetSetting(key)
 		if useFrameState then
 			local field = DEDICATED_FRAME_FIELD_MAP[key] or key;
 			return frame[field];
@@ -71,7 +71,7 @@ function Config.ShowConfigMenu(frame, mode)
 	---Toggles a setting on frame state or in the DB, then runs postUpdate
 	---@param key string
 	---@param postUpdate function?
-	local function toggleSetting(key, postUpdate)
+	local function ToggleSetting(key, postUpdate)
 		if useFrameState then
 			local field = DEDICATED_FRAME_FIELD_MAP[key] or key;
 			frame[field] = not frame[field];
@@ -157,26 +157,26 @@ function Config.ShowConfigMenu(frame, mode)
 		-- Enable Mouse
 		local enableMouse = rootDescription:CreateCheckbox(
 			L.ENABLE_MOUSE,
-			function() return getSetting("EnableMouse"); end,
-			function() toggleSetting("EnableMouse", function() frame:UpdateMouseLock(); end); end
+			function() return GetSetting("EnableMouse"); end,
+			function() ToggleSetting("EnableMouse", function() frame:UpdateMouseLock(); end); end
 		);
 		ED.Utils.SetMenuTooltip(enableMouse, L.ENABLE_MOUSE_HELP);
 
 		-- Lock Scroll
 		local lockScroll = rootDescription:CreateCheckbox(
 			L.LOCK_SCROLL,
-			function() return getSetting("LockScroll"); end,
-			function() toggleSetting("LockScroll", function() frame.ChatBox:ScrollToBottom(); end); end
+			function() return GetSetting("LockScroll"); end,
+			function() ToggleSetting("LockScroll", function() frame.ChatBox:ScrollToBottom(); end); end
 		);
 		ED.Utils.SetMenuTooltip(lockScroll, L.LOCK_SCROLL_HELP);
 
 		-- Lock Window
 		local lockWindow = rootDescription:CreateCheckbox(
 			L.LOCK_WINDOW,
-			function() return getSetting("LockWindow"); end,
+			function() return GetSetting("LockWindow"); end,
 			function()
-				toggleSetting("LockWindow", function()
-					frame.ResizeHandle:SetShown(not getSetting("LockWindow"));
+				ToggleSetting("LockWindow", function()
+					frame.ResizeHandle:SetShown(not GetSetting("LockWindow"));
 				end);
 			end
 		);
@@ -185,8 +185,8 @@ function Config.ShowConfigMenu(frame, mode)
 		-- Lock Title Bar
 		local lockTitleBar = rootDescription:CreateCheckbox(
 			L.LOCK_TITLEBAR,
-			function() return getSetting("LockTitleBar"); end,
-			function() toggleSetting("LockTitleBar"); end
+			function() return GetSetting("LockTitleBar"); end,
+			function() ToggleSetting("LockTitleBar"); end
 		);
 		ED.Utils.SetMenuTooltip(lockTitleBar, L.LOCK_TITLEBAR_HELP);
 
@@ -255,10 +255,10 @@ function Config.ShowConfigMenu(frame, mode)
 			-- Hide Close Button
 			rootDescription:CreateCheckbox(
 				L.HIDE_CLOSE_BUTTON,
-				function() return getSetting("HideCloseButton"); end,
+				function() return GetSetting("HideCloseButton"); end,
 				function()
-					toggleSetting("HideCloseButton", function()
-						frame.TitleBar.CloseButton:SetShown(not getSetting("HideCloseButton"));
+					ToggleSetting("HideCloseButton", function()
+						frame.TitleBar.CloseButton:SetShown(not GetSetting("HideCloseButton"));
 					end);
 				end
 			);

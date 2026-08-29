@@ -27,7 +27,7 @@ TRP3_API.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.REGISTER_DATA_UPDATED, f
 end);
 
 ---Registers the Eavesdropper toolbar button once TRP3's workflow is fully loaded.
-local function onStart()
+local function OnStart()
 	TRP3_API.RegisterCallback(TRP3_Addon, TRP3_Addon.Events.WORKFLOW_ON_LOADED, function()
 		if not TRP3_API.toolbar then return; end
 
@@ -54,6 +54,6 @@ TRP3_API.module.registerModule({
 	["description"] = "Adds a toolbar button to open Eavesdropper easily.",
 	["version"] = ED.Globals.addon_version,
 	["id"] = "trp_eavesdropper",
-	["onStart"] = onStart,
+	["onStart"] = OnStart,
 	["minVersion"] = 3,
 });

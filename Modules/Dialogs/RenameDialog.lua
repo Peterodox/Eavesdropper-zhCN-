@@ -13,7 +13,7 @@ local RenameDialog = {};
 ---@param oldName string?
 ---@param newName string
 ---@return boolean success
-local function tryRename(oldName, newName)
+local function TryRename(oldName, newName)
 	if not oldName then return false; end
 	if not ED.Database:IsValidNewProfileName(newName) then return false; end
 	return ED.Database:RenameProfile(oldName, string.trim(newName));
@@ -28,7 +28,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 	hideOnEscape = true,
 	preferredIndex = 3,
 	OnAccept = function(self, data)
-		tryRename(data and data.oldName, self.EditBox:GetText());
+		TryRename(data and data.oldName, self.EditBox:GetText());
 	end,
 	OnShow = function(self, data)
 		local button1 = _G[self:GetName() .. "Button1"];
@@ -52,7 +52,7 @@ StaticPopupDialogs["EAVESDROPPER_RENAME_PROFILE"] = {
 		StaticPopup_Hide("EAVESDROPPER_RENAME_PROFILE");
 	end,
 	EditBoxOnEnterPressed = function(self, data)
-		if tryRename(data and data.oldName, self:GetText()) then
+		if TryRename(data and data.oldName, self:GetText()) then
 			StaticPopup_Hide("EAVESDROPPER_RENAME_PROFILE");
 		end
 	end,

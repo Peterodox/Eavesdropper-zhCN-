@@ -28,7 +28,7 @@ local GLOBAL_EXCLUDED = {
 	Flyway = true,
 };
 
----Fields sanitizeShape keeps even though the default shape lacks them, with the bounds
+---Fields SanitizeShape keeps even though the default shape lacks them, with the bounds
 ---they are clamped to. Listed per setting so a field cannot leak into an unrelated table.
 ---Numeric fields need both a min and a max.
 local EXTRA_SHAPE_FIELDS = {
@@ -86,7 +86,7 @@ end
 ---@param enumTable table
 ---@param value any
 ---@return boolean
-local function isEnumValue(enumTable, value)
+local function IsEnumValue(enumTable, value)
 	for _, member in pairs(enumTable) do
 		if member == value then return true; end
 	end
@@ -97,7 +97,7 @@ end
 ---@param value table
 ---@param default table
 ---@return table? colour
-local function sanitizeColor(value, default)
+local function SanitizeColor(value, default)
 	local clean = {};
 
 	for _, channel in ipairs({ "r", "g", "b" }) do
@@ -126,7 +126,7 @@ local ANCHOR_FIELDS = {
 ---@param default table
 ---@param extraFields table? See EXTRA_SHAPE_FIELDS.
 ---@return table
-local function sanitizeShape(value, default, extraFields)
+local function SanitizeShape(value, default, extraFields)
 	local clean = {};
 
 	for field, defaultValue in pairs(default) do
@@ -161,7 +161,7 @@ end
 ---@param whitelist table<string, any>
 ---@return table clean
 ---@return number dropped
-local function sanitizeToggleTable(value, whitelist)
+local function SanitizeToggleTable(value, whitelist)
 	local clean, dropped = {}, 0;
 
 	for key, enabled in pairs(value) do
@@ -181,23 +181,23 @@ end
 ---@param default any
 ---@return any? sanitized nil when the value must be dropped
 ---@return number dropped Count of nested keys discarded.
-local function sanitizeValue(key, value, default)
+local function SanitizeValue(key, value, default)
 	if type(value) ~= type(default) then return nil, 0; end
 
 	if type(value) == "table" then
 		if COLOR_KEYS[key] then
-			return sanitizeColor(value, default), 0;
+			return SanitizeColor(value, default), 0;
 		elseif key == "Filters" or key == "MentionsFilters" then
-			return sanitizeToggleTable(value, Constants.FILTER_OPTIONS);
+			return SanitizeToggleTable(value, Constants.FILTER_OPTIONS);
 		elseif key == "MentionsReasonFilters" then
-			return sanitizeToggleTable(value, Enums.MENTION_REASON);
+			return SanitizeToggleTable(value, Enums.MENTION_REASON);
 		end
 
-		return sanitizeShape(value, default), 0;
+		return SanitizeShape(value, default), 0;
 	end
 
 	if ENUM_KEYS[key] then
-		if not isEnumValue(ENUM_KEYS[key], value) then return nil, 0; end
+		if not IsEnumValue(ENUM_KEYS[key], value) then return nil, 0; end
 		return value, 0;
 	end
 
@@ -229,7 +229,7 @@ function ProfileTransfer.SanitizeProfile(data)
 		if default == nil then
 			dropped = dropped + 1;
 		else
-			local sanitized, nested = sanitizeValue(key, value, default);
+			local sanitized, nested = SanitizeValue(key, value, default);
 
 			if sanitized == nil then
 				dropped = dropped + 1;
@@ -259,7 +259,7 @@ function ProfileTransfer.SanitizeGlobals(data)
 		elseif type(value) ~= type(default) then
 			dropped = dropped + 1;
 		elseif type(value) == "table" then
-			clean[key] = sanitizeShape(value, default, EXTRA_SHAPE_FIELDS[key]);
+			clean[key] = SanitizeShape(value, default, EXTRA_SHAPE_FIELDS[key]);
 		elseif GLOBAL_NUMERIC_BOUNDS[key] then
 			local bounds = GLOBAL_NUMERIC_BOUNDS[key];
 			clean[key] = bounds.max and Clamp(value, bounds.min, bounds.max) or math.max(value, bounds.min);
@@ -279,7 +279,7 @@ end
 ---@param name string?
 ---@param data table
 ---@return table packed
-local function packPayload(payloadType, name, data)
+local function PackPayload(payloadType, name, data)
 	-- Positional to keep the payload compact. Name is "" rather than nil, since a nil hole
 	-- would break both the length check and unpack on decode.
 	return {
@@ -295,7 +295,7 @@ end
 ---@param payload table
 ---@param headers table
 ---@return string? text
-local function encodePayload(label, payload, headers)
+local function EncodePayload(label, payload, headers)
 	local ok, serialized = pcall(C_EncodingUtil.SerializeCBOR, payload);
 	if not ok then return nil; end
 
@@ -317,7 +317,7 @@ function ProfileTransfer.ExportProfile()
 		data[key] = db:GetSetting(key);
 	end
 
-	return encodePayload(LABEL_PROFILE, packPayload("profile", name, data), {
+	return EncodePayload(LABEL_PROFILE, PackPayload("profile", name, data), {
 		{ key = "Name",          value = name },
 		{ key = "Exported",      value = date("%Y-%m-%d %H:%M:%S") },
 		{ key = "AddOn-Version", value = ED.Globals.addon_version },
@@ -344,7 +344,7 @@ function ProfileTransfer.ExportGlobals()
 		end
 	end
 
-	return encodePayload(LABEL_GLOBAL, packPayload("global", nil, data), {
+	return EncodePayload(LABEL_GLOBAL, PackPayload("global", nil, data), {
 		{ key = "Exported",      value = date("%Y-%m-%d %H:%M:%S") },
 		{ key = "AddOn-Version", value = ED.Globals.addon_version },
 	});

@@ -242,7 +242,7 @@ Database.globalDefaults = CopyTable(GLOBAL_DEFAULTS);
 ---@param base table
 ---@param override table
 ---@return table
-local function mergeTables(base, override)
+local function MergeTables(base, override)
 	-- start with defaults
 	local result = ED.Utils.ShallowCopy(base);
 	-- apply profile overrides (including keys not in defaults)
@@ -258,7 +258,7 @@ end
 ---@param value table
 ---@param def table?
 ---@return table?
-local function pruneToDefaults(value, def)
+local function PruneToDefaults(value, def)
 	local newTable = {};
 	-- store only keys that differ from defaults
 	for k, v in pairs(value) do
@@ -274,14 +274,14 @@ end
 ---Primitives matching defaults are nilled; table values are pruned key-by-key
 ---and removed entirely when every key matches the default.
 ---@param profile table
-local function pruneProfile(profile)
+local function PruneProfile(profile)
 	for key, value in pairs(profile) do
 		local def = DEFAULT_PROFILE[key];
 		if def == nil then -- luacheck: ignore 542 (empty if branch)
 			-- No default exists for this key; leave it untouched.
 		elseif type(value) == "table" then
 			if type(def) == "table" then
-				profile[key] = pruneToDefaults(value, def);
+				profile[key] = PruneToDefaults(value, def);
 			end
 		elseif value == def then
 			profile[key] = nil;
@@ -314,7 +314,7 @@ function Database:Init()
 
 	-- Prune all profiles to remove values that match their defaults.
 	for _, profileData in pairs(db.profiles) do
-		pruneProfile(profileData);
+		PruneProfile(profileData);
 	end
 
 	self:InitCharacterDatabase();
@@ -557,7 +557,7 @@ function Database:ImportProfile(profileName, data, overwrite)
 		target[k] = v;
 	end
 
-	pruneProfile(target);
+	PruneProfile(target);
 	self:SetProfile(profileName);
 
 	if ED.SettingsFrame then
@@ -696,7 +696,7 @@ function Database:GetSetting(key)
 	if profile and profile[key] ~= nil then
 		-- Table: merge defaults with profile overrides so neither side is mutated.
 		if type(def) == "table" then
-			return mergeTables(def, profile[key]);
+			return MergeTables(def, profile[key]);
 		end
 		return profile[key];
 	end
@@ -720,7 +720,7 @@ function Database:SetSetting(key, value)
 	local def = self.defaults[key];
 
 	if type(value) == "table" then
-		profile[key] = pruneToDefaults(value, def);
+		profile[key] = PruneToDefaults(value, def);
 	elseif value == def then
 		profile[key] = nil;
 	else
@@ -770,7 +770,7 @@ function Database:SetCharSetting(key, value)
 	local def = self.charDefaults[key];
 
 	if type(value) == "table" then
-		settings[key] = pruneToDefaults(value, def);
+		settings[key] = PruneToDefaults(value, def);
 	elseif value == def then
 		settings[key] = nil;
 	else

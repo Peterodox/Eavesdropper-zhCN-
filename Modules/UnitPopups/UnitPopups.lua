@@ -92,7 +92,7 @@ end
 ---Returns (nil, nil) if the constructed sender begins with UNKNOWNOBJECT.
 ---@param contextData table
 ---@return string?, string?
-local function resolveCharacterData(contextData)
+local function ResolveCharacterData(contextData)
 	local unit = contextData.unit;
 	local name = contextData.name;
 	local server = contextData.server;
@@ -151,7 +151,7 @@ local function CreateOpenCharacterEavesdropButton(menuDescription, contextData)
 		return;
 	end
 
-	local sender, guid = resolveCharacterData(contextData);
+	local sender, guid = ResolveCharacterData(contextData);
 	local elementDescription = UnitPopups.CreateEavesdropOnButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
@@ -245,7 +245,7 @@ end
 local function CreateEavesdropGroupMenu(menuDescription, contextData)
 	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
-	local sender, guid = resolveCharacterData(contextData);
+	local sender, guid = ResolveCharacterData(contextData);
 	local elementDescription = UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
@@ -289,11 +289,11 @@ local function CreateButtonAfterOtherOptions(menuDescription, text)
 end
 
 local function CreateCopyNameButton(menuDescription, contextData)
-	local sender = resolveCharacterData(contextData);
+	local sender = ResolveCharacterData(contextData);
 	if not sender then return; end
 
 	local function OnClick(contextData) -- luacheck: no redefined
-		local clickedSender = resolveCharacterData(contextData);
+		local clickedSender = ResolveCharacterData(contextData);
 		if clickedSender then
 			ED.CopyTextDialog.ShowCopyName(clickedSender);
 		end
@@ -373,7 +373,7 @@ local function CreateToggleMentionsButton(menuDescription, contextData)
 	end
 
 	-- Player themselves in chat frame is considered FRIEND, so check that we only run on ourselves.
-	local sender = resolveCharacterData(contextData);
+	local sender = ResolveCharacterData(contextData);
 	if not sender or sender ~= ED.Utils.GetUnitName() then
 		return;
 	end
