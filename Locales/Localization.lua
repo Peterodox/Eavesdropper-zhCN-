@@ -7,7 +7,7 @@ local DEFAULT_LOCALE_CODE = "enUS";
 ---@class ED.LocalizationClass
 ---@field New fun(defaultLocaleContent:table<string,string>):ED.Localization
 ---@field RegisterNewLocale fun(self:ED.LocalizationClass, code:string, name:string, content:table<string,string>)
----@field SetCurrentLocale fun(self:ED.LocalizationClass, code:string, fallback:boolean|nil)
+---@field SetCurrentLocale fun(self:ED.LocalizationClass, code:string, fallback:boolean?)
 ---@field GetText fun(self:ED.LocalizationClass, key:string, ...:any):string
 ---@field GetDefaultLocale fun(self:ED.LocalizationClass):string
 ---@field GetPreferredLocale fun(self:ED.LocalizationClass):string
@@ -58,7 +58,7 @@ end
 
 ---Set the active locale
 ---@param code string
----@param fallback boolean|nil
+---@param fallback boolean?
 function Localization:SetCurrentLocale(code, fallback)
 	if self.locales[code] then
 		self.currentLocaleCode = code;

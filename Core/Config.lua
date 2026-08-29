@@ -42,7 +42,7 @@ end
 
 ---Display the configuration menu for the addon.
 ---@param frame table
----@param mode "dedicated"|"group"|"mentions"|nil nil means the main Eavesdropper frame.
+---@param mode ("dedicated"|"group"|"mentions")? nil means the main Eavesdropper frame.
 ---@return nil
 function Config.ShowConfigMenu(frame, mode)
 	-- All three instance windows show the options section.
