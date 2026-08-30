@@ -11,7 +11,7 @@ Eavesdropper keeps you immersed in busy RP environments by tracking the conversa
 - **Multi-Message Support:** Built-in support for Chattery, EmoteScribe, EmoteSplitter, and Yapper.  
 - **Advanced RP Name Formatting:** Replaces standard names with RP names in rolls, Blizzard emotes, NPC dialogue, and Quest Text (via Dialogue UI).  
 - **Profiles & Sharing:** Manage per-character profiles and export/import setups or global account settings as text strings.  
-- **Keybindings:** Open the Main Window, Settings, or a Dedicated Window from Blizzard's **Options > Keybindings** menu.  
+- **Keybindings:** Open the Main Window, Settings, Mentions, or a Dedicated Window from Blizzard's **Options > Keybindings** menu.  
 - **ElvUI:** Optional, toggleable ElvUI skinning.  
 - **Localization:** Full English and French translations, with a partial Russian translation and more languages welcome.
 
@@ -69,7 +69,7 @@ Each Group Window features independent:
 > **Note:** As long as a Group Window is open, it remembers its setup and player list across `/reload`s and relogs. Reopening one with the same name lets you bring that back or start fresh.
 
 **Interactions & Navigation:**
-- **Sender Names:** Hover to underline and right-click for the standard player context menu (Whisper, Invite, Eavesdrop On).
+- **Sender Names:** Hover to underline and right-click for the standard player context menu (Whisper, Invite, Eavesdrop On). The target of a Blizzard emote is clickable too.
 - **Jump to Context:** Opens the sender's Dedicated Window scrolled directly to that message, showing the surrounding conversation.
 - **Player List Menu:** Access membership directly from the title bar (sorted by RP first name). Click **Add Target** to quickly add your current target, use checkboxes to toggle members on/off, or click the icon beside each member to jump straight to their Dedicated Window.
 
@@ -82,7 +82,7 @@ A dedicated window listing every message aimed at you, whether through keyword h
 Open it via `/ed mentions`, **Shift-Right-Click** on the minimap icon, or by selecting **"Toggle Mentions"** in your unit popup menu.
 
 The Mentions Window features independent:
-- **Behavior & Storage:** Filters, New Message Indicator, History Size (10–1000, default: 300), and a **Mention Types** filter to toggle keyword hits and Blizzard emotes independently.
+- **Behavior & Storage:** Filters, New Message Indicator, History Size (10–1000, default: 300), Font Size, and a **Mention Types** filter to toggle keyword hits and Blizzard emotes independently.
 
 > **Note:** Only new messages are checked. Older messages aren't rescanned when you add a keyword afterward.
 
@@ -139,7 +139,7 @@ This formatting applies to **all Eavesdropper windows** (Main, Dedicated, Group,
 *Click any image to view it in full size.*
 
 ## Profiles & Sharing
-Every character can run its own profile, ensuring your bank alt and main RP character maintain distinct setups. Profiles are managed under **Settings > Profiles**, where you can create, copy, rename, reset, and delete them.
+Every character can run its own profile, ensuring your Human and Void Elf character maintain distinct setups. Profiles are managed under **Settings > Profiles**, where you can create, copy, rename, reset, and delete them.
 
 **Import & Export:**
 Export either your **Profile** (window styling, filters, keywords, notifications) or your **Account Settings** (options shared across all profiles, such as minimap button visibility) as a shareable text string for backups or sharing.

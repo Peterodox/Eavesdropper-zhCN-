@@ -11,7 +11,7 @@ Major feature update adding a Mentions History window, Import & Export, a Group 
 
 ### Added
 - Added a **Mentions History** window that lists every message aimed at you, whether a keyword hit or a Blizzard emote (e.g. /poke, /wave), across every channel, with its own filters and a new **Settings > Mentions** category ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).
-  - Open it via /ed mentions, the minimap icon, or your unit popup menu.
+  - Open it via /ed mentions, the minimap icon, your unit popup menu, or the new **Toggle Mentions** keybinding ([#154](https://github.com/Raenore/Eavesdropper/pull/154)).
 - Added **Import & Export** to move your setup (profile & global settings) in and out of the game as a shareable text string ([#119](https://github.com/Raenore/Eavesdropper/pull/119)).
   - Export either your current profile or your global settings separately to a string, then import one back under a new name or overwrite an existing profile.
 - Added a **Player List** to Group Windows' title-bar dropdown, including a quick way to add your current target ([#143](https://github.com/Raenore/Eavesdropper/pull/143)).
@@ -33,6 +33,7 @@ Major feature update adding a Mentions History window, Import & Export, a Group 
 - Improved performance across every window: timestamps, RP names, and Group Windows all update faster, especially with several windows open in busy RP areas ([#126](https://github.com/Raenore/Eavesdropper/pull/126) and [#127](https://github.com/Raenore/Eavesdropper/pull/127)).
 - **Player names are now clickable in every window** (Main, Dedicated, Group, and Mentions), including anyone mentioned in an emote, not just the sender: right-click opens the game's own context menu for that player ([#131](https://github.com/Raenore/Eavesdropper/pull/131), [#148](https://github.com/Raenore/Eavesdropper/pull/148), and [#155](https://github.com/Raenore/Eavesdropper/pull/155)).
 - **Shift-Right-Click** on the minimap icon now opens Mentions instead of the main window; **Shift-Left-Click** still toggles the main window as before ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).
+- Updated the TOC for Patch 12.1 ([#122](https://github.com/Raenore/Eavesdropper/pull/122)).
 
 ### Fixed
 - Settings changes now apply instantly to open Dedicated and Group windows, no reopen or /reload needed ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).
@@ -43,6 +44,7 @@ Major feature update adding a Mentions History window, Import & Export, a Group 
 - The **New Message Indicator** setting for Group Windows now actually disables the indicator when unchecked ([#126](https://github.com/Raenore/Eavesdropper/pull/126)).
 - Fixed NPC dialogue sometimes being renamed twice when both Eavesdropper and **Total RP 3: RP Name in Quest Text** were active ([#135](https://github.com/Raenore/Eavesdropper/pull/135)).
 - Dedicated Windows no longer offer a broken "Rename" option in their title-bar menu ([#131](https://github.com/Raenore/Eavesdropper/pull/131)).
+- Fixed rapid duplicate rolls (like quick re-rolls, or a toy that rolls twice) sometimes only showing the first roll ([#170](https://github.com/Raenore/Eavesdropper/pull/170)).
 
 ## [0.5.1] - 2026-08-04
 Maintenance update switching the license to GNU GPLv3, improving Total RP 3 & MSP initialization during login, and fixing keyword token parsing across non-TRP3 RP addons.
