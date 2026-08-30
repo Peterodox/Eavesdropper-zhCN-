@@ -27,7 +27,7 @@ ED.Globals = {
 	DEBUG_MODE = false,
 	--@end-non-debug@]===]
 
-	initialized = false;
+	initialized = false,
 
 	addon_title = C_AddOns.GetAddOnMetadata("Eavesdropper", "Title"),
 	addon_version = C_AddOns.GetAddOnMetadata("Eavesdropper", "Version"),
