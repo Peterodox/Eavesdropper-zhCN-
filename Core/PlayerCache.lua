@@ -34,7 +34,7 @@ local sortedTimes = {};
 
 ---Returns a unique GetTime() value for use as a byTime key.
 ---@return number
-function PlayerCache:getUniqueTime()
+function PlayerCache:GetUniqueTime()
 	local t = GetTime();
 	while self.byTime[t] do
 		t = t + Constants.PLAYER_CACHE.TIME;
@@ -180,7 +180,7 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 		end
 	end
 
-	local cacheTime = self:getUniqueTime();
+	local cacheTime = self:GetUniqueTime();
 
 	self.bySender[sender] = { guid = guid, time = cacheTime };
 	if guid then

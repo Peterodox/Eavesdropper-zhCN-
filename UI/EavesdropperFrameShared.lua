@@ -634,7 +634,7 @@ end
 ---Applies saved config & title bar options from a CharDB entry (Dedicated/Group only)
 ---Mentions reads these from the profile instead.
 ---Re-runs RestoreLayout/UpdateMouseLock to apply the proper states.
----@param entry EavesdropperSavedDedicatedFrame|EavesdropperGroupSessionState|EavesdropperSavedGroupFrame|nil
+---@param entry (EavesdropperSavedDedicatedFrame|EavesdropperGroupSessionState|EavesdropperSavedGroupFrame)?
 function Eavesdropper_SharedFrameMixin:ApplySavedOptions(entry)
 	if not entry then return; end
 

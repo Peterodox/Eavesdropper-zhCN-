@@ -148,7 +148,7 @@ end
 
 ---Colorize an object by alphaChannelMode
 ---@param object any
----@param alphaChannelMode number|nil
+---@param alphaChannelMode number?
 function ScreenshotHelper.SetupObjectColorByMode(object, alphaChannelMode)
 	-- mode 1: All Widgets turn black + white fullscreen backdrop
 	-- mode 2: Widgets use original colors + black fullscreen backdrop

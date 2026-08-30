@@ -41,11 +41,11 @@ ChatHistory.nextEntryId = 1;
 ---@type EavesdropperConstants
 local Constants = ED.Constants;
 
----pruneAndRebuild Rebuilds list index and prunes expired entries
+---PruneAndRebuild Rebuilds list index and prunes expired entries
 ---@param now number
 ---@return number? minLineId
 ---@return number maxLineId
-function ChatHistory:pruneAndRebuild(now)
+function ChatHistory:PruneAndRebuild(now)
 	local DisablePruning = false; -- dev flag: disable expiration pruning (local set)
 	local ForcePruneAll = false; -- dev flag: removes all history (local set, highest priority)
 
@@ -108,8 +108,8 @@ function ChatHistory:pruneAndRebuild(now)
 	return minLineId, maxLineId;
 end
 
----upgradeBareNames Upgrades old entries without realm suffix
-function ChatHistory:upgradeBareNames()
+---UpgradeBareNames Upgrades old entries without realm suffix
+function ChatHistory:UpgradeBareNames()
 	if not self.byTime then return; end
 
 	local byTimeKeys = {};
@@ -132,8 +132,8 @@ function ChatHistory:upgradeBareNames()
 	end
 end
 
----backfillGUIDs Fills missing GUIDs per sender history
-function ChatHistory:backfillGUIDs()
+---BackfillGUIDs Fills missing GUIDs per sender history
+function ChatHistory:BackfillGUIDs()
 	for _, chatData in pairs(self.history) do
 		local knownGUID;
 
@@ -161,10 +161,10 @@ function ChatHistory:LoadFromSaved(savedHistory)
 
 	local now = time();
 
-	local minLineId, maxLineId = self:pruneAndRebuild(now);
+	local minLineId, maxLineId = self:PruneAndRebuild(now);
 
-	self:upgradeBareNames();
-	self:backfillGUIDs();
+	self:UpgradeBareNames();
+	self:BackfillGUIDs();
 
 	self.minEntryId = minLineId or maxLineId;
 	self.nextEntryId = (maxLineId or 0) + 1;

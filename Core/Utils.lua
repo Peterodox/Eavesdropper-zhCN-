@@ -118,13 +118,13 @@ function Utils.HandleLinks(message)
 	message = " " .. message .. " ";
 	local links = {};
 
-	local function storeLink(a, url, b)
+	local function StoreLink(a, url, b)
 		links[#links + 1] = url;
 		return a .. "\001" .. #links .. "\001" .. b;
 	end
 
-	message = message:gsub("([%s%(])(https?://[^%)%s]+)([%s%)])", storeLink);
-	message = message:gsub("([%s%(])([A-Za-z0-9-%.]+[A-Za-z0-9-]+%.[A-Za-z0-9]+/[^%)%s]*)([%s%)])", storeLink);
+	message = message:gsub("([%s%(])(https?://[^%)%s]+)([%s%)])", StoreLink);
+	message = message:gsub("([%s%(])([A-Za-z0-9-%.]+[A-Za-z0-9-]+%.[A-Za-z0-9]+/[^%)%s]*)([%s%)])", StoreLink);
 
 	message = message:gsub("\001(%d+)\001", function(i)
 		local url = links[tonumber(i)];

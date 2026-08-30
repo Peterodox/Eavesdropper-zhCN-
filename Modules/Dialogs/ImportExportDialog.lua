@@ -164,7 +164,7 @@ end
 -- Screenshot Helper
 -- ============================================================
 
----@param mode number|nil
+---@param mode number?
 function Eavesdropper_ImportExportDialogMixin:SetAlphaChannelMode(mode)
 	-- mode 1: All Widgets turn black + white fullscreen backdrop
 	-- mode 2: Widgets use original colors + black fullscreen backdrop

@@ -259,7 +259,7 @@ function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainS
 	local generation = self.mergeGeneration;
 
 	-- Chunking gathering takes time and might span multiple frames, so we keep the current id and table here.
-	-- We can then use this in finish() to still fold new live messages into self.mergedHistory (through AppendToMergedHistory).
+	-- We can then use this in Finish() to still fold new live messages into self.mergedHistory (through AppendToMergedHistory).
 	local rebuildStartId = ED.ChatHistory.nextEntryId;
 	local previousMerged = self.mergedHistory;
 
@@ -269,7 +269,7 @@ function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainS
 
 	---Gathers one player's history into entries/seen, deduplicating by entry id, as we did in the past.
 	---@param player string
-	local function gatherPlayer(player)
+	local function GatherPlayer(player)
 		local history = ED.ChatHistory:GetPlayerHistory(player, maxMessages, self);
 
 		if not history or #history == 0 then
@@ -287,7 +287,7 @@ function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainS
 	end
 
 	---Sorts entries ascending by id and trims to maxMessages.
-	local function sortAndTrim()
+	local function SortAndTrim()
 		if #entries == 0 then return; end
 
 		table.sort(entries, function(a, b) return a.id < b.id; end);
@@ -302,8 +302,8 @@ function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainS
 
 	---Sorts and trims the gather, folds in anything appended live since the rebuild started,
 	---stores the result, and redraws. See comment @ rebuildStartId for further info.
-	local function finish()
-		sortAndTrim();
+	local function Finish()
+		SortAndTrim();
 
 		if previousMerged then
 			local foldedInLive = false;
@@ -317,7 +317,7 @@ function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainS
 			end
 
 			if foldedInLive then
-				sortAndTrim();
+				SortAndTrim();
 			end
 		end
 
@@ -327,30 +327,30 @@ function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainS
 
 	if forceSync or (#players * maxMessages <= Constants.CHAT_BOX.GROUP_CHUNK_THRESHOLD) then
 		for _, player in ipairs(players) do
-			gatherPlayer(player);
+			GatherPlayer(player);
 		end
-		finish();
+		Finish();
 		return;
 	end
 
 	-- We use a counter for generation so that an invalidated rebuild is stopped early in favor of the newer one.
 	local index = 0;
-	local function step()
+	local function Step()
 		if generation ~= self.mergeGeneration then return; end
 
 		index = index + 1;
 		local player = players[index];
 
 		if not player then
-			finish();
+			Finish();
 			return;
 		end
 
-		gatherPlayer(player);
-		RunNextFrame(step);
+		GatherPlayer(player);
+		RunNextFrame(Step);
 	end
 
-	step();
+	Step();
 end
 
 ---Clears the ChatBox and replays the cached merged history into it. Does not re-gather,

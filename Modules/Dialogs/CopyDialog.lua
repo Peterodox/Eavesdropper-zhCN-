@@ -13,7 +13,7 @@ local CopyDialog = {};
 ---@param sourceName string?
 ---@param newName string
 ---@return boolean success
-local function tryCopy(sourceName, newName)
+local function TryCopy(sourceName, newName)
 	if not sourceName then return false; end
 	if not ED.Database:IsValidNewProfileName(newName) then return false; end
 	return ED.Database:CloneProfile(sourceName, string.trim(newName));
@@ -28,7 +28,7 @@ StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"] = {
 	hideOnEscape = true,
 	preferredIndex = 3,
 	OnAccept = function(self, data)
-		tryCopy(data and data.sourceName, self.EditBox:GetText());
+		TryCopy(data and data.sourceName, self.EditBox:GetText());
 	end,
 	OnShow = function(self)
 		local button1 = _G[self:GetName() .. "Button1"];
@@ -49,7 +49,7 @@ StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"] = {
 		StaticPopup_Hide("EAVESDROPPER_COPY_PROFILE");
 	end,
 	EditBoxOnEnterPressed = function(self, data)
-		if tryCopy(data and data.sourceName, self:GetText()) then
+		if TryCopy(data and data.sourceName, self:GetText()) then
 			StaticPopup_Hide("EAVESDROPPER_COPY_PROFILE");
 		end
 	end,

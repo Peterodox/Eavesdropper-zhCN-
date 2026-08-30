@@ -18,7 +18,7 @@ local clearTimerToken = nil;
 Magnifier.Frame = nil;
 
 ---Triggers a chat timestamp refresh on the main Eavesdropper frame.
-local function tickerCallback()
+local function TickerCallback()
 	if ED.Frame then
 		ED.Frame:UpdateTarget();
 	end
@@ -29,7 +29,7 @@ end
 ---@param handleField string
 ---@param interval number
 ---@param callback function
-local function createTicker(self, handleField, interval, callback)
+local function CreateTicker(self, handleField, interval, callback)
 	if not self[handleField] then
 		self[handleField] = C_Timer.NewTicker(interval, callback);
 	end
@@ -38,7 +38,7 @@ end
 ---Cancels and clears the stored ticker.
 ---@param self table
 ---@param handleField string
-local function stopTicker(self, handleField)
+local function StopTicker(self, handleField)
 	if self[handleField] then
 		self[handleField]:Cancel();
 		self[handleField] = nil;
@@ -174,9 +174,9 @@ function Magnifier:HandleUpdate(reason)
 
 	-- Keep the chat timestamp ticker alive while a unit is magnified.
 	if unitGUID then
-		createTicker(self, "EavesdropperUpdate", Constants.WINDOW_REFRESH_INTERVAL, tickerCallback);
+		CreateTicker(self, "EavesdropperUpdate", Constants.WINDOW_REFRESH_INTERVAL, TickerCallback);
 	else
-		stopTicker(self, "EavesdropperUpdate");
+		StopTicker(self, "EavesdropperUpdate");
 	end
 
 	-- If we are polling and the unit has not changed, nothing further to do.
