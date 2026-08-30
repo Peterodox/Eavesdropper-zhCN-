@@ -316,6 +316,7 @@ function Eavesdropper_SimpleSliderMixin:OnSizeChanged()
 	if not self.sizeDirty then
 		self.sizeDirty = true;
 		RunNextFrame(function()
+			self.sizeDirty = false;
 			self:UpdateSlider();
 		end);
 	end
