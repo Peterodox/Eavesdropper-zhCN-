@@ -65,11 +65,8 @@ local function ResolveEventType(event)
 	return "CHAT_MSG_" .. event;
 end
 
----Injects a test chat entry into ChatHistory and ensures the sender
----is present in the target group frame's player list.
----The sender name is wrapped in the class colour so it renders coloured
----in the formatted output without requiring MSP data.
----Test senders bypass AddPlayer to avoid persisting to charDB.
+---Injects a test chat entry into ChatHistory and ensures the sender is present in the target
+---group frame's player list. Test senders bypass AddPlayer to avoid persisting to charDB.
 ---@param groupName string
 ---@param event string Uppercased event shorthand (e.g. "SAY", "EMOTE", "ROLL")
 ---@param class string Uppercased English class token (e.g. "ROGUE", "PALADIN")

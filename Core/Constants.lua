@@ -118,7 +118,7 @@ Constants.CHAT_HISTORY = {
 	EXPIRE_AFTER = 60 * 30,
 
 	---Seconds within which an identical message counts as a duplicate.
-	---Doubles as the rotation period of the dedupe generations in ChatHistory.IsDuplicate.
+	---Doubles as the rotation period of the dedupe generations in ChatHistory:IsDuplicate.
 	DUPLICATE_WINDOW = 0.5,
 
 	---Emote substrings that mention "you" but should not trigger notifications.

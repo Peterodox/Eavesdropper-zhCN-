@@ -68,6 +68,8 @@ local function IsSplitMarkerMsg(entry, msg)
 end
 
 ---Remove the hyperlink but keep the color and []
+---@param text string
+---@return string
 local function StripHyperlinks(text)
 	return C_StringUtil.StripHyperlinks(text, true, true, false, true, true);
 end
@@ -75,6 +77,7 @@ end
 ---Formats a normal chat message, prepending any configured prefix.
 ---@param entry EavesdropperChatEntry
 ---@param name string
+---@param forGroup boolean? If true, called from a group context.
 ---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
 local function MsgFormatNormal(entry, name, forGroup, stripMessageHyperlink) -- luacheck: no unused (name, forGroup)
@@ -146,6 +149,7 @@ end
 ---sender name is visible so multi-player group windows remain legible.
 ---@param entry EavesdropperChatEntry
 ---@param name string
+---@param forGroup boolean? If true, called from a group context.
 ---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
 local function MsgFormatEmoteGroup(entry, name, forGroup, stripMessageHyperlink) -- luacheck: no unused (forGroup)
@@ -224,7 +228,7 @@ local function MsgFormatTextEmoteGroup(entry, name)
 	return name .. " " .. ColorByEvent(StripLeadingToken(entry.m or ""), entry.e);
 end
 
----@type table<string, fun(entry:EavesdropperChatEntry, name:string):string>
+---@type table<string, fun(entry:EavesdropperChatEntry, name:string, forGroup:boolean?, stripMessageHyperlink:boolean?):string>
 local MESSAGE_FORMATS = {
 	SAY                  = MsgFormatNormal,
 	PARTY                = MsgFormatNormal,
@@ -252,6 +256,7 @@ setmetatable(MESSAGE_FORMATS, {
 ---Verb events produce "Name says: msg"; prefix events produce "[Party] Name: msg".
 ---@param entry EavesdropperChatEntry
 ---@param name string
+---@param forGroup boolean? If true, called from a group context.
 ---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
 local function MsgFormatNormalGroup(entry, name, forGroup, stripMessageHyperlink) -- luacheck: no unused (forGroup)
@@ -283,7 +288,7 @@ local function MsgFormatNormalGroup(entry, name, forGroup, stripMessageHyperlink
 	return prefix .. name .. ": " .. msg;
 end
 
----@type table<string, fun(entry:EavesdropperChatEntry, name:string):string>
+---@type table<string, fun(entry:EavesdropperChatEntry, name:string, forGroup:boolean?, stripMessageHyperlink:boolean?):string>
 local GROUP_MESSAGE_FORMATS = {
 	SAY                  = MsgFormatNormalGroup,
 	PARTY                = MsgFormatNormalGroup,
