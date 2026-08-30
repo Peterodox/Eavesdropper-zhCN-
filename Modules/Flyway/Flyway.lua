@@ -5,7 +5,7 @@
 ---@class EavesdropperFlyway
 local Flyway = {};
 
-local SCHEMA_VERSION = 3;
+local SCHEMA_VERSION = 2;
 
 local function ApplyPatches(fromBuild, toBuild)
 	local patched = false;
