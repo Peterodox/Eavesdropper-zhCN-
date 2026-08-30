@@ -1,4 +1,4 @@
--- Copyright The Sippy Cup Authors
+-- Copyright The Eavesdropper Authors
 -- Inspired by Total RP 3, Sippy Cup
 -- SPDX-License-Identifier: GPL-3.0-or-later
 
