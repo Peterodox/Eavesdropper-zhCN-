@@ -77,7 +77,7 @@ end
 ---@param name string
 ---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
-local function MsgFormatNormal(entry, name, _forGroup, stripMessageHyperlink) -- luacheck: no unused (name)
+local function MsgFormatNormal(entry, name, forGroup, stripMessageHyperlink) -- luacheck: no unused (name, forGroup)
 	local prefix = ED.Constants.MESSAGE_PREFIXES[entry.e] or "";
 	local msg = entry.m or "";
 
@@ -148,7 +148,7 @@ end
 ---@param name string
 ---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
-local function MsgFormatEmoteGroup(entry, name, _forGroup, stripMessageHyperlink)
+local function MsgFormatEmoteGroup(entry, name, forGroup, stripMessageHyperlink) -- luacheck: no unused (forGroup)
 	local result = MsgFormatEmote(entry, name, true, stripMessageHyperlink);
 
 	--[[
@@ -254,7 +254,7 @@ setmetatable(MESSAGE_FORMATS, {
 ---@param name string
 ---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
-local function MsgFormatNormalGroup(entry, name, _forGroup, stripMessageHyperlink)
+local function MsgFormatNormalGroup(entry, name, forGroup, stripMessageHyperlink) -- luacheck: no unused (forGroup)
 	local msg = entry.m or "";
 
 	-- Check if a split marker was prior identified, use that
@@ -440,7 +440,7 @@ end
 ---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string formattedMsg
 ---@return string? firstName
-function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode, showJumpLink, stripMessageHyperlink)
+function ChatFormatter.FormatMessage(entry, forGroup, forceDisplayMode, showJumpLink, stripMessageHyperlink)
 	if not entry or not entry.m then return ""; end
 
 	-- Timestamp
