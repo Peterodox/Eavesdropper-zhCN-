@@ -14,11 +14,11 @@ local MAX_GROUP_NAME_LENGTH = 32;
 ---Otherwise it starts fresh, with none of the saved info carrying over.
 ---@param name string
 ---@param sender string?
-function GroupDialog:CreateOrRestore(name, sender)
+function GroupDialog.CreateOrRestore(name, sender)
 	local closed = ED.GroupFrame.sessionState[name:lower()];
 	if closed and closed.players and #closed.players > 0 then
 		local message = L.POPUP_RESTORE_GROUP:format(name, #closed.players);
-		ED.ConfirmDialog:Show(message, function()
+		ED.ConfirmDialog.Show(message, function()
 			local playerList = ED.Utils.ShallowCopy(closed.players);
 			if sender and not tContains(playerList, sender) then
 				playerList[#playerList + 1] = sender;
@@ -51,7 +51,7 @@ StaticPopupDialogs["EAVESDROPPER_NAME_GROUP"] = {
 	OnAccept = function(self, data)
 		local name = string.trim(self.EditBox:GetText());
 		if name ~= "" then
-			GroupDialog:CreateOrRestore(name, data and data.sender);
+			GroupDialog.CreateOrRestore(name, data and data.sender);
 		end
 	end,
 	---@param self table
@@ -80,7 +80,7 @@ StaticPopupDialogs["EAVESDROPPER_NAME_GROUP"] = {
 		local name = string.trim(self:GetText());
 		if name ~= "" and not ED.GroupFrame:HasFrameWithName(name) then
 			StaticPopup_Hide("EAVESDROPPER_NAME_GROUP");
-			GroupDialog:CreateOrRestore(name, data and data.sender);
+			GroupDialog.CreateOrRestore(name, data and data.sender);
 		end
 	end,
 };

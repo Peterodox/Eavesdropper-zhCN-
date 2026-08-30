@@ -309,7 +309,7 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 	end
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
-	local formatted = ED.ChatFormatter:FormatMessage(entry);
+	local formatted = ED.ChatFormatter.FormatMessage(entry);
 	self.ChatBox:AddMessage(formatted, r, g, b);
 
 	-- Only track lines (to keep frame awake) when they are actually inserted.
@@ -333,7 +333,7 @@ end
 -- FrameModule
 -- ============================================================
 
-function FrameModule:Init()
+function FrameModule.Init()
 	---@type EavesdropperFrameInstance
 	local frame = CreateFrame("Frame", "Eavesdropper_Frame", UIParent, "Eavesdropper_FrameTemplate");
 	ED.Frame = frame;

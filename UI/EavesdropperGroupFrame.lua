@@ -418,7 +418,7 @@ function Eavesdropper_Group_FrameMixin:AddMessage(entry, fromHistory)
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local showJumpLink = ED.Database:GetGlobalSetting("DedicatedWindows") and ED.Database:GetGlobalSetting("GroupWindowsJumpToContext");
-	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self.nameDisplayMode, showJumpLink);
+	local formatted = ED.ChatFormatter.FormatMessage(entry, true, self.nameDisplayMode, showJumpLink);
 	self.ChatBox:AddMessage(formatted, r, g, b);
 
 	-- Only track lines (to keep frame awake) when they are actually inserted.
@@ -555,7 +555,7 @@ end
 ---Find the lowest free numeric index for the stable _G frame name, create the frame, then
 ---register it keyed by displayName.
 ---Restores options from savedEntry, sessionState, or CharDB's FindSavedEntry, in that priority.
----It never restores the player list; see GroupDialog:CreateOrRestore.
+---It never restores the player list; see GroupDialog.CreateOrRestore.
 ---@param displayName string
 ---@param sender string? Initial sender to seed the frame with
 ---@param playerList string[]? Full player list for restore; takes precedence over sender

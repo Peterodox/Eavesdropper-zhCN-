@@ -42,7 +42,7 @@ function ED.ProcessCommand(msg)
 		return;
 	end
 
-	ED.Settings:ToggleSettings();
+	ED.Settings.ToggleSettings();
 	return;
 end
 
@@ -67,8 +67,8 @@ function ED.Init()
 		ED.Keywords:ParseList();
 
 		-- Now safe to initialize everything else
-		ED.FrameModule:Init();
-		ED.MentionsFrameModule:Init();
+		ED.FrameModule.Init();
+		ED.MentionsFrameModule.Init();
 		ED.DedicatedFrame:RestoreFromCharDB();
 		ED.GroupFrame:RestoreFromCharDB();
 		ED.ChatHandler:Init();

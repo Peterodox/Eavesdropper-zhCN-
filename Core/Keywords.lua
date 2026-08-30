@@ -197,11 +197,11 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 			notificationNextTime = now + Constants.KEYWORDS_NOTIFICATION_CD;
 
 			if ED.Database:GetSetting("NotificationKeywordsSound") then
-				ED.Notifications:PlayAlertSound(ED.Enums.NOTIFICATIONS_TYPE.KEYWORDS);
+				ED.Notifications.PlayAlertSound(ED.Enums.NOTIFICATIONS_TYPE.KEYWORDS);
 			end
 
 			if ED.Database:GetSetting("NotificationKeywordsFlashTaskbar") then
-				ED.Notifications:FlashTaskbar();
+				ED.Notifications.FlashTaskbar();
 			end
 		end
 

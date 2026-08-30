@@ -13,13 +13,13 @@ local SharedMedia = LibStub("LibSharedMedia-3.0");
 local soundCache = {};
 
 ---Flashes the WoW client icon on the taskbar.
-function Notifications:FlashTaskbar()
+function Notifications.FlashTaskbar()
 	FlashClientIcon();
 end
 
 ---Plays the configured alert sound for the given notification type, subject to a throttle.
 ---@param notifType EavesdropperNotificationsType
-function Notifications:PlayAlertSound(notifType)
+function Notifications.PlayAlertSound(notifType)
 	local now = GetTime();
 	local throttle = ED.Database:GetSetting("NotificationThrottle");
 

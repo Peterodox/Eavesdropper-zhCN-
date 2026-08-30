@@ -557,7 +557,7 @@ function Eavesdropper_ImportExportDialogMixin:ApplyGlobals(payload)
 
 	-- While not strictly necessary, we still offer an UI refresh just in case.
 	RunNextFrame(function()
-		ED.ConfirmDialog:Show(L.IMPORTEXPORT_CONFIRM_RELOAD, function()
+		ED.ConfirmDialog.Show(L.IMPORTEXPORT_CONFIRM_RELOAD, function()
 			ReloadUI();
 		end);
 	end);
@@ -578,7 +578,7 @@ function Eavesdropper_ImportExportDialogMixin:OnActionClicked()
 	local exported = payload.exported or UNKNOWN;
 
 	if self.payloadType ~= "profile" then
-		ED.ConfirmDialog:Show(L.IMPORTEXPORT_CONFIRM_GLOBAL:format(exported, version), function()
+		ED.ConfirmDialog.Show(L.IMPORTEXPORT_CONFIRM_GLOBAL:format(exported, version), function()
 			self:ApplyGlobals(payload);
 		end);
 		return;
@@ -591,7 +591,7 @@ function Eavesdropper_ImportExportDialogMixin:OnActionClicked()
 		and L.IMPORTEXPORT_CONFIRM_OVERWRITE:format(profileName, exported, version)
 		or L.IMPORTEXPORT_CONFIRM_PROFILE:format(profileName, exported, version);
 
-	ED.ConfirmDialog:Show(prompt, function()
+	ED.ConfirmDialog.Show(prompt, function()
 		self:ApplyProfile(payload, profileName, overwrite);
 	end);
 end

@@ -311,10 +311,10 @@ function ChatHistory:HandleTextEmote(sender, message, advancedFormatting)
 
 	if ED.Mentions:IsEmoteAtPlayer(message) then
 		if ED.Database:GetSetting("NotificationEmotesSound") then
-			ED.Notifications:PlayAlertSound(ED.Enums.NOTIFICATIONS_TYPE.EMOTES);
+			ED.Notifications.PlayAlertSound(ED.Enums.NOTIFICATIONS_TYPE.EMOTES);
 		end
 		if ED.Database:GetSetting("NotificationEmotesFlashTaskbar") then
-			ED.Notifications:FlashTaskbar();
+			ED.Notifications.FlashTaskbar();
 		end
 	end
 
@@ -354,10 +354,10 @@ local function TryNotify(entry, frame, soundKey, flashKey, notifType)
 	if not ED.ChatFilters:HasEvent(entry.e, frame) then return; end
 
 	if ED.Database:GetSetting(soundKey) then
-		ED.Notifications:PlayAlertSound(notifType);
+		ED.Notifications.PlayAlertSound(notifType);
 	end
 	if ED.Database:GetSetting(flashKey) then
-		ED.Notifications:FlashTaskbar();
+		ED.Notifications.FlashTaskbar();
 	end
 end
 

@@ -57,7 +57,7 @@ StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"] = {
 
 ---Prompts for the name of a new profile copied from an existing one, replacing any other open profile name prompt.
 ---@param profileName string The profile being copied from.
-function CopyDialog:Show(profileName)
+function CopyDialog.Show(profileName)
 	ED.Utils.HideProfileNamePopups();
 
 	StaticPopupDialogs["EAVESDROPPER_COPY_PROFILE"].text = L.POPUP_COPY_PROFILE:format(profileName);

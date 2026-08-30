@@ -262,7 +262,7 @@ function Eavesdropper_Mentions_FrameMixin:AddMessage(entry, fromHistory)
 
 	local r, g, b = ED.ChatFormatter.GetEntryColor(entry);
 	local showJumpLink = ED.Database:GetGlobalSetting("DedicatedWindows") and ED.Database:GetGlobalSetting("MentionsHistoryJumpToContext");
-	local formatted = ED.ChatFormatter:FormatMessage(entry, true, self:GetNameDisplayMode(), showJumpLink);
+	local formatted = ED.ChatFormatter.FormatMessage(entry, true, self:GetNameDisplayMode(), showJumpLink);
 	self.ChatBox:AddMessage(formatted, r, g, b);
 
 	if not fromHistory then
@@ -276,7 +276,7 @@ end
 -- MentionsFrameModule
 -- ============================================================
 
-function MentionsFrameModule:Init()
+function MentionsFrameModule.Init()
 	---@type EavesdropperMentionsFrameInstance
 	local frame = CreateFrame("Frame", "Eavesdropper_Mentions_Frame", UIParent, "Eavesdropper_Mentions_FrameTemplate");
 	ED.MentionsFrame = frame;

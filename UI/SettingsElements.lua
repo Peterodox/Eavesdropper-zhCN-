@@ -568,13 +568,13 @@ local function CreateDropDown(parent, data)
 						-- Submenu entries are children of this row; DeactivateSubmenu stops hover from
 						-- opening them so only the gear button does, through ForceOpenSubmenu below.
 						local copyEntry = dropdownOption:CreateButton(L.PROFILES_COPYPROFILE, function()
-							ED.CopyDialog:Show(text);
+							ED.CopyDialog.Show(text);
 						end);
 						ED.Utils.SetMenuTooltip(copyEntry, L.PROFILES_COPYPROFILE_HELP);
 
 						if not isDefaultEntry then
 							local renameEntry = dropdownOption:CreateButton(L.PROFILES_RENAMEPROFILE, function()
-								ED.RenameDialog:Show(text);
+								ED.RenameDialog.Show(text);
 							end);
 							ED.Utils.SetMenuTooltip(renameEntry, L.PROFILES_RENAMEPROFILE_HELP);
 						end
@@ -610,7 +610,7 @@ local function CreateDropDown(parent, data)
 								-- Deleting the active profile also switches characters, so warn separately.
 								local isCurrent = text == ED.Database:GetProfileName();
 								local prompt = isCurrent and L.PROFILES_CONFIRM_DELETE_CURRENT or L.PROFILES_CONFIRM_DELETE;
-								ED.ConfirmDialog:Show(prompt:format(text), function()
+								ED.ConfirmDialog.Show(prompt:format(text), function()
 									ED.Database:DeleteProfile(text);
 								end);
 								menu:Close();

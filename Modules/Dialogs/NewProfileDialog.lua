@@ -54,7 +54,7 @@ StaticPopupDialogs["EAVESDROPPER_NEW_PROFILE"] = {
 };
 
 ---Prompts for the name of a new profile, replacing any other open profile name prompt.
-function NewProfileDialog:Show()
+function NewProfileDialog.Show()
 	ED.Utils.HideProfileNamePopups();
 
 	StaticPopupDialogs["EAVESDROPPER_NEW_PROFILE"].text = L.POPUP_NEW_PROFILE;

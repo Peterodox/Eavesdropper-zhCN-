@@ -31,7 +31,7 @@ function QuestText.SubstitutePlayerPreferredName(questText)
 		return questText;
 	end
 
-	return PlayerName:SubstitutePlayerPreferredName(questText);
+	return PlayerName.SubstitutePlayerPreferredName(questText);
 end
 
 ---Returns the name of the installed supported addon, or nil if none are active.

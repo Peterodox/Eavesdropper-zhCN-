@@ -28,7 +28,7 @@ end
 ---Replaces the OOC player name in sourceText with the preferred (RP) name.
 ---@param sourceText string
 ---@return string
-function PlayerName:SubstitutePlayerPreferredName(sourceText)
+function PlayerName.SubstitutePlayerPreferredName(sourceText)
 	if not PlayerName.preferredName then
 		PlayerName.RefreshPlayerPreferredName();
 	end

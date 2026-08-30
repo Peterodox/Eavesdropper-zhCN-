@@ -31,7 +31,7 @@ function NPCDialogue.SubstitutePlayerPreferredName(npcDialogue)
 		return npcDialogue;
 	end
 
-	return PlayerName:SubstitutePlayerPreferredName(npcDialogue);
+	return PlayerName.SubstitutePlayerPreferredName(npcDialogue);
 end
 
 function NPCDialogue.Init()
