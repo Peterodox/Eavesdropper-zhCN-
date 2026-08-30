@@ -277,7 +277,6 @@ function Eavesdropper_ChangelogFrameMixin:OnShow()
 end
 
 function Eavesdropper_ChangelogFrameMixin:LoadChangelog()
-	self.ScrollBox:GetWidth()
 	if not self.dataProvider then
 		self.dataProvider = ConvertMarkdownToDataProvider();
 	end
