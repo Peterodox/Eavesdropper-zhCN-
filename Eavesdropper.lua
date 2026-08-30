@@ -101,7 +101,7 @@ function ED.Init()
 		C_Timer.After(1, function()
 			ED.Frame:RefreshChat();
 			ED.Magnifier:HandleUpdate(ED.Enums.MAGNIFIER_REASON.LOGIN);
-			ED.Minimap:SetupMinimapButtons();
+			ED.Minimap.SetupMinimapButtons();
 
 			if ED.Database:GetGlobalSetting("WelcomeMessage") then
 				ED.Utils.Write(ED.Localization.WELCOMEMSG_VERSION:format(ED.Database:GetProfileName(), ED.Globals.addon_version));

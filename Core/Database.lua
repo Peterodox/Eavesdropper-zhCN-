@@ -866,7 +866,7 @@ function Database:ImportGlobals(data)
 	end
 
 	if ED.Minimap then
-		ED.Minimap:UpdateMinimapButtons();
+		ED.Minimap.UpdateMinimapButtons();
 	end
 
 	return true;
