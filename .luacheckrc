@@ -363,6 +363,12 @@ stds.wow = {
 			},
 		},
 
+		C_StringUtil = {
+			fields = {
+				"StripHyperlinks",
+			},
+		},
+
 		C_Texture = {
 			fields = {
 				"GetAtlasInfo",

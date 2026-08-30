@@ -67,11 +67,17 @@ local function IsSplitMarkerMsg(entry, msg)
 	end
 end
 
+---Remove the hyperlink but keep the color and []
+local function StripHyperlinks(text)
+	return C_StringUtil.StripHyperlinks(text, true, true, false, true, true);
+end
+
 ---Formats a normal chat message, prepending any configured prefix.
 ---@param entry EavesdropperChatEntry
 ---@param name string
+---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
-local function MsgFormatNormal(entry, name) -- luacheck: no unused (name)
+local function MsgFormatNormal(entry, name, _forGroup, stripMessageHyperlink) -- luacheck: no unused (name)
 	local prefix = ED.Constants.MESSAGE_PREFIXES[entry.e] or "";
 	local msg = entry.m or "";
 
@@ -82,6 +88,10 @@ local function MsgFormatNormal(entry, name) -- luacheck: no unused (name)
 		end
 	end
 
+	if stripMessageHyperlink then
+		msg = StripHyperlinks(msg);
+	end
+
 	return prefix .. msg;
 end
 
@@ -89,9 +99,14 @@ end
 ---@param entry EavesdropperChatEntry
 ---@param name string
 ---@param forGroup boolean? If true, called from a group context.
+---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
-local function MsgFormatEmote(entry, name, forGroup)
+local function MsgFormatEmote(entry, name, forGroup, stripMessageHyperlink)
 	local msg = entry.m or "";
+
+	if stripMessageHyperlink then
+		msg = StripHyperlinks(msg);
+	end
 
 	local nameDisplayMode = ED.Database:GetSetting("NameDisplayMode");
 	local useRPName = nameDisplayMode ~= 3;
@@ -131,9 +146,10 @@ end
 ---sender name is visible so multi-player group windows remain legible.
 ---@param entry EavesdropperChatEntry
 ---@param name string
+---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
-local function MsgFormatEmoteGroup(entry, name)
-	local result = MsgFormatEmote(entry, name, true);
+local function MsgFormatEmoteGroup(entry, name, _forGroup, stripMessageHyperlink)
+	local result = MsgFormatEmote(entry, name, true, stripMessageHyperlink);
 
 	--[[
 	Kept for archival purposes (for now), this adds names for multi-msg.
@@ -236,14 +252,19 @@ setmetatable(MESSAGE_FORMATS, {
 ---Verb events produce "Name says: msg"; prefix events produce "[Party] Name: msg".
 ---@param entry EavesdropperChatEntry
 ---@param name string
+---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string
-local function MsgFormatNormalGroup(entry, name)
+local function MsgFormatNormalGroup(entry, name, _forGroup, stripMessageHyperlink)
 	local msg = entry.m or "";
 
 	-- Check if a split marker was prior identified, use that
 	if IsSplitMarkerMsg(entry, msg) then return msg; end
 
 	local verb = ED.Constants.GROUP_EVENT_VERBS[entry.e];
+
+	if stripMessageHyperlink then
+		msg = StripHyperlinks(msg);
+	end
 
 	if verb then
 		return name .. " " .. verb .. ": " .. msg;
@@ -416,9 +437,10 @@ end
 ---@param forGroup boolean? If true, uses group-aware formatting that always embeds the sender name.
 ---@param forceDisplayMode number? Overrides the profile NameDisplayMode when set.
 ---@param showJumpLink boolean? If true (and forGroup), prepends a Jump to Context link before the timestamp.
+---@param stripMessageHyperlink boolean? If true, remove the hyperlinks in the message but keep the color and []
 ---@return string formattedMsg
 ---@return string? firstName
-function ChatFormatter.FormatMessage(entry, forGroup, forceDisplayMode, showJumpLink)
+function ChatFormatter:FormatMessage(entry, forGroup, forceDisplayMode, showJumpLink, stripMessageHyperlink)
 	if not entry or not entry.m then return ""; end
 
 	-- Timestamp
@@ -466,7 +488,7 @@ function ChatFormatter.FormatMessage(entry, forGroup, forceDisplayMode, showJump
 	-- Format message
 	local eventType = NormalizeEventType(entry.e);
 	local formatTable = forGroup and GROUP_MESSAGE_FORMATS or MESSAGE_FORMATS;
-	local msgText = formatTable[eventType](entry, name);
+	local msgText = formatTable[eventType](entry, name, forGroup, stripMessageHyperlink);
 
 	-- Apply entry color
 	local entryR, entryG, entryB = GetEntryColor(entry);
