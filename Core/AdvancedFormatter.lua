@@ -130,7 +130,8 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 		sm = false,
 	};
 
-	local name, applyRPName = ED.ChatFormatter.GetFormattedName(entry, ResolveMainChatDisplayMode());
+	local displayMode = ResolveMainChatDisplayMode();
+	local name, applyRPName = ED.ChatFormatter.GetFormattedName(entry, displayMode);
 	local msgFinalText;
 
 	if ED.Utils.IsOwnPlayer(sender, event) then
@@ -142,7 +143,7 @@ function AdvancedFormatter:HandleChecks(chatFrame, event, message, sender, ...) 
 	local msgToSend = msgFinalText;
 
 	if entry.e == "CHAT_MSG_TEXT_EMOTE" and applyRPName then
-		msgToSend = ED.ChatFormatter.FormatTextEmoteTargetWithRPName(entry, msgFinalText, ResolveMainChatDisplayMode());
+		msgToSend = ED.ChatFormatter.FormatTextEmoteTargetWithRPName(entry, msgFinalText, displayMode);
 		self:EnableNameFormatting(entry.e);
 	elseif entry.e == "ROLL" and applyRPName then
 		msgToSend = ED.ChatFormatter.MsgFormatTextEmote(entry, name);
