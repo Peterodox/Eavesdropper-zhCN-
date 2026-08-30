@@ -34,6 +34,7 @@ function NPCDialogue.SubstitutePlayerPreferredName(npcDialogue)
 	return PlayerName.SubstitutePlayerPreferredName(npcDialogue);
 end
 
+---Currently unused; no call site.
 function NPCDialogue.Init()
 	NPCDialogue.RefreshPlayerPreferredName();
 end
