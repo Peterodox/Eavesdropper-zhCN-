@@ -95,43 +95,6 @@ Significant update featuring a modernized Settings menu, initial keybindings sup
 - Hyphenated RP names (e.g., Ivy-Rose) now display properly in emotes thanks to [Bitwise1057](https://github.com/Bitwise1057) ([#73](https://github.com/Raenore/Eavesdropper/pull/73) and [#74](https://github.com/Raenore/Eavesdropper/pull/74)).  
 - When "Enable Mouse" is disabled, hyperlinks (e.g. items) no longer block camera movement or clicks, thanks to [Peterodox](https://www.curseforge.com/members/peterodox/projects) ([#68](https://github.com/Raenore/Eavesdropper/pull/68)).  
 
-## [0.4.1] - 2026-04-04  
-Minor patch introducing the ability to rename profiles and internal data optimizations.  
-
-### Added
-- You can now rename existing profiles in the profile switching dropdown by clicking the small gear icon when hovering over them ([#63](https://github.com/Raenore/Eavesdropper/pull/63)).  
-
-### Fixed
-- Optimized how data is stored locally, there should be no user-facing changes ([#64](https://github.com/Raenore/Eavesdropper/pull/64)).  
-- Resolved a rare issue where a player's name color would fail to load if their character data wasn't already cached ([#67](https://github.com/Raenore/Eavesdropper/pull/67)).  
-
-## [0.4.0] - 2026-03-28  
-Significant feature update introducing Group Windows, session persistence for dedicated frames, and various quality-of-life UI improvements.  
-
-### Added
-- Added **Group Window** support to combine multiple specific players into a single shared Eavesdropper window ([#53](https://github.com/Raenore/Eavesdropper/pull/53)).  
-  - Ideal for tracking small parties or specific "inner circles" in crowded RP hubs.  
-  - Create or manage groups by right-clicking a unit's portrait or chat name and selecting "Eavesdrop Group".  
-  - Includes a global setting (enabled by default) that remembers your Group Name, Player List, and Display Mode even after logging out or reloading.  
-- Improved how **Dedicated Windows** are saved across sessions ([#55](https://github.com/Raenore/Eavesdropper/pull/55)).  
-  - Includes a global setting (enabled by default) that automatically re-opens your active Dedicated Windows after a UI reload or game restart.  
-- Added the **Beep** and **Poke** sounds from the Listener addon as new notification options with proper licensing ([#28](https://github.com/Raenore/Eavesdropper/pull/28) and [#61](https://github.com/Raenore/Eavesdropper/pull/61)).  
-  - Special thanks to [Bitwise1057](https://github.com/Bitwise1057) for the initial implementation.  
-- Added confirmation popups for profile actions to prevent accidental clicks ([#59](https://github.com/Raenore/Eavesdropper/pull/59) and [#60](https://github.com/Raenore/Eavesdropper/pull/60)).  
-  - "New," "Copy From," "Reset," and "Delete" profile options now ask for confirmation before any changes are made.  
-- The title bar button (which opens the window menu) now automatically resizes to fit its text.  
-  - Whether it shows "Eavesdropper," a target name, or a group name, the button will grow or shrink to fit the name while keeping a clean minimum width.  
-
-### Changed
-- Improved window dragging by allowing you to move windows by clicking directly on the title text ([#54](https://github.com/Raenore/Eavesdropper/pull/54), by [Peterodox](https://www.curseforge.com/members/peterodox/projects)).  
-  - You can now click and drag anywhere on the top bar to move any Eavesdropper window.  
-- New Dedicated or Group windows now automatically appear in front of existing ones when opened ([#52](https://github.com/Raenore/Eavesdropper/pull/52)).  
-  - This ensures that newly created windows are always on top and not hidden behind others.  
-
-### Fixed
-- Improved the title bar menu to prevent it from flickering or closing if you click the menu button while it is already open ([#56](https://github.com/Raenore/Eavesdropper/pull/56)).  
-- Resolved a rare issue where "Format Quest Text" would fail for certain NPCs that had no actual dialogue to show ([#51](https://github.com/Raenore/Eavesdropper/pull/51)).  
-
 ## Full Changelog  
 The complete changelog, including older versions, can always be found on [Eavesdropper's GitHub Wiki](https://github.com/Raenore/Eavesdropper/wiki/Full-Changelog).  
 
@@ -139,5 +102,3 @@ The complete changelog, including older versions, can always be found on [Eavesd
 [0.6.0]: https://github.com/Raenore/Eavesdropper/compare/0.5.1...0.6.0
 [0.5.1]: https://github.com/Raenore/Eavesdropper/compare/0.5.0...0.5.1
 [0.5.0]: https://github.com/Raenore/Eavesdropper/compare/0.4.1...0.5.0
-[0.4.1]: https://github.com/Raenore/Eavesdropper/compare/0.4.0...0.4.1
-[0.4.0]: https://github.com/Raenore/Eavesdropper/compare/0.3.0...0.4.0
