@@ -572,7 +572,8 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 	local frame = CreateFrame("Frame", globalName, UIParent, "Eavesdropper_Group_FrameTemplate");
 	frame:Raise();
 	frame:HandleVisibility();
-	frame:ApplyWindowSettings();
+	-- Player list setup and/or the saved-entry restore below always trigger their own refresh.
+	frame:ApplyWindowSettings(true);
 	ED.ChatFilters:Init(frame);
 
 	frame.displayName = displayName;
@@ -600,7 +601,9 @@ function GroupFrame:CreateNamedFrame(displayName, sender, playerList, savedEntry
 	end
 
 	frame:UpdateTitleBar();
-	frame:RefreshChat();
+	if not entry then
+		frame:RefreshChat(); -- Restoring a saved entry already refreshed via ApplySavedOptions above.
+	end
 	frame:UpdateScrollbar();
 
 	self.frames[displayName] = frame;

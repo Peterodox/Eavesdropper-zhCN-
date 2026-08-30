@@ -401,10 +401,12 @@ function DedicatedFrame:AddFrame(sender, savedEntry)
 		frame = CreateFrame("Frame", "Eavesdropper_Dedicated_Frame_" .. sender, UIParent, "Eavesdropper_Dedicated_FrameTemplate");
 		frame:Raise();
 		frame:HandleVisibility();
-		frame:ApplyWindowSettings();
-		ED.ChatFilters:Init(frame);
 
 		local entry = savedEntry or self.sessionState[sender] or self:FindSavedEntry(sender);
+
+		frame:ApplyWindowSettings(entry ~= nil);
+		ED.ChatFilters:Init(frame);
+
 		if entry then
 			if entry.nameDisplayMode then
 				frame.nameDisplayMode = entry.nameDisplayMode;
