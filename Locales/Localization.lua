@@ -12,15 +12,13 @@ local DEFAULT_LOCALE_CODE = "enUS";
 ---@field GetDefaultLocale fun(self:ED.LocalizationClass):string
 ---@field GetPreferredLocale fun(self:ED.LocalizationClass):string
 local Localization = {};
-Localization.__index = Localization;
 
 ---Create a new localization instance
 ---@param defaultLocaleContent table<string,string>
 ---@return ED.Localization
 function Localization:New(defaultLocaleContent)
-	local localeInstance = setmetatable({}, self);
+	local localeInstance = {};
 
-	-- Separate metatable for instance to avoid infinite recursion
 	local mt = {
 		__index = function(t, k)
 			if Localization[k] then
@@ -113,16 +111,6 @@ function Localization:GetText(key, ...)
 	end
 
 	return text;
-end
-
----Flavour syntax: localization.KEY
-function Localization:__index(key)
-	return self:GetText(key);
-end
-
----Flavour syntax: localization("KEY", ...)
-function Localization:__call(key, ...)
-	return self:GetText(key, ...);
 end
 
 ---Initialize localization and set the Global keybindings.
