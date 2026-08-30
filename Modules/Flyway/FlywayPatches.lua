@@ -35,34 +35,13 @@ ED.Flyway.Patches["2"] = {
 	run = function()
 		if not EavesdropperDB or not EavesdropperDB.profiles then return; end
 
+		local defaults = ED.Database.defaults;
 		local highestMaxHistory = 0;
 
 		for _, profileData in pairs(EavesdropperDB.profiles) do
 			local maxHistory = profileData["MaxHistory"];
 			if type(maxHistory) == "number" and maxHistory > highestMaxHistory then
 				highestMaxHistory = maxHistory;
-			end
-		end
-
-		if highestMaxHistory > ED.Database.globalDefaults.GroupHistorySize then
-			EavesdropperDB.global.GroupHistorySize = Clamp(highestMaxHistory, Constants.CHAT_BOX.MIN_GROUP_HISTORY, Constants.CHAT_BOX.MAX_GROUP_HISTORY);
-		end
-	end,
-
-	description = "Raise the new global GroupHistorySize to match the highest per-profile MaxHistory, so existing large history setups aren't shrunk for Group Windows.",
-};
-
-ED.Flyway.Patches["3"] = {
-	run = function()
-		if not EavesdropperDB or not EavesdropperDB.profiles then return; end
-
-		local defaults = ED.Database.defaults;
-
-		for _, profileData in pairs(EavesdropperDB.profiles) do
-			local maxHistory = profileData["MaxHistory"] or defaults.MaxHistory;
-			local mentionsHistorySize = profileData["MentionsHistorySize"] or defaults.MentionsHistorySize;
-			if maxHistory > mentionsHistorySize then
-				profileData["MentionsHistorySize"] = Clamp(maxHistory, Constants.CHAT_BOX.MIN_MENTIONS_HISTORY, Constants.CHAT_BOX.MAX_MENTIONS_HISTORY);
 			end
 
 			local fontSize = profileData["FontSize"] or defaults.FontSize;
@@ -71,7 +50,11 @@ ED.Flyway.Patches["3"] = {
 				profileData["MentionsFontSize"] = Clamp(fontSize, Constants.CHAT_BOX.MIN_FONT_SIZE, Constants.CHAT_BOX.MAX_FONT_SIZE);
 			end
 		end
+
+		if highestMaxHistory > ED.Database.globalDefaults.GroupHistorySize then
+			EavesdropperDB.global.GroupHistorySize = Clamp(highestMaxHistory, Constants.CHAT_BOX.MIN_GROUP_HISTORY, Constants.CHAT_BOX.MAX_GROUP_HISTORY);
+		end
 	end,
 
-	description = "Raise per-profile MentionsHistorySize/MentionsFontSize to match that profile's MaxHistory/FontSize where higher, now that Mentions has its own independent settings instead of inheriting Main's live values.",
+	description = "Raise the new global GroupHistorySize to match the highest per-profile MaxHistory, and raise per-profile MentionsFontSize to match FontSize where the user had set it higher, now that Group and Mentions windows have their own independent settings.",
 };
