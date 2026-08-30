@@ -545,8 +545,8 @@ function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 		end
 	else
 		-- Normal mode: consume clicks, block world interaction
-		self:SetPropagateMouseClicks(true);
-		self:SetPropagateMouseMotion(true);
+		self:SetPropagateMouseClicks(false);
+		self:SetPropagateMouseMotion(false);
 
 		if self.SetMouseMotionEnabled then
 			self:SetMouseMotionEnabled(true);
