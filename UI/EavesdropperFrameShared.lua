@@ -530,6 +530,7 @@ end
 ---Mouse-click propagation depends on IsMouseEnabled(), passthrough on false.
 function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 	local isEnabled = self:IsMouseEnabled();
+	self.stripMessageHyperlink = not isEnabled;
 
 	-- Always keep the frame itself mouse-enabled so OnEnter/OnLeave still fire
 	self:EnableMouse(true);
@@ -541,7 +542,6 @@ function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 
 		if self.SetMouseMotionEnabled then
 			self:SetMouseMotionEnabled(true);
-			self:SetMouseClickEnabled(true);
 		end
 	else
 		-- Normal mode: consume clicks, block world interaction
@@ -564,6 +564,8 @@ function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 			self.ChatBox:SetHyperlinksEnabled(hyperlinksEnabled);
 		end
 	end);
+
+	self:RefreshChat(true);
 end
 
 -- ============================================================
