@@ -65,11 +65,8 @@ local function ResolveEventType(event)
 	return "CHAT_MSG_" .. event;
 end
 
----Injects a test chat entry into ChatHistory and ensures the sender
----is present in the target group frame's player list.
----The sender name is wrapped in the class colour so it renders coloured
----in the formatted output without requiring MSP data.
----Test senders bypass AddPlayer to avoid persisting to charDB.
+---Injects a test chat entry into ChatHistory and ensures the sender is present in the target
+---group frame's player list. Test senders bypass AddPlayer to avoid persisting to charDB.
 ---@param groupName string
 ---@param event string Uppercased event shorthand (e.g. "SAY", "EMOTE", "ROLL")
 ---@param class string Uppercased English class token (e.g. "ROGUE", "PALADIN")
@@ -93,14 +90,14 @@ function Debug:InjectTestEntry(groupName, event, class, senderName, message)
 	local coloredName = classColor:WrapTextInColorCode(senderName);
 	local resolvedEvent = ResolveEventType(event);
 
-	---Directly insert into the player list to avoid triggering SaveToCharDB.
+	-- Directly insert into the player list to avoid triggering SaveToCharDB.
 	if not frame:HasPlayer(coloredName) then
 		frame.players[#frame.players + 1] = coloredName;
 		frame.playerListDirty = true;
 		frame:RefreshEmptyState();
 	end
 
-	---Build and insert the chat entry.
+	-- Build and insert the chat entry.
 	local entry = {
 		id = ED.ChatHistory.nextEntryId,
 		t = time(),
@@ -115,7 +112,8 @@ function Debug:InjectTestEntry(groupName, event, class, senderName, message)
 	ED.ChatHistory.list[entry.id] = entry;
 	ED.ChatHistory.nextEntryId = ED.ChatHistory.nextEntryId + 1;
 	ED.ChatHistory.history[coloredName] = ED.ChatHistory.history[coloredName] or {};
-	tinsert(ED.ChatHistory.history[coloredName], entry);
+	local history = ED.ChatHistory.history[coloredName];
+	history[#history + 1] = entry;
 
 	frame:RefreshChat();
 end
@@ -132,7 +130,7 @@ function Debug:ClearTestEntries(groupName)
 		return;
 	end
 
-	---Collect senders that have at least one test entry.
+	-- Collect senders that have at least one test entry.
 	local sendersToClean = {};
 	for _, player in ipairs(frame.players) do
 		local history = ED.ChatHistory.history[player];
@@ -151,7 +149,7 @@ function Debug:ClearTestEntries(groupName)
 		return;
 	end
 
-	---Remove test entries from history; remove sender if no real entries remain.
+	-- Remove test entries from history; remove sender if no real entries remain.
 	for sender in pairs(sendersToClean) do
 		local history = ED.ChatHistory.history[sender];
 		if history then
@@ -160,7 +158,7 @@ function Debug:ClearTestEntries(groupName)
 				if entry.test then
 					ED.ChatHistory.list[entry.id] = nil;
 				else
-					tinsert(kept, entry);
+					kept[#kept + 1] = entry;
 				end
 			end
 
@@ -172,7 +170,7 @@ function Debug:ClearTestEntries(groupName)
 		end
 	end
 
-	---Remove test-only senders from the player list (reverse iterate for safe removal).
+	-- Remove test-only senders from the player list (reverse iterate for safe removal).
 	for i = #frame.players, 1, -1 do
 		local player = frame.players[i];
 		if sendersToClean[player] and not ED.ChatHistory.history[player] then

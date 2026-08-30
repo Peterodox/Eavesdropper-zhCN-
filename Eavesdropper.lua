@@ -74,10 +74,10 @@ function ED.Init()
 		ED.ChatHandler:Init();
 		ED.Config.Init();
 		ED.Magnifier:Setup();
-		ED.UnitPopups:Init()
+		ED.UnitPopups:Init();
 
 		SLASH_EAVESDROPPER1, SLASH_EAVESDROPPER2 = "/ed", "/eavesdropper";
-		SlashCmdList["EAVESDROPPER"] = function(msg) ED.ProcessCommand(msg); end
+		SlashCmdList["EAVESDROPPER"] = function(msg) ED.ProcessCommand(msg); end;
 
 		EventRegistry:RegisterCallback("SetItemRef", function(_owner, link, _text, _button, _frame)
 			--[[ if ED.Globals.DEBUG_MODE then
@@ -101,7 +101,7 @@ function ED.Init()
 		C_Timer.After(1, function()
 			ED.Frame:RefreshChat();
 			ED.Magnifier:HandleUpdate(ED.Enums.MAGNIFIER_REASON.LOGIN);
-			ED.Minimap:SetupMinimapButtons();
+			ED.Minimap.SetupMinimapButtons();
 
 			if ED.Database:GetGlobalSetting("WelcomeMessage") then
 				ED.Utils.Write(ED.Localization.WELCOMEMSG_VERSION:format(ED.Database:GetProfileName(), ED.Globals.addon_version));

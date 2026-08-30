@@ -41,7 +41,7 @@ local function OnTooltipShow(tooltip)
 end
 
 ---Initialises and registers the addon's minimap icon and addon compartment button.
-function Minimap:SetupMinimapButtons()
+function Minimap.SetupMinimapButtons()
 	local ldb = LibDataBroker:NewDataObject(ED.Globals.addon_title, {
 		type = "launcher",
 		icon = ED.Globals.addon_icon_texture,
@@ -56,11 +56,11 @@ function Minimap:SetupMinimapButtons()
 	LibDBIcon:Register(ED.Globals.addon_title, ldb, minimapSettings);
 	LibDBCompartment:Register(ED.Globals.addon_title, ldb);
 
-	self:UpdateMinimapButtons();
+	Minimap.UpdateMinimapButtons();
 end
 
 ---Refreshes the visibility of the minimap icon and compartment button from current settings.
-function Minimap:UpdateMinimapButtons()
+function Minimap.UpdateMinimapButtons()
 	---@type EavesdropperGlobalMinimapButton
 	local minimapSettings = ED.Database:GetGlobalSetting("MinimapButton");
 

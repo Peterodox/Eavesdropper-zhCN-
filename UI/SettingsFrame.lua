@@ -190,7 +190,8 @@ end
 function Eavesdropper_SettingsMixin:PopulatePanel(panel, options)
 	local previousContainer = nil;
 
-	tinsert(options, {type = "spacer"}); -- Additional spacer to the bottom so the last widget doesn't touch the bottom of border
+	-- Additional spacer to the bottom so the last widget doesn't touch the bottom of border.
+	options[#options + 1] = {type = "spacer"};
 
 	for _, data in ipairs(options) do
 		local container, widget;
@@ -738,7 +739,7 @@ function Eavesdropper_SettingsMixin:OnLoad()
 				[3] = L.NAME_DISPLAY_MODE_ORIGINAL_NAME,
 			},
 			sorting = { 1, 2, 3 },
-			disabled = function() return not ED.MSP.IsEnabled() end,
+			disabled = function() return not ED.MSP.IsEnabled(); end,
 			disabledValues = function()
 				return {
 					[1] = not ED.MSP.IsEnabled(),
@@ -1540,7 +1541,7 @@ function Eavesdropper_SettingsMixin:OnShow()
 	ED.ElvUI.SkinRegisteredElements();
 	local tabToShow = lastSelectedTab or 1;
 	self:SetTab(tabToShow);
-	self:RefreshWidgets()
+	self:RefreshWidgets();
 end
 
 function Eavesdropper_SettingsMixin:OnHide()

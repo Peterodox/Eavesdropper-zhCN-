@@ -702,12 +702,15 @@ end
 ---Apply font, filters, layout, colors, and history to this frame.
 ---Instance frames call this directly; the main frame's ApplyProfileSettings
 ---calls this then additionally refreshes the settings panel.
-function Eavesdropper_SharedFrameMixin:ApplyWindowSettings()
+---@param skipChatRefresh boolean? True when the caller will immediately trigger its own RefreshChat (e.g. restoring a saved entry).
+function Eavesdropper_SharedFrameMixin:ApplyWindowSettings(skipChatRefresh)
 	ED.ChatBox:ApplyFontOptions(self);
 	ED.ChatFilters:UpdateFilters(self);
 	self:RestoreLayout();
 	self:ApplyThemeColors();
-	self:RefreshChat();
+	if not skipChatRefresh then
+		self:RefreshChat();
+	end
 end
 
 ---Apply background and title bar colors from the database

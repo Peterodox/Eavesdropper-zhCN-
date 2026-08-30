@@ -1002,7 +1002,7 @@ function SettingsElements.CreateDeveloperInfoFrame(parent)
 		LogoButton_SetHighlighted(logoButton, false);
 	end
 
-	return infoFrame
+	return infoFrame;
 end
 
 -- ============================================================

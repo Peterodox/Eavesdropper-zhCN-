@@ -24,10 +24,8 @@ end
 
 function UnitPopups:Init()
 	for menuTagSuffix in pairs(UnitPopups.MenuEntries) do
-		-- The closure supplied to ModifyMenu needs to be unique on each
-		-- iteration of the loop as it acts as an "owner" in a callback
-		-- registry behind the scenes. If not unique, successive registrations
-		-- will replace previous ones.
+		-- ModifyMenu uses each closure as an "owner" key behind the scenes, so it must be
+		-- unique per iteration or successive registrations replace previous ones.
 
 		local function OnMenuOpen(owner, rootDescription, contextData)
 			self:OnMenuOpen(owner, rootDescription, contextData);
@@ -152,7 +150,7 @@ local function CreateOpenCharacterEavesdropButton(menuDescription, contextData)
 	end
 
 	local sender, guid = ResolveCharacterData(contextData);
-	local elementDescription = UnitPopups.CreateEavesdropOnButton(menuDescription, sender, guid);
+	local elementDescription = UnitPopups:CreateEavesdropOnButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
 end
@@ -162,7 +160,7 @@ end
 ---@param sender string?
 ---@param guid string?
 ---@return table elementDescription
-function UnitPopups.CreateEavesdropOnButton(menuDescription, sender, guid)
+function UnitPopups:CreateEavesdropOnButton(menuDescription, sender, guid)
 	local elementDescription = menuDescription:CreateButton(L.UNIT_POPUPS_EAVESDROP_ON);
 	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_EAVESDROP_ON_HELP);
 	elementDescription:SetResponder(function()
@@ -182,7 +180,7 @@ end
 ---@param sender string?
 ---@param guid string?
 ---@return table elementDescription
-function UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid)
+function UnitPopups:CreateEavesdropGroupButton(menuDescription, sender, guid)
 	local elementDescription = menuDescription:CreateButton(L.UNIT_POPUPS_EAVESDROP_GROUP);
 	elementDescription:CreateTitle(L.UNIT_POPUPS_EAVESDROP_GROUP .. " " .. MAIN_MENU);
 	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_EAVESDROP_GROUP_HELP);
@@ -237,7 +235,7 @@ local function CreateBattleNetEavesdropGroupMenu(menuDescription, contextData)
 	end
 
 	local sender, guid = GetBattleNetCharacterFullName(gameAccountInfo);
-	local elementDescription = UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid);
+	local elementDescription = UnitPopups:CreateEavesdropGroupButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
 end
@@ -246,7 +244,7 @@ local function CreateEavesdropGroupMenu(menuDescription, contextData)
 	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
 	local sender, guid = ResolveCharacterData(contextData);
-	local elementDescription = UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid);
+	local elementDescription = UnitPopups:CreateEavesdropGroupButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
 end
@@ -263,10 +261,8 @@ local function FindNativeCopyNameButton(rootDescription)
 	end
 end
 
----Insert a button two positions after the "Other Options" subsection title, or
----append it at the end if that title isn't present. Insert() with an index shifts
----every following element down a slot; Blizzard wraps that move in securecallfunction.
----Note: This position was chosen to mimic where Blizzard tends to place it.
+---Insert a button two positions after the "Other Options" subsection title (mimicking Blizzard's
+---own placement), or append it at the end if that title isn't present.
 ---@param menuDescription table
 ---@param text string
 ---@return table elementDescription

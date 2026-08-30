@@ -99,6 +99,7 @@ function ED.ElvUI.SkinRegisteredElements()
 end
 
 ---Applies ElvUI tooltip styling to the given tooltip frame.
+---Currently unused; no call site.
 ---@param tooltip table Tooltip frame to style.
 function ED.ElvUI.SkinTooltip(tooltip)
 	UpdateElvUICaches();

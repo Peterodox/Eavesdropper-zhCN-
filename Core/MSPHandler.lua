@@ -394,7 +394,7 @@ function MSP.Init()
 			pendingRefresh = nil;
 			MSP.InvalidatePlayer(senderID);
 			ED.Keywords:ParseList();
-			ED.QuestText:RefreshPlayerPreferredName();
+			ED.QuestText.RefreshPlayerPreferredName();
 		end, 1);
 	end);
 end

@@ -300,8 +300,6 @@ function Eavesdropper_FrameMixin:AddMessage(entry, fromHistory)
 		self.fade_time = GetTime();
 	end
 
-	-- local hidden = not self:EavesdroppingOn(entry.g); -- UNUSED for now.
-
 	if not self.ChatBox then return; end
 
 	if not fromHistory and (ED.Database:GetSetting("HideWhenEmpty") or ED.Frame.settingsOpened) then

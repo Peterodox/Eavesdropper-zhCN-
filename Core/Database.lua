@@ -800,11 +800,8 @@ end
 ---| "WelcomeMessage"
 
 ---Returns the effective value of a global setting.
----For table keys, the stored table is returned directly as a live reference which is required
----by LibDBIcon, which mutates the MinimapButton table in place (e.g. minimapPos on drag).
----On first access, a missing table key is initialised from defaults and written back so that
----LibDBIcon receives a real table it can write into immediately after Register() is called.
----Took me way too long to figure out, but was the cause of how some people's minimap button reset.
+---Table keys are returned as a live reference (initialised from defaults on first access),
+---because LibDBIcon mutates the MinimapButton table in place rather than replacing it.
 ---@param key EavesdropperGlobalSettingKey
 ---@return any
 function Database:GetGlobalSetting(key)
@@ -869,7 +866,7 @@ function Database:ImportGlobals(data)
 	end
 
 	if ED.Minimap then
-		ED.Minimap:UpdateMinimapButtons();
+		ED.Minimap.UpdateMinimapButtons();
 	end
 
 	return true;

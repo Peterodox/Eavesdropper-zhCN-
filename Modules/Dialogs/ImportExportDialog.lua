@@ -51,25 +51,25 @@ local function InstallTextGuards(editBox)
 
 	editBox.GetText = function(self)
 		return (string.gsub(baseGetText(self), "||", "|"));
-	end
+	end;
 
 	editBox.SetText = function(self, text)
 		return baseSetText(self, (string.gsub(text or "", "|", "||")));
-	end
+	end;
 
 	---Pins the box to text, making it read-only. Pass nil to make it editable again.
 	---@param text string?
 	editBox.SetReadOnlyText = function(self, text)
 		self.readOnlyText = text;
 		self:RestoreReadOnlyText();
-	end
+	end;
 
 	editBox.RestoreReadOnlyText = function(self)
 		if self.restoringReadOnlyText then return; end
 		self.restoringReadOnlyText = true;
 		self:SetText(self.readOnlyText or "");
 		self.restoringReadOnlyText = false;
-	end
+	end;
 
 	editBox:SetScript("OnChar", function(self, char)
 		if self.readOnlyText == nil then return; end
