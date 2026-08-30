@@ -6,7 +6,7 @@ local changelogMarkdown = [[
 
 All notable changes to this project will be documented in this file.
 
-## [0.6.0] - 2026-08-xx
+## [0.6.0] - 2026-08-30
 Major feature update adding a Mentions History window, Import & Export, a Group Windows Player List, and a French translation, alongside wide-ranging performance and interface polish.
 
 ### Added
