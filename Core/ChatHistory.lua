@@ -271,6 +271,9 @@ end
 ---@param guid string? Sender GUID
 ---@return boolean True if duplicate, false otherwise
 function ChatHistory:IsDuplicate(event, sender, message, channel, language, guid)
+	---Rapid identical rolls (fast /roll spam, toys that roll twice) are legitimately repeated, unlike every other event.
+	if event == "ROLL" then return false; end
+
 	local now = GetTime();
 	local window = Constants.CHAT_HISTORY.DUPLICATE_WINDOW;
 
