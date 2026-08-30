@@ -152,7 +152,7 @@ local function CreateOpenCharacterEavesdropButton(menuDescription, contextData)
 	end
 
 	local sender, guid = ResolveCharacterData(contextData);
-	local elementDescription = UnitPopups.CreateEavesdropOnButton(menuDescription, sender, guid);
+	local elementDescription = UnitPopups:CreateEavesdropOnButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
 end
@@ -162,7 +162,7 @@ end
 ---@param sender string?
 ---@param guid string?
 ---@return table elementDescription
-function UnitPopups.CreateEavesdropOnButton(menuDescription, sender, guid)
+function UnitPopups:CreateEavesdropOnButton(menuDescription, sender, guid)
 	local elementDescription = menuDescription:CreateButton(L.UNIT_POPUPS_EAVESDROP_ON);
 	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_EAVESDROP_ON_HELP);
 	elementDescription:SetResponder(function()
@@ -182,7 +182,7 @@ end
 ---@param sender string?
 ---@param guid string?
 ---@return table elementDescription
-function UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid)
+function UnitPopups:CreateEavesdropGroupButton(menuDescription, sender, guid)
 	local elementDescription = menuDescription:CreateButton(L.UNIT_POPUPS_EAVESDROP_GROUP);
 	elementDescription:CreateTitle(L.UNIT_POPUPS_EAVESDROP_GROUP .. " " .. MAIN_MENU);
 	ED.Utils.SetMenuTooltip(elementDescription, L.UNIT_POPUPS_EAVESDROP_GROUP_HELP);
@@ -237,7 +237,7 @@ local function CreateBattleNetEavesdropGroupMenu(menuDescription, contextData)
 	end
 
 	local sender, guid = GetBattleNetCharacterFullName(gameAccountInfo);
-	local elementDescription = UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid);
+	local elementDescription = UnitPopups:CreateEavesdropGroupButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
 end
@@ -246,7 +246,7 @@ local function CreateEavesdropGroupMenu(menuDescription, contextData)
 	if not ED.Database:GetGlobalSetting("GroupWindows") or not ED.Database:GetGlobalSetting("GroupWindowsUnitPopups") then return; end
 
 	local sender, guid = ResolveCharacterData(contextData);
-	local elementDescription = UnitPopups.CreateEavesdropGroupButton(menuDescription, sender, guid);
+	local elementDescription = UnitPopups:CreateEavesdropGroupButton(menuDescription, sender, guid);
 	elementDescription:SetData(contextData);
 	return elementDescription;
 end

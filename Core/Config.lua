@@ -115,10 +115,10 @@ function Config.ShowConfigMenu(frame, mode)
 			local guid = frame.eavesdropped_player_guid;
 
 			if mode == nil and ED.Database:GetGlobalSetting("DedicatedWindows") then
-				ED.UnitPopups.CreateEavesdropOnButton(rootDescription, sender, guid);
+				ED.UnitPopups:CreateEavesdropOnButton(rootDescription, sender, guid);
 			end
 			if ED.Database:GetGlobalSetting("GroupWindows") then
-				ED.UnitPopups.CreateEavesdropGroupButton(rootDescription, sender, guid);
+				ED.UnitPopups:CreateEavesdropGroupButton(rootDescription, sender, guid);
 			end
 		end
 
