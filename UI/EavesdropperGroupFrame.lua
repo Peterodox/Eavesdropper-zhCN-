@@ -245,15 +245,12 @@ function Eavesdropper_Group_FrameMixin:RefreshChat(retainScroll)
 	self:RebuildMergedHistory(maxMessages, retainScroll);
 end
 
----Collects & deduplicates history across all tracker players, sorts and trims it to chosen
----maxMessages, and then stores it in self.mergedHistory. As soon as we enter chunking
----territory (above Constants.CHAT_BOX.GROUP_CHUNK_THRESHOLD) which is tracked
----players x maxMessages, we make gathering spread out one player per RunNextFrame.
----Not running sync prevents e.g. adding players to huge groups from causing fps issues.
+---Collects & deduplicates history across all tracked players, sorts and trims it to maxMessages,
+---then stores it in self.mergedHistory. Above Constants.CHAT_BOX.GROUP_CHUNK_THRESHOLD
+---(trackedPlayers x maxMessages), gathering spreads one player per RunNextFrame to avoid FPS hits on huge groups.
 ---@param maxMessages number
 ---@param retainScroll boolean?
----@param forceSync boolean? Bypasses the chunk threshold to gather synchronously; used by the
----debug measurement harness.
+---@param forceSync boolean? Bypasses the chunk threshold to gather synchronously; used by the debug measurement harness.
 function Eavesdropper_Group_FrameMixin:RebuildMergedHistory(maxMessages, retainScroll, forceSync)
 	self.mergeGeneration = (self.mergeGeneration or 0) + 1;
 	local generation = self.mergeGeneration;
@@ -404,8 +401,6 @@ function Eavesdropper_Group_FrameMixin:AddMessage(entry, fromHistory)
 		self.fade_time = GetTime();
 	end
 
-	-- local hidden = not self:EavesdroppingOn(entry.g); -- UNUSED for now.
-
 	if not self.ChatBox then return; end
 
 	if not fromHistory then
@@ -552,10 +547,9 @@ function GroupFrame:AddFrame(sender)
 	StaticPopup_Show("EAVESDROPPER_NAME_GROUP", nil, nil, { sender = sender });
 end
 
----Find the lowest free numeric index for the stable _G frame name, create the frame, then
----register it keyed by displayName.
----Restores options from savedEntry, sessionState, or CharDB's FindSavedEntry, in that priority.
----It never restores the player list; see GroupDialog.CreateOrRestore.
+---Finds the lowest free numeric index for the stable _G frame name, creates the frame, registers
+---it keyed by displayName, and restores options from savedEntry, sessionState, or CharDB's
+---FindSavedEntry (in that priority), never the player list; see GroupDialog.CreateOrRestore.
 ---@param displayName string
 ---@param sender string? Initial sender to seed the frame with
 ---@param playerList string[]? Full player list for restore; takes precedence over sender

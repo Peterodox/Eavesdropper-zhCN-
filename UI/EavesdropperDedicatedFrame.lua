@@ -272,8 +272,6 @@ function Eavesdropper_Dedicated_FrameMixin:AddMessage(entry, fromHistory)
 		self.fade_time = GetTime();
 	end
 
-	-- local hidden = not self:EavesdroppingOn(entry.g); -- UNUSED for now.
-
 	if not self.ChatBox then return; end
 
 	if not fromHistory and (ED.Database:GetSetting("HideWhenEmpty") or ED.Frame.settingsOpened) then
@@ -373,8 +371,8 @@ function DedicatedFrame:FrameExists(sender)
 	return self.frames[sender] ~= nil;
 end
 
---Handle creating/showing a dedicated frame for current magnified target.
---GetMagnified incorporates the user's choice of targeting priority.
+---Handle creating/showing a dedicated frame for current magnified target.
+---GetMagnified incorporates the user's choice of targeting priority.
 function DedicatedFrame:AddFrameForMagnified()
 	local magnifiedName, magnifiedGUID = ED.Magnifier:GetMagnified();
 	local target = magnifiedName

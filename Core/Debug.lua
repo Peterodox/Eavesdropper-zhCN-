@@ -93,14 +93,14 @@ function Debug:InjectTestEntry(groupName, event, class, senderName, message)
 	local coloredName = classColor:WrapTextInColorCode(senderName);
 	local resolvedEvent = ResolveEventType(event);
 
-	---Directly insert into the player list to avoid triggering SaveToCharDB.
+	-- Directly insert into the player list to avoid triggering SaveToCharDB.
 	if not frame:HasPlayer(coloredName) then
 		frame.players[#frame.players + 1] = coloredName;
 		frame.playerListDirty = true;
 		frame:RefreshEmptyState();
 	end
 
-	---Build and insert the chat entry.
+	-- Build and insert the chat entry.
 	local entry = {
 		id = ED.ChatHistory.nextEntryId,
 		t = time(),
@@ -133,7 +133,7 @@ function Debug:ClearTestEntries(groupName)
 		return;
 	end
 
-	---Collect senders that have at least one test entry.
+	-- Collect senders that have at least one test entry.
 	local sendersToClean = {};
 	for _, player in ipairs(frame.players) do
 		local history = ED.ChatHistory.history[player];
@@ -152,7 +152,7 @@ function Debug:ClearTestEntries(groupName)
 		return;
 	end
 
-	---Remove test entries from history; remove sender if no real entries remain.
+	-- Remove test entries from history; remove sender if no real entries remain.
 	for sender in pairs(sendersToClean) do
 		local history = ED.ChatHistory.history[sender];
 		if history then
@@ -173,7 +173,7 @@ function Debug:ClearTestEntries(groupName)
 		end
 	end
 
-	---Remove test-only senders from the player list (reverse iterate for safe removal).
+	-- Remove test-only senders from the player list (reverse iterate for safe removal).
 	for i = #frame.players, 1, -1 do
 		local player = frame.players[i];
 		if sendersToClean[player] and not ED.ChatHistory.history[player] then
