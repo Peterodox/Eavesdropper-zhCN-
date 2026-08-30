@@ -190,7 +190,8 @@ end
 function Eavesdropper_SettingsMixin:PopulatePanel(panel, options)
 	local previousContainer = nil;
 
-	tinsert(options, {type = "spacer"}); -- Additional spacer to the bottom so the last widget doesn't touch the bottom of border
+	-- Additional spacer to the bottom so the last widget doesn't touch the bottom of border.
+	options[#options + 1] = {type = "spacer"};
 
 	for _, data in ipairs(options) do
 		local container, widget;
