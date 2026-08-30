@@ -458,7 +458,8 @@ function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
 
 	self.list[entry.id] = entry;
 	self.nextEntryId = self.nextEntryId + 1;
-	tinsert(self.history[sender], entry);
+	local history = self.history[sender];
+	history[#history + 1] = entry;
 
 	-- Target notifications.
 	if not entry.p and ED.Utils.GetUnitName("target") == sender then

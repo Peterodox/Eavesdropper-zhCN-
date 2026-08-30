@@ -115,7 +115,8 @@ function Debug:InjectTestEntry(groupName, event, class, senderName, message)
 	ED.ChatHistory.list[entry.id] = entry;
 	ED.ChatHistory.nextEntryId = ED.ChatHistory.nextEntryId + 1;
 	ED.ChatHistory.history[coloredName] = ED.ChatHistory.history[coloredName] or {};
-	tinsert(ED.ChatHistory.history[coloredName], entry);
+	local history = ED.ChatHistory.history[coloredName];
+	history[#history + 1] = entry;
 
 	frame:RefreshChat();
 end
@@ -160,7 +161,7 @@ function Debug:ClearTestEntries(groupName)
 				if entry.test then
 					ED.ChatHistory.list[entry.id] = nil;
 				else
-					tinsert(kept, entry);
+					kept[#kept + 1] = entry;
 				end
 			end
 

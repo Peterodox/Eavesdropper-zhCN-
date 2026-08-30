@@ -67,7 +67,7 @@ function PlayerCache:PruneOldEntries(ttl)
 	if changed then
 		wipe(sortedTimes);
 		for t in pairs(self.byTime) do
-			tinsert(sortedTimes, t);
+			sortedTimes[#sortedTimes + 1] = t;
 		end
 		table.sort(sortedTimes, function(a, b) return a > b; end);
 	end
@@ -87,7 +87,7 @@ function PlayerCache:LoadFromSaved(cache, ttl)
 	-- Build sortedTimes
 	wipe(sortedTimes);
 	for t in pairs(self.byTime) do
-		tinsert(sortedTimes, t);
+		sortedTimes[#sortedTimes + 1] = t;
 	end
 	table.sort(sortedTimes, function(a, b) return a > b; end);
 
@@ -146,7 +146,7 @@ function PlayerCache:InsertAndRetrieve(sender, guid)
 				if not e.g and guid then
 					e.g = guid;
 				end
-				tinsert(target, e);
+				target[#target + 1] = e;
 			end
 			ED.ChatHistory.history[bareName] = nil;
 		end
