@@ -119,15 +119,18 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 	end
 
 	local enablePartial = ED.Database:GetSetting("EnablePartialKeywords");
-	local originalLower = msg:lower();
 	local found = false;
 
 	-- Protect item/spell links from being modified by wrapping them in placeholders.
+	-- "|c.-|H" covers both the classic |cffRRGGBBAA hex prefix and the newer |cn<name>: named-colour prefix.
 	local replaced = {};
-	msg = msg:gsub("(|cff[0-9a-f]+|H[^|]+|h[^|]+|h|r)", function(link)
+	msg = msg:gsub("(|c.-|H[^|]+|h[^|]+|h|r)", function(link)
 		replaced[#replaced + 1] = link;
 		return Constants.KEYWORD_LINK_PLACEHOLDER .. #replaced .. Constants.KEYWORD_LINK_PLACEHOLDER;
 	end);
+
+	-- Computed after the link substitution so match positions stay aligned with msg.
+	local searchLower = msg:lower();
 
 	local highlightColor = ED.Database:GetSetting("HighlightColor");
 	if type(highlightColor) ~= "table" then
@@ -147,16 +150,16 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 
 	for _, kw in ipairs(self.SortedList) do
 		local searchPos = 1;
-		while searchPos <= #originalLower do
-			local startPos, endPos = originalLower:find(kw, searchPos, true);
+		while searchPos <= #searchLower do
+			local startPos, endPos = searchLower:find(kw, searchPos, true);
 			if not startPos then break; end
 
 			local matchOk = true;
 			if not enablePartial then
 				local beforeOk = startPos == 1
-					or not originalLower:sub(startPos - 1, startPos - 1):match("[%w]");
-				local afterOk = endPos == #originalLower
-					or not originalLower:sub(endPos + 1, endPos + 1):match("[%w]");
+					or not searchLower:sub(startPos - 1, startPos - 1):match("[%w]");
+				local afterOk = endPos == #searchLower
+					or not searchLower:sub(endPos + 1, endPos + 1):match("[%w]");
 				matchOk = beforeOk and afterOk;
 			end
 
