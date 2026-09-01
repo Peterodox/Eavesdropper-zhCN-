@@ -535,22 +535,13 @@ function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 	-- Always keep the frame itself mouse-enabled so OnEnter/OnLeave still fire
 	self:EnableMouse(true);
 
-	if not isEnabled then
-		-- Ghost mode: pass all clicks and motion through to the world
-		self:SetPropagateMouseClicks(true);
-		self:SetPropagateMouseMotion(true);
+	-- Pass clicks and motion through to the world
+	-- Unless they land on Jump, Sender, or enabled Hyperlink
+	self:SetPropagateMouseClicks(true);
+	self:SetPropagateMouseMotion(true);
 
-		if self.SetMouseMotionEnabled then
-			self:SetMouseMotionEnabled(true);
-		end
-	else
-		-- Normal mode: consume clicks, block world interaction
-		self:SetPropagateMouseClicks(false);
-		self:SetPropagateMouseMotion(false);
-
-		if self.SetMouseMotionEnabled then
-			self:SetMouseMotionEnabled(true);
-		end
+	if self.SetMouseMotionEnabled then
+		self:SetMouseMotionEnabled(true);
 	end
 
 	-- SetHyperlinksEnabled stays true when exempt so edjump/player can still hit-test; OnHyperlinkClick/
