@@ -83,10 +83,10 @@ function ChatHandler:ChatFrameFilter(chatFrame, event, ...) -- luacheck: no unus
 			-- Rolls carry no GUID from Blizzard, but a roll from another player is only ever visible
 			-- while grouped with them, so the roster can resolve their full identity.
 			local resolvedSender, rollGuid = ED.PlayerCache:ResolveLiveUnitByName(rollSender);
-			ED.ChatHistory:AddEntry("ROLL", resolvedSender or rollSender, message, nil, rollGuid);
+			ED.ChatHistory:AddEntry("ROLL", resolvedSender or rollSender, message, nil, rollGuid, nil, lineID);
 		end
 	else
-		ED.ChatHistory:AddEntry(event, sender, message, language, guid, channel);
+		ED.ChatHistory:AddEntry(event, sender, message, language, guid, channel, lineID);
 	end
 
 	return false;

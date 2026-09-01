@@ -21,8 +21,8 @@
 ---@field list table<number, EavesdropperChatEntry> Global index of entries by ID
 ---@field minEntryId number
 ---@field nextEntryId number
----@field deduper table<string, number> Deduplication timestamps, current generation
----@field deduperPrevious table<string, number> Deduplication timestamps, previous generation
+---@field deduper table<number, number> Deduplication timestamps by lineID, current generation
+---@field deduperPrevious table<number, number> Deduplication timestamps by lineID, previous generation
 ---@field deduperRotatedAt number GetTime() the current generation began
 ---@field byTime table<number, EavesdropperChatEntry> Legacy migration index keyed by timestamp
 ---@field mentions number[] Ascending entry ids flagged as mentions, derived (not saved in SVs)
@@ -260,19 +260,13 @@ function ChatHistory:GetMentions(maxEntries, frame)
 	return entries;
 end
 
----Checks if a chat message is a duplicate.
----Keeps two generations instead of one, so a key survives a full window even if it was
----written right before a rotation.
----@param event string Event name
----@param sender string Sender name
----@param message string Message content
----@param channel string? Chat channel
----@param language string? Message language
----@param guid string? Sender GUID
+---Deduplicates by Blizzard's lineID, unique to one chat line for the whole session, so a repeat
+---means the line was redelivered (e.g. by Prat), not a legitimate repeat like fast /roll spam.
+---Keeps two generations so a key survives a full window even right before a rotation.
+---@param lineID number? Blizzard chat line ID; entries without one are never deduped
 ---@return boolean True if duplicate, false otherwise
-function ChatHistory:IsDuplicate(event, sender, message, channel, language, guid)
-	---Rapid identical rolls (fast /roll spam, toys that roll twice) are legitimately repeated, unlike every other event.
-	if event == "ROLL" then return false; end
+function ChatHistory:IsDuplicate(lineID)
+	if not lineID then return false; end
 
 	local now = GetTime();
 	local window = Constants.CHAT_HISTORY.DUPLICATE_WINDOW;
@@ -283,20 +277,12 @@ function ChatHistory:IsDuplicate(event, sender, message, channel, language, guid
 		self.deduperRotatedAt = now;
 	end
 
-	local key =
-		(event or "") .. "|" ..
-		(sender or "") .. "|" ..
-		(ED.Utils.StripColorCodes(message) or "") .. "|" ..
-		(channel or "") .. "|" ..
-		(language or "") .. "|" ..
-		(guid or "");
-
-	local last = self.deduper[key] or self.deduperPrevious[key];
+	local last = self.deduper[lineID] or self.deduperPrevious[lineID];
 	if last and now - last < window then
 		return true;
 	end
 
-	self.deduper[key] = now;
+	self.deduper[lineID] = now;
 	return false;
 end
 
@@ -371,12 +357,13 @@ end
 ---@param language string? Language code
 ---@param guid string? Sender GUID
 ---@param channel string? Chat channel
+---@param lineID number? Blizzard chat line ID; used as the dedup key when present
 ---@return EavesdropperChatEntry? chatEntry The created chat entry, or nil if ignored
-function ChatHistory:AddEntry(event, sender, message, language, guid, channel)
+function ChatHistory:AddEntry(event, sender, message, language, guid, channel, lineID)
 	if not sender or sender == "" then return; end
 	if not canaccessvalue(message) then return; end
 	if message == "" and event ~= "CHAT_MSG_CHANNEL_JOIN" and event ~= "CHAT_MSG_CHANNEL_LEAVE" then return; end
-	if self:IsDuplicate(event, sender, message, channel, language, guid) then return; end
+	if self:IsDuplicate(lineID) then return; end
 
 	-- Extract sender data from Blizzard Emote
 	if event == "CHAT_MSG_TEXT_EMOTE" then
