@@ -559,7 +559,6 @@ function Eavesdropper_SharedFrameMixin:UpdateMouseLock()
 
 	-- This delay is essential otherwise it won't take effect
 	RunNextFrame(function()
-		self:SetHyperlinksEnabled(hyperlinksEnabled);
 		if self.ChatBox then
 			self.ChatBox:SetHyperlinksEnabled(hyperlinksEnabled);
 		end
