@@ -13,6 +13,19 @@ Keywords.SortedList = {};
 ---@type number
 local notificationNextTime = 0;
 
+---True if the match spanning startPos-endPos in str is not adjacent to a word character.
+---@param str string
+---@param startPos number
+---@param endPos number
+---@return boolean
+local function IsWordBoundaryMatch(str, startPos, endPos)
+	local beforeOk = startPos == 1
+		or not str:sub(startPos - 1, startPos - 1):match("[%w]");
+	local afterOk = endPos == #str
+		or not str:sub(endPos + 1, endPos + 1):match("[%w]");
+	return beforeOk and afterOk;
+end
+
 ---Rebuilds the keyword lookup table and sorted list from the HighlightKeywords setting.
 ---Applies token substitutions (<firstname>, <lastname>, <oocname>, <class>, <race>).
 function Keywords:ParseList()
@@ -40,15 +53,15 @@ function Keywords:ParseList()
 	raceName  = raceName or "";
 
 	for word in highlightKeywords:gmatch("([^,]+)") do
-		word = word:match("^%s*(.-)%s*$"); -- trim
+		word = string.trim(word);
 		if word ~= "" then
-			-- Substitutions
+			-- Function replacements so a literal "%" in MSP-provided text isn't parsed as a capture reference.
 			word = word
-				:gsub("<firstname>", firstName)
-				:gsub("<lastname>",  lastName)
-				:gsub("<oocname>",   ED.Globals.player_character_name)
-				:gsub("<class>",     className)
-				:gsub("<race>",      raceName);
+				:gsub("<firstname>", function() return firstName; end)
+				:gsub("<lastname>",  function() return lastName; end)
+				:gsub("<oocname>",   function() return ED.Globals.player_character_name; end)
+				:gsub("<class>",     function() return className; end)
+				:gsub("<race>",      function() return raceName; end);
 
 			if word ~= "" then
 				self.List[word:lower()] = true;
@@ -62,8 +75,7 @@ function Keywords:ParseList()
 	table.sort(self.SortedList, function(a, b) return #a > #b; end);
 end
 
----Match-only scan for a keyword hit, working exactly as the one HandleChecks but skipping:
----Colour wrapping, link placeholders and overlap tracking.
+---Same matching logic as HandleChecks, without colour wrapping, link placeholders, or overlap tracking.
 ---@param text string
 ---@return boolean
 function Keywords:HasMatch(text)
@@ -80,12 +92,7 @@ function Keywords:HasMatch(text)
 
 			if enablePartial then return true; end
 
-			local beforeOk = startPos == 1
-				or not lower:sub(startPos - 1, startPos - 1):match("[%w]");
-			local afterOk = endPos == #lower
-				or not lower:sub(endPos + 1, endPos + 1):match("[%w]");
-
-			if beforeOk and afterOk then return true; end
+			if IsWordBoundaryMatch(lower, startPos, endPos) then return true; end
 
 			searchPos = endPos + 1;
 		end
@@ -119,15 +126,18 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 	end
 
 	local enablePartial = ED.Database:GetSetting("EnablePartialKeywords");
-	local originalLower = msg:lower();
 	local found = false;
 
 	-- Protect item/spell links from being modified by wrapping them in placeholders.
+	-- "|c.-|H" covers both the classic |cffRRGGBBAA hex prefix and the newer |cn<name>: named-colour prefix.
 	local replaced = {};
-	msg = msg:gsub("(|cff[0-9a-f]+|H[^|]+|h[^|]+|h|r)", function(link)
+	msg = msg:gsub("(|c.-|H[^|]+|h[^|]+|h|r)", function(link)
 		replaced[#replaced + 1] = link;
 		return Constants.KEYWORD_LINK_PLACEHOLDER .. #replaced .. Constants.KEYWORD_LINK_PLACEHOLDER;
 	end);
+
+	-- Computed after the link substitution so match positions stay aligned with msg.
+	local searchLower = msg:lower();
 
 	local highlightColor = ED.Database:GetSetting("HighlightColor");
 	if type(highlightColor) ~= "table" then
@@ -147,17 +157,13 @@ function Keywords:HandleChecks(chatFrame, event, message, sender, ...) -- luache
 
 	for _, kw in ipairs(self.SortedList) do
 		local searchPos = 1;
-		while searchPos <= #originalLower do
-			local startPos, endPos = originalLower:find(kw, searchPos, true);
+		while searchPos <= #searchLower do
+			local startPos, endPos = searchLower:find(kw, searchPos, true);
 			if not startPos then break; end
 
 			local matchOk = true;
 			if not enablePartial then
-				local beforeOk = startPos == 1
-					or not originalLower:sub(startPos - 1, startPos - 1):match("[%w]");
-				local afterOk = endPos == #originalLower
-					or not originalLower:sub(endPos + 1, endPos + 1):match("[%w]");
-				matchOk = beforeOk and afterOk;
+				matchOk = IsWordBoundaryMatch(searchLower, startPos, endPos);
 			end
 
 			if matchOk then
