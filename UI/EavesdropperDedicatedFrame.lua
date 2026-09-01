@@ -190,7 +190,7 @@ end
 -- ============================================================
 
 ---Repopulate the chat box from stored history. Uses jumpHistoryLimit instead of MaxHistory
----once a jump has widened the buffer, so the timestamp ticker doesn't shrink it back down.
+---while a jump's widened buffer is still in view; drops back to normal once scrolled to bottom.
 ---@param retainScroll boolean? If true, retain the previous scroll position.
 function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 	if not self.ChatBox then return; end
@@ -198,6 +198,12 @@ function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 	self.refreshing = true;
 
 	local scrollOffset = self.ChatBox:GetScrollOffset();
+
+	if self.jumpHistoryLimit and scrollOffset == 0 then
+		self.jumpHistoryLimit = nil;
+		self.ChatBox:SetMaxLines(Constants.CHAT_BOX.MAX_HISTORY);
+	end
+
 	self.ChatBox:Clear();
 	self.newestEntryTime = nil;
 
@@ -217,8 +223,8 @@ function Eavesdropper_Dedicated_FrameMixin:RefreshChat(retainScroll)
 end
 
 ---Scrolls so entryId lands as the bottom-most visible line. SetScrollOffset fixes to the
----bottom edge, not the top. It will increase the history size when needed, persisted through
----jumpHistoryLimit for the rest of the session (/reload, restart, etc.) for context purposes.
+---bottom edge, not the top. Widens the history buffer via jumpHistoryLimit when entryId
+---needs more than MAX_HISTORY; RefreshChat drops it back to normal once scrolled to bottom.
 ---@param entryId number
 function Eavesdropper_Dedicated_FrameMixin:ScrollToEntry(entryId)
 	if not self.ChatBox then return; end
