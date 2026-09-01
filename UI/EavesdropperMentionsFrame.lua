@@ -252,7 +252,9 @@ function Eavesdropper_Mentions_FrameMixin:AddMessage(entry, fromHistory)
 	if not entry then return; end
 
 	if not ED.ChatFilters:HasEvent(entry.e, self) then return; end
-	if not ED.ChatFilters:HasMentionReason(entry.mn) then return; end
+
+	-- fromHistory entries already passed this in ChatHistory:GetMentions; only live entries need it.
+	if not fromHistory and not ED.ChatFilters:HasMentionReason(entry.mn) then return; end
 
 	if not self.refreshing then
 		self.fade_time = GetTime();
