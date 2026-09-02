@@ -59,7 +59,7 @@ L = {
 
 	WINDOW_OPTIONS = "Options de la fenêtre",
 	ENABLE_MOUSE = "Activer les liens",
-	ENABLE_MOUSE_HELP = "Autorise le clic sur les liens (objets, URLs, etc.) dans la fenêtre d'Eavesdropper.",
+	ENABLE_MOUSE_HELP = "Autorise l'interaction avec les liens (objets, URLs, etc.) dans la fenêtre d'Eavesdropper.",
 	LOCK_SCROLL = "Verrouiller le défilement",
 	LOCK_SCROLL_HELP = "Désactive le défilement dans l'historique des messages.|n|n- Utilisez cette option pour vous assurer qu'Eavesdropper reste toujours en bas de la liste afin d'afficher les derniers messages.",
 	LOCK_WINDOW = "Verrouiller la fenêtre",

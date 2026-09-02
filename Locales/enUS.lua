@@ -58,7 +58,7 @@ L = {
 
 	WINDOW_OPTIONS = "Window Options",
 	ENABLE_MOUSE = "Enable Hyperlinks",
-	ENABLE_MOUSE_HELP = "Toggles the ability to click hyperlinks, such as items and URLs, in the Eavesdropper window.",
+	ENABLE_MOUSE_HELP = "Toggles the ability to interact with hyperlinks, such as items and URLs, in the Eavesdropper window.",
 	LOCK_SCROLL = "Lock Scrolling",
 	LOCK_SCROLL_HELP = "Disables the ability to scroll through the message history.|n|n- Use this to ensure Eavesdropper always remains at the bottom of the list to show the latest messages.",
 	LOCK_WINDOW = "Lock Moving",
