@@ -503,7 +503,14 @@ function Eavesdropper_SharedFrameMixin:OnHyperlinkEnter(link, text, region, left
 	if linkType == "player" then
 		if not width or not height then return; end
 		NameHoverHighlight_Show(region, left, bottom, width, height);
+		return;
 	end
+
+	-- Otherwise try showing a tooltip on the top right
+	GameTooltip:SetOwner(self, "ANCHOR_PRESERVE");
+	GameTooltip:ClearAllPoints();
+	GameTooltip:SetPoint("BOTTOMLEFT", region, "TOPLEFT", left + width, bottom);
+	GameTooltip:SetHyperlink(link);
 end
 
 function Eavesdropper_SharedFrameMixin:OnHyperlinkLeave()
